@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사상체질 진단 | 四象體質 診斷</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream: #F5F0E8;
+  --ink: #1A1410;
+  --ink-light: #4A3F35;
+  --ink-muted: #8C7B6E;
+  --gold: #C8962A;
+  --gold-light: #E8C96A;
+  --gold-pale: #F5E9C8;
+  --taeyang: #C8450A;
+  --taeyang-pale: #FBF0EB;
+  --taeyin: #2D6A2D;
+  --taeyin-pale: #EBF5EB;
+  --soyang: #B5450A;
+  --soyang-pale: #FDF0E8;
+  --soeum: #1A4F8A;
+  --soeum-pale: #EBF0FA;
+  --border: rgba(26,20,16,0.12);
+  --border-strong: rgba(26,20,16,0.25);
+  --shadow: 0 2px 20px rgba(26,20,16,0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--cream);
+  color:var(--ink);
+  min-height:100vh;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:'';position:fixed;inset:0;
+  background:
+    radial-gradient(ellipse 60% 50% at 15% 10%,rgba(200,150,42,0.08) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 85% 90%,rgba(45,106,45,0.06) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 40% at 75% 15%,rgba(26,79,138,0.05) 0%,transparent 50%);
+  pointer-events:none;z-index:0;
+}
+.app{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:0 16px}
+.screen{display:none}
+.screen.active{display:block}
+
+/* ── SHARED ── */
+.section-label{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:11px;font-weight:700;letter-spacing:.12em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:18px;
+}
+.section-label::before{content:'';width:20px;height:1px;background:var(--gold)}
+.card{
+  background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);padding:24px;margin-bottom:14px;
+}
+.card-title{
+  font-size:11px;font-weight:700;letter-spacing:.1em;
+  color:var(--ink-muted);text-transform:uppercase;
+  margin-bottom:14px;padding-bottom:12px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:8px;
+}
+.card-title .ct-icon{font-size:15px}
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  background:var(--ink);color:var(--cream);border:none;
+  border-radius:40px;padding:15px 36px;
+  font-size:15px;font-weight:500;font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;letter-spacing:.02em;transition:all .2s;
+  box-shadow:0 4px 20px rgba(26,20,16,.18);
+}
+.btn-primary:hover{background:var(--ink-light);transform:translateY(-2px);box-shadow:0 8px 28px rgba(26,20,16,.22)}
+.btn-ghost{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  background:transparent;border:1.5px solid var(--border-strong);
+  border-radius:30px;padding:12px 22px;
+  font-size:14px;font-family:'Noto Sans KR',sans-serif;
+  color:var(--ink-light);cursor:pointer;transition:all .18s;
+}
+.btn-ghost:hover:not(:disabled){background:rgba(26,20,16,.05);border-color:var(--ink);color:var(--ink)}
+.btn-ghost:disabled{opacity:.3;cursor:default}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.anim{animation:fadeInUp .4s ease both}
+.d1{animation-delay:.05s}.d2{animation-delay:.1s}.d3{animation-delay:.15s}
+.d4{animation-delay:.2s}.d5{animation-delay:.25s}.d6{animation-delay:.3s}
+
+/* ══════════════════════════════
+   INTRO
+══════════════════════════════ */
+.intro-wrap{padding:56px 0 80px;text-align:center}
+.emblem{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:76px;height:76px;border-radius:50%;
+  background:var(--ink);margin-bottom:26px;
+}
+.emblem::after{
+  content:'四';font-family:'Noto Serif KR',serif;
+  font-size:34px;font-weight:700;color:var(--gold-light);
+}
+.intro-badge{
+  display:inline-block;font-size:11px;font-weight:500;letter-spacing:.12em;
+  color:var(--gold);border:1px solid rgba(200,150,42,.35);
+  border-radius:20px;padding:5px 14px;margin-bottom:18px;text-transform:uppercase;
+}
+.intro-title{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(26px,6vw,40px);font-weight:600;color:var(--ink);
+  line-height:1.25;margin-bottom:6px;letter-spacing:-.02em;
+}
+.intro-sub{font-size:13px;color:var(--ink-muted);letter-spacing:.05em;margin-bottom:24px}
+.intro-desc{
+  font-size:15px;color:var(--ink-light);line-height:1.8;
+  max-width:420px;margin:0 auto 44px;
+}
+.type-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:40px}
+@media(max-width:460px){.type-row{grid-template-columns:repeat(2,1fr)}}
+.type-card{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:14px 8px;text-align:center;transition:transform .2s,box-shadow .2s;
+}
+.type-card:hover{transform:translateY(-3px);box-shadow:var(--shadow)}
+.tc-char{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;margin-bottom:5px}
+.tc-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.tc-pct{font-size:11px;color:var(--ink-muted)}
+.ty .tc-char{color:var(--taeyang)}
+.te .tc-char{color:var(--taeyin)}
+.sy .tc-char{color:var(--soyang)}
+.se .tc-char{color:var(--soeum)}
+.intro-note{font-size:12px;color:var(--ink-muted);margin-top:14px}
+.divider{width:40px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:44px auto}
+.about-box{
+  text-align:left;background:#fff;border:1px solid var(--border);
+  border-radius:var(--radius);padding:26px;
+}
+.about-box h3{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:600;margin-bottom:10px}
+.about-box p{font-size:14px;color:var(--ink-light);line-height:1.8;margin-bottom:14px}
+.about-box p:last-child{margin-bottom:0}
+.compare-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:18px}
+@media(max-width:380px){.compare-grid{grid-template-columns:1fr}}
+.ci{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--cream);border-radius:var(--radius-sm);padding:12px;
+}
+.ci-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.ci-name{font-size:13px;font-weight:700;color:var(--ink)}
+.ci-organ{font-size:11px;color:var(--ink-muted);margin-top:1px}
+.ci-pct{font-size:11px;font-weight:500;margin-top:3px}
+
+/* ══════════════════════════════
+   PROFILE (사전 정보)
+══════════════════════════════ */
+.profile-wrap{padding:40px 0 80px}
+.profile-desc{
+  font-size:14px;color:var(--ink-light);line-height:1.8;
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+  padding:18px 20px;margin-bottom:24px;
+}
+.profile-desc strong{color:var(--ink);font-weight:700}
+.form-group{margin-bottom:20px}
+.form-label{
+  display:block;font-size:13px;font-weight:700;
+  color:var(--ink);margin-bottom:10px;letter-spacing:.02em;
+}
+.radio-grid{display:grid;gap:8px}
+.radio-grid.col2{grid-template-columns:repeat(2,1fr)}
+.radio-grid.col3{grid-template-columns:repeat(3,1fr)}
+.radio-grid.col4{grid-template-columns:repeat(4,1fr)}
+@media(max-width:440px){.radio-grid.col4{grid-template-columns:repeat(2,1fr)}}
+.radio-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:14px 10px;
+  cursor:pointer;transition:all .15s;text-align:center;
+}
+.radio-btn:hover{border-color:rgba(200,150,42,.5);background:var(--gold-pale)}
+.radio-btn.selected{border-color:var(--ink);background:var(--ink);color:var(--cream)}
+.radio-btn .rb-icon{font-size:20px;line-height:1}
+.radio-btn .rb-text{font-size:13px;font-weight:500;color:inherit}
+.radio-btn .rb-sub{font-size:11px;color:var(--ink-muted);line-height:1.3}
+.radio-btn.selected .rb-sub{color:rgba(245,240,232,.7)}
+.health-notice{
+  background:var(--gold-pale);border:1px solid rgba(200,150,42,.3);
+  border-radius:var(--radius-sm);padding:14px 18px;
+  font-size:13px;color:var(--ink-light);line-height:1.7;margin-top:8px;
+}
+.profile-actions{display:flex;justify-content:flex-end;margin-top:28px}
+
+/* ══════════════════════════════
+   QUIZ
+══════════════════════════════ */
+.quiz-wrap{padding:28px 0 80px}
+.quiz-top{
+  position:sticky;top:0;
+  background:rgba(245,240,232,.93);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  padding:14px 0 12px;z-index:100;margin-bottom:26px;
+}
+.quiz-nav-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.quiz-sec-badge{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--gold);text-transform:uppercase}
+.quiz-count{font-size:13px;color:var(--ink-muted);font-weight:500}
+.sdots{display:flex;gap:5px;margin-bottom:8px}
+.sdot{height:3px;border-radius:2px;background:rgba(26,20,16,.1);transition:all .3s}
+.sdot.done{background:var(--gold)}
+.sdot.cur{background:var(--ink)}
+.ptrack{width:100%;height:3px;background:rgba(26,20,16,.1);border-radius:2px;overflow:hidden}
+.pfill{height:3px;background:linear-gradient(90deg,var(--gold),var(--ink));border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+.q-num{font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--ink-muted);margin-bottom:8px;text-transform:uppercase}
+.q-text{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(16px,3.5vw,20px);font-weight:500;
+  color:var(--ink);line-height:1.55;margin-bottom:22px;
+}
+.opts{display:flex;flex-direction:column;gap:9px}
+.opt{
+  display:flex;align-items:flex-start;gap:13px;
+  background:#fff;border:1.5px solid var(--border);
+  border-radius:var(--radius-sm);padding:15px 17px;
+  text-align:left;cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;font-size:14px;
+  color:var(--ink-light);line-height:1.5;
+  transition:all .16s cubic-bezier(.4,0,.2,1);width:100%;
+  position:relative;overflow:hidden;
+}
+.opt::before{
+  content:'';position:absolute;inset:0;
+  background:var(--gold-pale);opacity:0;transition:opacity .16s;
+}
+.opt:hover::before{opacity:1}
+.opt:hover{border-color:rgba(200,150,42,.45);color:var(--ink);transform:translateX(3px)}
+.opt.sel{border-color:var(--ink);background:var(--ink);color:var(--cream);transform:translateX(3px)}
+.opt.sel::before{display:none}
+.opt-lbl{
+  display:flex;align-items:center;justify-content:center;
+  width:25px;height:25px;border-radius:50%;border:1.5px solid currentColor;
+  font-size:11px;font-weight:700;flex-shrink:0;opacity:.65;margin-top:1px;
+  position:relative;z-index:1;transition:all .16s;
+}
+.opt.sel .opt-lbl{border-color:var(--gold-light);color:var(--gold-light);opacity:1}
+.opt-txt{flex:1;position:relative;z-index:1}
+.quiz-actions{display:flex;justify-content:space-between;align-items:center;margin-top:26px;gap:10px}
+.btn-next{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--ink);color:var(--cream);border:none;border-radius:30px;
+  padding:13px 26px;font-size:15px;font-weight:500;
+  font-family:'Noto Sans KR',sans-serif;cursor:pointer;
+  transition:all .18s;max-width:220px;margin-left:auto;
+}
+.btn-next:hover:not(:disabled){background:var(--ink-light);transform:translateY(-1px)}
+.btn-next:disabled{opacity:.35;cursor:default;transform:none}
+
+/* ══════════════════════════════
+   RESULT
+══════════════════════════════ */
+.result-wrap{padding:44px 0 80px}
+
+/* Hero */
+.r-hero{text-align:center;margin-bottom:32px}
+.r-tag{
+  display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;
+  text-transform:uppercase;padding:5px 16px;border-radius:20px;margin-bottom:14px;
+}
+.r-char{
+  font-family:'Noto Serif KR',serif;
+  font-size:clamp(54px,13vw,86px);font-weight:700;
+  line-height:1;margin-bottom:10px;letter-spacing:-.03em;
+}
+.r-name-row{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-bottom:5px}
+.r-name{font-family:'Noto Serif KR',serif;font-size:clamp(22px,5vw,30px);font-weight:600}
+.r-hanja{font-size:16px;color:var(--ink-muted)}
+.r-organ{font-size:13px;color:var(--ink-muted);line-height:1.6}
+.r-divider{width:50px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:28px auto 0}
+
+/* 신뢰도 배너 */
+.reliability-banner{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 24px;margin-bottom:14px;
+}
+.rb-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.rb-title{font-size:13px;font-weight:700;color:var(--ink)}
+.rb-badge{
+  font-size:12px;font-weight:700;padding:4px 12px;
+  border-radius:20px;letter-spacing:.04em;
+}
+.rb-bars{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.rb-row{display:flex;align-items:center;gap:10px}
+.rb-label{font-size:12px;color:var(--ink-muted);min-width:80px}
+.rb-track{flex:1;height:5px;background:rgba(26,20,16,.08);border-radius:3px;overflow:hidden}
+.rb-fill{height:5px;border-radius:3px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.rb-val{font-size:12px;font-weight:700;min-width:34px;text-align:right}
+.rb-note{font-size:12px;color:var(--ink-muted);line-height:1.6;border-top:1px solid var(--border);padding-top:12px}
+
+/* 보정 정보 */
+.correction-box{
+  background:var(--gold-pale);border:1px solid rgba(200,150,42,.3);
+  border-radius:var(--radius-sm);padding:14px 18px;
+  display:flex;gap:10px;align-items:flex-start;margin-bottom:14px;
+}
+.cb-icon{font-size:15px;flex-shrink:0;margin-top:1px}
+.cb-text{font-size:13px;color:var(--ink-light);line-height:1.7}
+.cb-text strong{color:var(--ink);font-weight:700}
+
+/* 점수 */
+.score-section{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px}
+.score-sec-title{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--ink-muted);text-transform:uppercase;margin-bottom:18px}
+.s-row{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+.s-row:last-child{margin-bottom:0}
+.s-name{font-size:13px;font-weight:500;color:var(--ink);min-width:50px}
+.s-track{flex:1;height:6px;background:rgba(26,20,16,.08);border-radius:3px;overflow:hidden}
+.s-bar{height:6px;border-radius:3px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.s-val{font-size:13px;font-weight:700;min-width:36px;text-align:right}
+.s-winner .s-name,.s-winner .s-val{font-weight:700}
+
+/* Info cards */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+@media(max-width:480px){.two-col{grid-template-columns:1fr}}
+.mini-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius-sm);padding:18px}
+.mc-title{font-size:12px;font-weight:700;letter-spacing:.05em;margin-bottom:11px;padding-bottom:9px;border-bottom:1px solid var(--border)}
+.mc-title.good{color:var(--taeyin)}
+.mc-title.warn{color:#B5450A}
+.mc-title.str{color:var(--soeum)}
+.mc-title.cau{color:#9B2020}
+.mc-item{
+  font-size:13px;color:var(--ink-light);padding:3px 0;
+  line-height:1.5;display:flex;gap:6px;
+}
+.mc-item::before{content:'·';color:var(--ink-muted);flex-shrink:0}
+
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.bullet-list li{
+  display:flex;align-items:flex-start;gap:9px;
+  font-size:14px;color:var(--ink-light);line-height:1.55;
+}
+.bullet-list li::before{
+  content:'';width:5px;height:5px;border-radius:50%;
+  background:var(--gold);flex-shrink:0;margin-top:7px;
+}
+
+.tip-list{list-style:none;display:flex;flex-direction:column;gap:10px}
+.tip-list li{display:flex;align-items:flex-start;gap:11px;font-size:14px;color:var(--ink-light);line-height:1.6}
+.tip-arr{
+  width:20px;height:20px;border-radius:50%;background:var(--gold-pale);
+  display:flex;align-items:center;justify-content:center;
+  font-size:10px;color:var(--gold);flex-shrink:0;margin-top:2px;font-weight:700;
+}
+
+.herb-wrap{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}
+.herb-tag{
+  display:inline-block;background:var(--cream);border:1px solid var(--border-strong);
+  border-radius:20px;padding:5px 12px;font-size:12px;color:var(--ink-light);
+}
+
+/* 사상의학 해설 */
+.sasang-explain{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:14px}
+.se-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
+@media(max-width:460px){.se-grid{grid-template-columns:1fr}}
+.se-item{
+  border-radius:var(--radius-sm);padding:14px;
+  border:1px solid var(--border);
+}
+.se-item-title{font-size:12px;font-weight:700;margin-bottom:6px}
+.se-item-body{font-size:12px;color:var(--ink-light);line-height:1.6}
+
+/* 가중치 설명 */
+.weight-explain{
+  background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:14px;
+}
+.we-row{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:10px 0;border-bottom:1px solid var(--border);
+}
+.we-row:last-child{border-bottom:none;padding-bottom:0}
+.we-row:first-child{padding-top:0}
+.we-icon{font-size:18px;flex-shrink:0;width:28px;text-align:center}
+.we-body{}
+.we-title{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.we-desc{font-size:13px;color:var(--ink-light);line-height:1.6}
+
+/* 주의 박스 */
+.notice-box{
+  background:var(--gold-pale);border:1px solid rgba(200,150,42,.3);
+  border-radius:var(--radius-sm);padding:16px 20px;
+  margin-bottom:14px;display:flex;gap:12px;align-items:flex-start;
+}
+.n-icon{font-size:16px;flex-shrink:0;margin-top:1px}
+.n-text{font-size:13px;color:var(--ink-light);line-height:1.7}
+
+.info-box{
+  background:rgba(26,20,16,.04);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px 20px;
+  margin-bottom:14px;display:flex;gap:12px;align-items:flex-start;
+}
+
+.btn-retry{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  width:100%;background:transparent;border:1.5px solid var(--border-strong);
+  border-radius:30px;padding:14px;font-size:15px;font-weight:500;
+  font-family:'Noto Sans KR',sans-serif;color:var(--ink);cursor:pointer;
+  transition:all .18s;margin-top:6px;
+}
+.btn-retry:hover{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+
+/* Exercise badge */
+.ex-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--cream);border:1px solid var(--border-strong);
+  border-radius:8px;padding:8px 14px;font-size:13px;color:var(--ink-light);margin-top:12px;
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ══════════════ INTRO ══════════════ -->
+<div class="screen active" id="s-intro">
+<div class="intro-wrap">
+  <div class="anim"><div class="emblem"></div></div>
+  <div class="intro-badge anim d1">QSCC II 기반 · 이제마 사상의학</div>
+  <h1 class="intro-title anim d1">사상체질 진단</h1>
+  <p class="intro-sub anim d1">四象體質 自家診斷</p>
+  <p class="intro-desc anim d2">나의 체형·성격·소화·건강 경향을 파악하여<br>내 몸에 맞는 생활 습관과 음식을 알아보세요.</p>
+  <div class="type-row anim d2">
+    <div class="type-card ty"><div class="tc-char">太</div><div class="tc-name">태양인</div><div class="tc-pct">0.1% 미만</div></div>
+    <div class="type-card te"><div class="tc-char">陰</div><div class="tc-name">태음인</div><div class="tc-pct">약 50%</div></div>
+    <div class="type-card sy"><div class="tc-char">少</div><div class="tc-name">소양인</div><div class="tc-pct">약 30%</div></div>
+    <div class="type-card se"><div class="tc-char">陰</div><div class="tc-name">소음인</div><div class="tc-pct">약 20%</div></div>
+  </div>
+  <div class="anim d3">
+    <button class="btn-primary" onclick="go('s-profile')">
+      진단 시작하기
+      <svg width="15" height="15" viewBox="0 0 15 15" fill="none"><path d="M3 7.5h9M8 4l3.5 3.5L8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <p class="intro-note">약 5~7분 소요 · 30문항</p>
+  </div>
+  <div class="divider"></div>
+  <div class="about-box anim d4">
+    <h3>사상체질이란?</h3>
+    <p>조선 말기 의학자 이제마(1837~1900) 선생이 『동의수세보원』에서 체계화한 이론입니다. 사람마다 <strong>선천적으로</strong> 장부(臟腑)의 강약이 정해져 있으며, 이것이 평생 체형·성격·건강 경향을 결정합니다.</p>
+    <p style="font-size:13px;color:var(--ink-muted);margin-bottom:0">체질은 태어날 때 결정되며 변하지 않습니다. 다만 건강 상태에 따라 체질 특성이 다르게 나타날 수 있어, 지금 몸 상태가 좋지 않을 때는 결과가 실제 체질과 다르게 나올 수 있습니다.</p>
+    <div class="compare-grid">
+      <div class="ci"><div class="ci-dot" style="background:var(--taeyang)"></div><div><div class="ci-name">태양인 太陽人</div><div class="ci-organ">폐(肺) 강 · 간(肝) 약</div><div class="ci-pct" style="color:var(--taeyang)">0.1% 미만 · 매우 희귀</div></div></div>
+      <div class="ci"><div class="ci-dot" style="background:var(--taeyin)"></div><div><div class="ci-name">태음인 太陰人</div><div class="ci-organ">간(肝) 강 · 폐(肺) 약</div><div class="ci-pct" style="color:var(--taeyin)">약 50% · 가장 흔함</div></div></div>
+      <div class="ci"><div class="ci-dot" style="background:var(--soyang)"></div><div><div class="ci-name">소양인 少陽人</div><div class="ci-organ">비장(脾) 강 · 신장(腎) 약</div><div class="ci-pct" style="color:var(--soyang)">약 30%</div></div></div>
+      <div class="ci"><div class="ci-dot" style="background:var(--soeum)"></div><div><div class="ci-name">소음인 少陰人</div><div class="ci-organ">신장(腎) 강 · 비장(脾) 약</div><div class="ci-pct" style="color:var(--soeum)">약 20%</div></div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ PROFILE ══════════════ -->
+<div class="screen" id="s-profile">
+<div class="profile-wrap">
+  <div class="section-label anim">진단 전 기본 정보</div>
+  <div class="profile-desc anim d1">
+    <strong>나이·성별·건강 상태에 따라 체질 판정 가중치를 보정합니다.</strong><br>
+    같은 증상도 나이나 성별에 따라 다르게 나타날 수 있고, 현재 건강 상태가 좋지 않으면 체질 특성이 왜곡되어 보일 수 있기 때문입니다.
+  </div>
+
+  <div class="card anim d2">
+    <div class="form-group">
+      <label class="form-label">성별</label>
+      <div class="radio-grid col2">
+        <button class="radio-btn" data-group="gender" data-val="male" onclick="selectProfile(this)">
+          <span class="rb-icon">👨</span><span class="rb-text">남성</span>
+        </button>
+        <button class="radio-btn" data-group="gender" data-val="female" onclick="selectProfile(this)">
+          <span class="rb-icon">👩</span><span class="rb-text">여성</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">나이대</label>
+      <div class="radio-grid col4">
+        <button class="radio-btn" data-group="age" data-val="10s" onclick="selectProfile(this)">
+          <span class="rb-icon">🌱</span><span class="rb-text">10대</span><span class="rb-sub">~19세</span>
+        </button>
+        <button class="radio-btn" data-group="age" data-val="20s" onclick="selectProfile(this)">
+          <span class="rb-icon">🔥</span><span class="rb-text">20대</span><span class="rb-sub">20~29세</span>
+        </button>
+        <button class="radio-btn" data-group="age" data-val="30s" onclick="selectProfile(this)">
+          <span class="rb-icon">⚡</span><span class="rb-text">30대</span><span class="rb-sub">30~39세</span>
+        </button>
+        <button class="radio-btn" data-group="age" data-val="40s" onclick="selectProfile(this)">
+          <span class="rb-icon">🌿</span><span class="rb-text">40대</span><span class="rb-sub">40~49세</span>
+        </button>
+        <button class="radio-btn" data-group="age" data-val="50s" onclick="selectProfile(this)">
+          <span class="rb-icon">🍁</span><span class="rb-text">50대</span><span class="rb-sub">50~59세</span>
+        </button>
+        <button class="radio-btn" data-group="age" data-val="60s" onclick="selectProfile(this)">
+          <span class="rb-icon">🌙</span><span class="rb-text">60대+</span><span class="rb-sub">60세 이상</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group" style="margin-bottom:0">
+      <label class="form-label">현재 건강 상태 <span style="font-weight:400;color:var(--ink-muted)">(평소와 비교해서)</span></label>
+      <div class="radio-grid col3">
+        <button class="radio-btn" data-group="health" data-val="good" onclick="selectProfile(this)">
+          <span class="rb-icon">😊</span><span class="rb-text">좋음</span><span class="rb-sub">평소와 같음</span>
+        </button>
+        <button class="radio-btn" data-group="health" data-val="normal" onclick="selectProfile(this)">
+          <span class="rb-icon">😐</span><span class="rb-text">보통</span><span class="rb-sub">약간 피곤함</span>
+        </button>
+        <button class="radio-btn" data-group="health" data-val="bad" onclick="selectProfile(this)">
+          <span class="rb-icon">😔</span><span class="rb-text">좋지 않음</span><span class="rb-sub">아프거나 회복 중</span>
+        </button>
+      </div>
+      <div class="health-notice" id="health-notice" style="display:none">
+        ⚠️ 현재 몸 상태가 좋지 않으면 체질 특성이 왜곡되어 나타날 수 있습니다. 결과는 참고만 하시고, 건강이 회복된 후 다시 진단하시면 더 정확합니다. 진단 중 신체 관련 문항은 <strong>평소 건강할 때</strong>를 기준으로 답해주세요.
+      </div>
+    </div>
+  </div>
+
+  <div class="profile-actions anim d3">
+    <button class="btn-ghost" onclick="go('s-intro')" style="margin-right:auto">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8 2L3.5 6.5 8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      이전
+    </button>
+    <button class="btn-primary" id="btn-profile-next" onclick="startQuiz()" disabled style="opacity:.35;cursor:default">
+      진단 시작
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ QUIZ ══════════════ -->
+<div class="screen" id="s-quiz">
+<div class="quiz-wrap">
+  <div class="quiz-top">
+    <div class="quiz-nav-row">
+      <span class="quiz-sec-badge" id="q-sec"></span>
+      <span class="quiz-count" id="q-cnt"></span>
+    </div>
+    <div class="sdots" id="sdots"></div>
+    <div class="ptrack"><div class="pfill" id="pfill"></div></div>
+  </div>
+  <div id="quiz-body">
+    <div class="q-num" id="q-num"></div>
+    <div class="q-text" id="q-text"></div>
+    <div class="opts" id="q-opts"></div>
+    <div class="quiz-actions">
+      <button class="btn-ghost" id="btn-prev" onclick="prevQ()">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M8 2L3.5 6.5 8 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        이전
+      </button>
+      <button class="btn-next" id="btn-next" onclick="nextQ()">
+        <span id="btn-next-txt">다음</span>
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M5 2l4.5 4.5L5 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ RESULT ══════════════ -->
+<div class="screen" id="s-result">
+<div class="result-wrap" id="r-content"></div>
+</div>
+
+</div><!-- /app -->
+
+<script>
+/* ════════════════════════════
+   DATA
+════════════════════════════ */
+const SECS = ["체형·외모","소화·음식","체온·땀·수면","성격·심성","건강 경향"];
+const SEC_EMOJI = ["👤","🍚","🌡️","🧠","🏥"];
+const SEC_CNT = [7, 7, 6, 6, 4]; // 총 30문항
+
+/*
+  점수 매핑: 각 문항마다 options 배열의 순서대로
+  scores: [태양인, 태음인, 소양인, 소음인]
+  체질 옵션이 없으면 0, 균등이면 [1,1,1,1]
+  각 문항 마지막 선택지는 대체로 "잘 모름/균등" = 모든 체질 1점
+*/
+const QUESTIONS = [
+  // ── 1. 체형·외모 (7) ──
+  {
+    q:"체형 전반을 봤을 때 가장 가까운 것은?",
+    opts:[
+      "배·허리가 두툼하고 전체적으로 체격이 크고 탄탄하다",
+      "어깨·가슴이 발달하고 엉덩이·하체가 상대적으로 빈약하다",
+      "하체(엉덩이·허벅지)가 상체보다 발달하고 전체적으로 가냘프다",
+      "특별히 어느 쪽도 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"살이 찌는 경향이 어떤가?",
+    opts:[
+      "조금만 먹어도 잘 찌고, 빼기가 힘들다",
+      "먹으면 상체·팔 위주로 찌는 편이다",
+      "아무리 먹어도 잘 안 찌고 항상 마른 편이다",
+      "비교적 고르게 찌거나 잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"목덜미와 어깨 부분이 어떤가?",
+    opts:[
+      "목이 굵고 어깨가 두텁고 묵직하다",
+      "어깨가 넓고 상체가 발달해 보인다",
+      "어깨가 좁고 목이 가늘다",
+      "잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"피부 상태는?",
+    opts:[
+      "피부가 두껍고 탄탄하며 기름기가 있는 편이다",
+      "피부가 희고 얇지 않으며 촉촉한 편이다",
+      "피부가 얇고 민감하며 건조하거나 창백한 편이다",
+      "특별히 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,2,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"걸음걸이나 몸동작의 인상은?",
+    opts:[
+      "묵직하고 안정감 있게 천천히 움직인다",
+      "발걸음이 가볍고 민첩하며 빠르게 움직인다",
+      "조심스럽고 가볍게 조용히 움직인다",
+      "특별히 두드러지지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"얼굴형과 전반적인 인상은?",
+    opts:[
+      "둥글고 온화하며 눈이 부드럽다",
+      "역삼각형에 눈매가 또렷하고 전체적으로 날카로운 인상이다",
+      "이목구비가 작고 단정하며 차분한 인상이다",
+      "어느 쪽도 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"목소리와 말하는 방식은?",
+    opts:[
+      "목소리가 굵고 느리며 신중하게 말한다",
+      "목소리가 맑고 빠르며 거침없이 말한다",
+      "목소리가 작고 말수가 적으며 천천히 말한다",
+      "특별히 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+
+  // ── 2. 소화·음식 (7) ──
+  {
+    q:"평소 식욕과 소화 상태는?",
+    opts:[
+      "식욕이 왕성하고 뭐든 잘 먹으며 소화도 잘 된다",
+      "식욕은 좋은데 과식하거나 찬 음식을 먹으면 배가 불편하다",
+      "식욕이 별로 없고 조금만 먹어도 속이 더부룩하거나 소화가 잘 안 된다",
+      "보통이다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"대변 습관은?",
+    opts:[
+      "대체로 변비 경향이고 굳은 편이다",
+      "대변이 시원하게 잘 통하면 그날 컨디션이 좋다",
+      "무른 변이나 설사 경향이 있고 자주 배가 아프다",
+      "규칙적이고 특별히 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"찬 음식과 따뜻한 음식 중 어느 것이 몸에 잘 맞는가?",
+    opts:[
+      "차갑든 뜨겁든 가리지 않고 다 잘 먹는다",
+      "찬 음식이 속이 편하고 잘 맞는다",
+      "따뜻한 음식이 속이 편하고, 찬 음식을 먹으면 배가 아프거나 불편하다",
+      "잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"식사 후 속 상태는?",
+    opts:[
+      "과식하지 않는 한 항상 속이 편하다",
+      "식사 후 가끔 상기되거나 가슴이 답답할 때가 있다",
+      "조금만 먹어도 더부룩하거나 자주 소화불량을 느낀다",
+      "거의 불편하지 않다"
+    ],
+    scores:[[0,3,0,0],[0,0,2,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"고기(육식)를 먹으면 어떤가?",
+    opts:[
+      "잘 먹고 먹으면 힘이 나는 것을 느낀다",
+      "좋아하지만 많이 먹으면 속이 더부룩하거나 열이 오른다",
+      "소화가 잘 안 되거나 먹고 나면 몸이 불편하다",
+      "특별히 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,2,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"배고플 때 몸의 반응은?",
+    opts:[
+      "배가 고프면 심하게 허기를 느끼고 빨리 먹어야 한다",
+      "배고파도 그냥 참을 수 있고 크게 불편하지 않다",
+      "조금만 굶어도 기운이 없어지고 어지럽거나 손발이 떨린다",
+      "잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"술을 마시면 어떻게 되는가? (음주를 하지 않는다면 예상으로 답해도 됩니다)",
+    opts:[
+      "주량이 세고 술이 잘 받는 편이다",
+      "기분 좋게 마실 수 있지만 과음하면 다음날 힘들다",
+      "조금만 마셔도 얼굴이 빨개지거나 몸이 힘들다",
+      "해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,2,0],[0,0,0,3],[1,1,1,1]]
+  },
+
+  // ── 3. 체온·땀·수면 (6) ──
+  {
+    q:"평소 체온 경향은?",
+    opts:[
+      "더위를 많이 타고 몸에 열이 많다, 여름이 특히 힘들다",
+      "상체는 덥고 하체(발·무릎)는 차가운 느낌이 자주 있다",
+      "추위를 많이 타고 손발이 항상 차다, 겨울이 특히 힘들다",
+      "보통이다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"땀 분비 경향은?",
+    opts:[
+      "조금만 움직여도 땀이 많이 나고, 흠뻑 흘리고 나면 오히려 개운하다",
+      "땀을 별로 흘리지 않는 편이고, 안 나면 몸이 무겁게 느껴진다",
+      "땀이 조금만 나도 기운이 빠지고 힘들다",
+      "보통이다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"수면 패턴은?",
+    opts:[
+      "잠이 많은 편이고 일단 누우면 깊이 잘 잔다",
+      "잠이 적고 늦게 자도 크게 피곤하지 않다",
+      "잠들기 어렵거나 자주 깨고 얕은 잠을 잔다",
+      "보통이다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"운동 후 몸 상태는?",
+    opts:[
+      "땀을 흠뻑 흘리고 나면 개운하고 컨디션이 좋아진다",
+      "운동 중에는 좋은데 끝나고 상체 열감이나 피로감이 온다",
+      "조금만 격렬하게 해도 기운이 빠지고 회복이 느리다",
+      "특별히 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"소변 상태는?",
+    opts:[
+      "소변량이 많고 맑으며 잘 나온다",
+      "소변이 시원하게 잘 나오면 그날 컨디션이 좋다",
+      "소변이 잦거나 시원하지 않고 찔끔 나온다",
+      "특별히 이상 없다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"피로할 때 가장 효과적인 회복 방법은?",
+    opts:[
+      "충분히 자고 쉬면 금세 회복된다",
+      "사람들을 만나거나 가벼운 활동을 하면 오히려 기운이 난다",
+      "충분한 안정과 따뜻한 음식이 있어야 회복된다",
+      "잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+
+  // ── 4. 성격·심성 (6) ──
+  {
+    q:"일 처리 방식은?",
+    opts:[
+      "꾸준하고 성실하게 끝까지 완수한다, 변화보다 안정을 선호한다",
+      "빠르게 추진하지만 마무리가 약하고 새로운 것을 즐긴다",
+      "세부 계획을 꼼꼼하게 세우고 준비를 철저히 한다",
+      "상황에 따라 다르다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"감정 표현 방식은?",
+    opts:[
+      "감정을 겉으로 잘 드러내지 않고 혼자 삭이는 편이다",
+      "감정을 바로 드러내고 그 자리에서 표현하고 해소한다",
+      "표현하고 싶어도 못 하고, 속으로 오래 담아두는 편이다",
+      "상황에 따라 다르다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"대인관계 스타일은?",
+    opts:[
+      "처음엔 낯을 가리지만 친해지면 의리가 매우 깊다",
+      "처음 보는 사람과도 금방 친해지고 사교적이다",
+      "가까운 소수와 깊게 사귀고 낯선 사람이 어렵다",
+      "상황에 따라 다르다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"스트레스를 받을 때 반응은?",
+    opts:[
+      "겉으로는 평온해 보이지만 속으로 삭이고 쌓아둔다",
+      "즉각적으로 표출하거나 몸을 움직이고 사람을 만나 해소한다",
+      "걱정이 많아지고 불안이 오래 지속되며 혼자 끙끙 앓는다",
+      "상황에 따라 다르다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"새로운 것 vs 익숙한 것, 어느 쪽인가?",
+    opts:[
+      "익숙하고 안정적인 것을 강하게 선호하고 변화를 싫어한다",
+      "새로운 것을 즐기고 변화와 도전을 좋아한다",
+      "새로운 것에 관심은 있지만 신중하게 검토하고 천천히 받아들인다",
+      "균형을 맞추는 편이다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"불의나 부당한 상황을 보면?",
+    opts:[
+      "속으로 불편하지만 참고 넘기거나 나중에 조용히 해결한다",
+      "참지 못하고 그 자리에서 바로 지적하거나 행동한다",
+      "속으로 불편하지만 겉으로 드러내기 어렵고 나중에 혼자 속앓이를 한다",
+      "상황에 따라 다르다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+
+  // ── 5. 건강 경향 (4) ──
+  {
+    q:"자주 겪는 건강 문제는? (가장 가까운 것 하나)",
+    opts:[
+      "피부 트러블, 비염, 기침 등 호흡기 문제 / 고혈압 경향",
+      "두통, 상체 열감, 변비, 불면증",
+      "소화불량, 복부 냉감, 설사, 손발 냉증 / 저혈압 경향",
+      "특별히 해당하지 않는다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"감기에 걸리면 주로 어떤 증상이 나타나는가?",
+    opts:[
+      "코막힘, 가래, 기침이 주로 생기고 오래 간다",
+      "고열이 나고 인후통(목 통증)이 심하게 온다",
+      "오한이 심하고 몸이 으슬으슬하며 손발이 더 차가워진다",
+      "잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"스트레스가 몸에 나타나는 방식은?",
+    opts:[
+      "피부 트러블, 두드러기, 호흡이 답답해진다",
+      "두통, 불면, 가슴이 답답하고 상기된다",
+      "소화불량, 식욕 감소, 배가 차가워지고 설사한다",
+      "몸보다 마음에 주로 나타난다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  },
+  {
+    q:"가장 약하다고 느끼는 신체 부위는?",
+    opts:[
+      "폐, 기관지, 피부 / 또는 간, 소화기",
+      "신장, 방광, 허리·무릎 하체",
+      "비장, 위장, 소화기 전반",
+      "잘 모르겠다"
+    ],
+    scores:[[0,3,0,0],[0,0,3,0],[0,0,0,3],[1,1,1,1]]
+  }
+];
+
+/* ════════════════════════════
+   RESULT DATA
+════════════════════════════ */
+const DATA = {
+  0:{
+    name:"태양인",hanja:"太陽人",char:"太",
+    organ:"폐(肺)가 강하고 간(肝)이 약한 체질 · 전체 인구의 0.1% 미만",
+    color:"var(--taeyang)",colorPale:"var(--taeyang-pale)",
+    summary:"사상체질 중 가장 희귀한 체질입니다. 폐와 호흡기 기능이 강하고 간 기능이 약합니다. 강렬한 사회적 지향성과 독창적 사고를 가지며 선구자적 기질이 뛰어납니다.",
+    health_signal:"감기 후 회복이 느리고 하체에 힘이 없어진다면 몸에 이상이 생긴 신호입니다.",
+    body:["목덜미·후두부가 발달하고 상체가 실해 보임","허리 아래 하체가 약하고 가늘어 오래 걷기 불편","식사량이 적고 소식하는 편"],
+    personality:["독창적이고 선구자적인 기질이 강함","사회적 정의감이 강하고 타인을 위한 일에 적극적","직관이 뛰어나고 결단력이 있음"],
+    good_food:["메밀, 냉면, 포도, 감, 모과","새우, 게, 조개류, 해산물","붕어, 잉어 등 민물생선","오가피 차, 솔잎 차"],
+    bad_food:["쇠고기, 돼지고기 등 지방 많은 육류","기름에 볶은 음식, 튀김류","마늘, 생강, 고추 등 자극적인 것","과음 (소량도 주의)"],
+    strengths:["뛰어난 통찰력과 창의적 사고","강한 사회적 책임감과 리더십","호흡기·면역력이 상대적으로 강함"],
+    cautions:["간이 약해 과로·음주에 매우 취약","기름지고 자극적인 음식에 소화 장애","하체 근력이 약해 장시간 보행 주의"],
+    exercise:"수영, 가벼운 걷기 등 하체 강화 운동",
+    herb:["오가피(五加皮)","솔잎","포도 추출물","모과(木瓜)"],
+    tips:["하루 30분 이내의 가벼운 걷기나 수영 등 하체 강화 운동을 꾸준히","간 보호를 위해 과로와 늦은 취침을 피하고 수면을 충분히","음주는 최대한 자제하고 불가피한 경우 소량만","식사는 소식(小食)하되 천천히, 규칙적으로"],
+    warning:"태양인은 극히 희귀해 설문만으로 확정하기 어렵습니다. 반드시 전문 한의사 대면 진단을 받으세요. 간 기능 보호가 최우선이며 정기적인 간 수치 검사를 권장합니다.",
+    disease_risk:"간 기능 저하, 하체 무력증, 역류성 식도염, 척추·무릎 관련 질환",
+    sasang_theory:"폐(肺)의 기운이 강하여 호흡기와 면역이 튼튼하지만, 간(肝)이 약해 해독·소화 기능이 부족합니다. 감정적으로 분노를 느낄 때 간에 직접 영향을 주므로 분노 조절과 스트레스 해소가 중요합니다."
+  },
+  1:{
+    name:"태음인",hanja:"太陰人",char:"太",
+    organ:"간(肝)이 강하고 폐(肺)가 약한 체질 · 전체 인구의 약 50%",
+    color:"var(--taeyin)",colorPale:"var(--taeyin-pale)",
+    summary:"한국인에게 가장 흔한 체질(약 50%)입니다. 간·순환계가 강하고 폐·호흡기가 약합니다. 참을성과 지구력이 뛰어나며, 땀을 충분히 흘리면 건강하다는 신호입니다.",
+    health_signal:"땀이 잘 나지 않거나(무한증) 몸이 붓는다면 건강에 이상이 생긴 신호입니다.",
+    body:["체격이 크고 골격이 굵으며 허리·복부가 발달","살이 쉽게 찌고 비만해지기 쉬움","피부가 두껍고 윤기 있는 편","얼굴이 둥글고 눈이 온화한 인상"],
+    personality:["인내력과 끈기가 뛰어나 장기 목표를 잘 이룸","보수적이고 안정 지향적","한번 믿으면 의리가 깊음","감정을 잘 드러내지 않고 속으로 삭이는 편"],
+    good_food:["쇠고기, 우유, 치즈 등 유제품","견과류 (호두, 밤, 잣)","콩류 (두부, 된장, 청국장)","배, 살구, 자두, 매실","도라지, 더덕, 연근, 무"],
+    bad_food:["닭고기 (과다 섭취 시 열 상승)","인삼, 꿀 등 과도한 열성 음식","맵고 자극적인 음식","과음은 절대 금물"],
+    strengths:["체력과 지구력이 강해 꾸준히 할 수 있음","간이 강해 해독 능력이 좋음","안정적이고 믿음직스러워 신뢰를 받음"],
+    cautions:["살이 쉽게 찌고 복부 비만이 되기 쉬움","호흡기(폐)가 약해 환절기 감기에 자주 걸림","감정을 억압하면 울화증(鬱火症)으로 발전 가능","운동 부족 시 성인병 위험이 급격히 올라감"],
+    exercise:"유산소 운동, 등산, 수영 — 땀을 충분히 흘리는 운동",
+    herb:["녹용(鹿茸)","칡(葛根)","맥문동(麥門冬)","오미자(五味子)","행인(杏仁)"],
+    tips:["땀을 충분히 흘리는 유산소 운동이 가장 중요 — 주 3~5회","과식을 조심하고 식사량을 일정하게 유지, 비만은 적신호","환절기에 보온에 신경 쓰고 실내 습도 50~60% 유지","스트레스를 속으로만 삭이지 말고 운동·취미로 해소","정기적인 혈압·혈당·콜레스테롤 검사 권장"],
+    warning:"비만이 되면 고혈압·당뇨·심혈관 질환 위험이 급격히 높아집니다. 체중 관리가 최우선입니다. 땀이 나지 않는 상태가 지속되면 즉시 진료를 받으세요.",
+    disease_risk:"호흡기 질환(비염·천식), 고혈압·고지혈증, 당뇨, 피부 질환(아토피·두드러기)",
+    sasang_theory:"간(肝)의 기운이 강하여 체력과 해독 능력이 뛰어나지만, 폐(肺)가 약해 호흡기와 피부가 취약합니다. 땀을 통해 노폐물을 배출하는 능력이 핵심이며, 땀이 잘 나는 상태를 유지하는 것이 건강의 지표입니다."
+  },
+  2:{
+    name:"소양인",hanja:"少陽人",char:"少",
+    organ:"비장(脾臟)이 강하고 신장(腎臟)이 약한 체질 · 전체 인구의 약 30%",
+    color:"var(--soyang)",colorPale:"var(--soyang-pale)",
+    summary:"전체 인구의 약 30%를 차지합니다. 비장(소화·흡수)이 강하고 신장이 약합니다. 활발하고 외향적이며 대변이 잘 통하면 건강하다는 신호입니다.",
+    health_signal:"대변이 불규칙해지거나 허리·무릎에 통증이 생기면 건강에 이상이 생긴 신호입니다.",
+    body:["어깨·가슴 등 상체가 발달하고 엉덩이·하체는 빈약","체형이 날렵하고 민첩한 인상","상체에 열이 오르고 하체가 차가운 경향","목소리가 맑고 빠른 편"],
+    personality:["활발하고 외향적이며 사람을 금방 사귐","창의적이고 아이디어가 넘침","의협심이 강하고 불의를 참지 못함","시작을 잘 하지만 마무리가 약한 편"],
+    good_food:["돼지고기, 오리고기","보리, 팥, 녹두, 메밀","참외, 수박, 오이, 바나나","굴, 홍합, 새우","녹차, 결명자 차"],
+    bad_food:["인삼, 꿀, 대추, 생강 등 열성 음식","닭고기, 개고기 (과다 섭취 시)","맵고 자극적인 음식","기름진 튀김류"],
+    strengths:["뛰어난 사교성과 리더십","비장이 강해 소화·흡수 능력이 좋음","창의적 사고와 빠른 행동력","열정적이고 활력이 넘침"],
+    cautions:["신장이 약해 과로 시 허리·무릎 통증 악화","상체 열감·불면증으로 만성 피로 누적","인삼·홍삼이 오히려 열을 올려 해로울 수 있음","마무리 부족으로 신뢰를 잃을 수 있음"],
+    exercise:"하체 근력 운동 (스쿼트, 런지), 반신욕·족욕으로 하체 보온",
+    herb:["숙지황(熟地黃)","구기자(枸杞子)","산수유(山茱萸)","복령(茯苓)","택사(澤瀉)"],
+    tips:["하체를 따뜻하게 유지 — 반신욕이나 족욕을 자주","과로를 피하고 충분한 수면 — 신장은 무리하면 가장 먼저 손상","하체 근력 운동 꾸준히 — 스쿼트, 런지, 자전거 타기","대변이 불규칙해지면 몸에 이상이 생겼다는 신호","인삼·홍삼 보약은 소양인에게 오히려 해로울 수 있음"],
+    warning:"신장이 약하므로 카페인 과다 섭취, 짠 음식, 탈수에 매우 주의하세요. 상체 열감이 심해 두통·불면이 지속되면 반드시 진료를 받으세요.",
+    disease_risk:"신장·방광 질환, 요통, 하체 냉증, 두통·이명, 불면증, 과민성 대장",
+    sasang_theory:"비장(脾臟)의 기운이 강하여 소화·흡수 능력이 탁월하지만, 신장(腎臟)이 약해 하체와 비뇨 기능이 취약합니다. 상체의 열기를 아래로 내려 신장을 보호하는 것이 건강 관리의 핵심입니다."
+  },
+  3:{
+    name:"소음인",hanja:"少陰人",char:"少",
+    organ:"신장(腎臟)이 강하고 비장(脾臟)이 약한 체질 · 전체 인구의 약 20%",
+    color:"var(--soeum)",colorPale:"var(--soeum-pale)",
+    summary:"전체 인구의 약 20%입니다. 신장 기능이 강하고 비장(소화·흡수)이 약합니다. 소화가 잘 되면 건강하다는 신호이며, 몸을 따뜻하게 유지하는 것이 핵심입니다.",
+    health_signal:"소화가 잘 안 되거나 손발이 평소보다 더 차가워지면 건강에 이상이 생긴 신호입니다.",
+    body:["체형이 가냘프고 하체(엉덩이·허벅지)가 상체보다 발달","살이 잘 안 찌고 전체적으로 날씬한 편","피부가 얇고 민감하며 창백한 편","손발이 차고 추위를 많이 타는 편"],
+    personality:["꼼꼼하고 계획적이며 신중함","내성적이고 소수의 가까운 사람을 깊게 사귐","걱정이 많고 불안감을 자주 느낌","한 가지 일에 집중력이 높음"],
+    good_food:["닭고기, 양고기 등 따뜻한 육류","찹쌀, 현미, 차조","파, 마늘, 생강 등 따뜻한 향신료(적당량)","귤, 사과, 복숭아, 대추","생강 차, 쑥차, 인삼 차"],
+    bad_food:["돼지고기, 오리고기 등 차가운 성질의 고기","보리, 메밀, 녹두 등 냉성 곡류","수박, 참외, 배 등 차가운 과일 (과다 섭취)","빙수, 아이스크림 등 냉음식"],
+    strengths:["신장이 강해 생식·비뇨 기능이 좋음","꼼꼼하고 세심해서 실수가 적음","집중력이 높아 전문 분야에서 탁월한 성과","감수성이 풍부해 예술·문학 분야에 강점"],
+    cautions:["비장이 약해 소화 문제가 잦고 냉증에 취약","걱정과 불안이 많아 심신 피로가 쉽게 쌓임","추위에 약하고 체력이 쉽게 떨어짐","과한 땀은 기력을 빼앗아 주의"],
+    exercise:"요가, 필라테스, 가벼운 걷기 — 과격한 운동은 피할 것",
+    herb:["인삼(人蔘)","황기(黃芪)","당귀(當歸)","백출(白朮)","대추(大棗)"],
+    tips:["몸을 항상 따뜻하게 유지 — 배와 발을 특히 따뜻하게","식사는 따뜻하고 소화하기 쉬운 음식 위주로 규칙적으로","과도한 다이어트나 굶기는 금물 — 소음인에게 영양 결핍은 위험","걱정이 심해지면 가벼운 산책이나 명상·복식호흡 활용","사우나·과격한 운동을 자주 하지 말 것 — 땀이 기력을 빼앗음"],
+    warning:"소화불량이 자주 반복되면 방치하지 말고 한의사 진료를 받으세요. 차가운 환경·음식 노출을 최소화하세요. 땀을 과다하게 흘리면 기력이 급격히 떨어집니다.",
+    disease_risk:"소화기 질환, 냉증, 빈혈·저혈압, 불안장애·우울증 경향, 갑상선 기능 저하",
+    sasang_theory:"신장(腎臟)의 기운이 강하여 생식·비뇨 기능이 좋고 정밀한 사고 능력이 뛰어나지만, 비장(脾臟)이 약해 소화·흡수 능력이 부족합니다. 몸을 따뜻하게 하여 비장의 기운을 보호하는 것이 건강 관리의 핵심입니다."
+  }
+};
+
+/* ════════════════════════════
+   WEIGHTING
+════════════════════════════ */
+/*
+  가중치 보정 방식:
+  - 나이, 성별, 건강상태에 따라 특정 문항 그룹에 multiplier 적용
+  - 섹션별 가중치: [체형, 소화, 체온·땀, 성격, 건강증상]
+  - 기본값 1.0, 낮출수록 해당 섹션 신뢰도 하락
+*/
+function getWeights(profile){
+  // base weights per section
+  let w = [1.0, 1.0, 1.0, 1.0, 1.0];
+  const {age, gender, health} = profile;
+
+  // 나이 보정
+  if(age === '10s'){
+    // 10대: 체형·성격은 아직 덜 굳어짐, 소화·체온이 더 신뢰적
+    w[0] *= 0.8; w[3] *= 0.75;
+    w[1] *= 1.1; w[2] *= 1.1;
+  } else if(age === '20s' || age === '30s'){
+    // 20~30대: 모든 항목 신뢰도 최고
+    // no change
+  } else if(age === '40s'){
+    // 40대: 신뢰도 전반 유지, 체온·땀 약간 하향
+    w[2] *= 0.9;
+  } else if(age === '50s'){
+    // 50대: 체온·땀 신뢰도 하락 (갱년기 등), 체형도 변화
+    w[0] *= 0.85; w[2] *= 0.8;
+    w[4] *= 1.1; // 건강 증상은 더 신뢰
+  } else if(age === '60s'){
+    // 60대+: 체온·땀·체형 신뢰도 크게 하락, 소화·건강증상 중심
+    w[0] *= 0.7; w[2] *= 0.7;
+    w[1] *= 1.15; w[4] *= 1.2;
+    // 소음인 편향 방지: 섹션 전체 소음인 가중 억제 (별도 처리)
+  }
+
+  // 성별 보정
+  if(gender === 'female'){
+    // 여성: 체온·냉증 문항에서 소음인 과대 판정 방지
+    // 소화 문항 소음인 편향 보정 → 섹션 가중치 소폭 하향
+    w[2] *= 0.9; // 체온·땀 섹션 소음인 편향 완화
+  }
+
+  // 건강 상태 보정
+  if(health === 'bad'){
+    // 몸 상태 나쁠 때: 소화·체온 증상이 왜곡될 수 있음
+    w[1] *= 0.75; w[2] *= 0.75;
+    w[3] *= 1.15; // 성격은 비교적 안정적
+    w[0] *= 1.1;  // 체형은 가장 안정적
+  } else if(health === 'normal'){
+    w[1] *= 0.9; w[2] *= 0.9;
+  }
+
+  return w;
+}
+
+function getCorrections(profile){
+  const msgs = [];
+  const {age, gender, health} = profile;
+
+  if(age === '10s') msgs.push("10대는 체형·성격이 아직 굳어지지 않아 체형 및 성격 문항 가중치를 낮추고, 소화·체온 중심으로 판정했습니다.");
+  if(age === '50s') msgs.push("50대 이후는 갱년기·체력 변화로 체온 및 땀 문항의 신뢰도가 낮아질 수 있어 가중치를 조정했습니다.");
+  if(age === '60s') msgs.push("60대 이상은 전반적인 체력 저하로 소음인 증상이 과다하게 나타날 수 있어, 체형·체온 가중치를 낮추고 소화·건강 증상 중심으로 판정했습니다.");
+  if(gender === 'female') msgs.push("여성은 냉증·소화 문항에서 소음인 편향이 나타날 수 있어 체온 섹션 가중치를 조정했습니다.");
+  if(health === 'bad') msgs.push("현재 건강 상태가 좋지 않아 소화·체온 문항의 가중치를 낮추고 체형·성격 중심으로 판정했습니다. 건강 회복 후 다시 진단하시면 더 정확합니다.");
+  if(health === 'normal') msgs.push("현재 몸 상태가 평소보다 좋지 않아 소화·체온 문항 가중치를 소폭 조정했습니다.");
+
+  return msgs;
+}
+
+/* ════════════════════════════
+   STATE
+════════════════════════════ */
+let profile = {gender:null, age:null, health:null};
+let curQ = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+/* ════════════════════════════
+   NAVIGATION
+════════════════════════════ */
+function go(id){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+/* ════════════════════════════
+   PROFILE
+════════════════════════════ */
+function selectProfile(btn){
+  const group = btn.dataset.group;
+  document.querySelectorAll(`[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  profile[group] = btn.dataset.val;
+
+  if(group === 'health'){
+    document.getElementById('health-notice').style.display =
+      (profile.health === 'bad') ? 'block' : 'none';
+  }
+  checkProfileReady();
+}
+
+function checkProfileReady(){
+  const ok = profile.gender && profile.age && profile.health;
+  const btn = document.getElementById('btn-profile-next');
+  btn.disabled = !ok;
+  btn.style.opacity = ok ? '1' : '.35';
+  btn.style.cursor = ok ? 'pointer' : 'default';
+}
+
+/* ════════════════════════════
+   QUIZ
+════════════════════════════ */
+function secIdx(qi){
+  let c=0;
+  for(let i=0;i<SEC_CNT.length;i++){c+=SEC_CNT[i];if(qi<c)return i;}
+  return SEC_CNT.length-1;
+}
+
+function buildDots(){
+  const wrap = document.getElementById('sdots');
+  const total = 660, gap = 5*(SEC_CNT.length-1);
+  const avail = total - gap;
+  wrap.innerHTML='';
+  SEC_CNT.forEach(cnt=>{
+    const d=document.createElement('div');
+    d.className='sdot';
+    d.style.width=Math.round(avail*cnt/QUESTIONS.length)+'px';
+    wrap.appendChild(d);
+  });
+}
+
+function updateDots(qi){
+  const si=secIdx(qi);
+  document.querySelectorAll('.sdot').forEach((d,i)=>{
+    d.classList.remove('done','cur');
+    if(i<si)d.classList.add('done');
+    else if(i===si)d.classList.add('cur');
+  });
+}
+
+function startQuiz(){
+  curQ=0;
+  answers=new Array(QUESTIONS.length).fill(null);
+  go('s-quiz');
+  buildDots();
+  renderQ();
+}
+
+function renderQ(){
+  const q=QUESTIONS[curQ];
+  const total=QUESTIONS.length;
+  document.getElementById('pfill').style.width=((curQ+1)/total*100)+'%';
+  const si=secIdx(curQ);
+  document.getElementById('q-sec').textContent=SEC_EMOJI[si]+' '+SECS[si];
+  document.getElementById('q-cnt').textContent=(curQ+1)+' / '+total;
+  updateDots(curQ);
+  document.getElementById('q-num').textContent='Q'+(curQ+1).toString().padStart(2,'0');
+  document.getElementById('q-text').textContent=q.q;
+
+  const labels=['A','B','C','D'];
+  const wrap=document.getElementById('q-opts');
+  wrap.innerHTML='';
+  q.opts.forEach((opt,i)=>{
+    const btn=document.createElement('button');
+    btn.className='opt'+(answers[curQ]===i?' sel':'');
+    btn.innerHTML=`<span class="opt-lbl">${labels[i]}</span><span class="opt-txt">${opt}</span>`;
+    btn.addEventListener('click',()=>selectOpt(i));
+    wrap.appendChild(btn);
+  });
+
+  document.getElementById('btn-prev').disabled=curQ===0;
+  document.getElementById('btn-next').disabled=answers[curQ]===null;
+  document.getElementById('btn-next-txt').textContent=curQ===total-1?'결과 보기':'다음';
+
+  const body=document.getElementById('quiz-body');
+  body.style.animation='none';
+  void body.offsetHeight;
+  body.style.animation='fadeInUp .35s ease both';
+}
+
+function selectOpt(i){
+  answers[curQ]=i;
+  document.querySelectorAll('.opt').forEach((b,idx)=>b.classList.toggle('sel',idx===i));
+  document.getElementById('btn-next').disabled=false;
+}
+
+function prevQ(){if(curQ>0){curQ--;renderQ();window.scrollTo(0,0);}}
+function nextQ(){
+  if(answers[curQ]===null)return;
+  if(curQ<QUESTIONS.length-1){curQ++;renderQ();window.scrollTo(0,0);}
+  else showResult();
+}
+
+/* ════════════════════════════
+   RESULT
+════════════════════════════ */
+function showResult(){
+  // 1) 원점수 계산
+  const raw=[0,0,0,0];
+  answers.forEach((ans,qi)=>{
+    if(ans===null)return;
+    const sc=QUESTIONS[qi].scores[ans];
+    for(let i=0;i<4;i++)raw[i]+=sc[i];
+  });
+
+  // 2) 섹션별 가중치 적용
+  const weights=getWeights(profile);
+  const weighted=[0,0,0,0];
+  answers.forEach((ans,qi)=>{
+    if(ans===null)return;
+    const sc=QUESTIONS[qi].scores[ans];
+    const si=secIdx(qi);
+    const w=weights[si];
+    for(let i=0;i<4;i++)weighted[i]+=sc[i]*w;
+  });
+
+  // 3) 판정
+  const maxIdx=weighted.indexOf(Math.max(...weighted));
+  const d=DATA[maxIdx];
+  const names=['태양인','태음인','소양인','소음인'];
+  const colors=['var(--taeyang)','var(--taeyin)','var(--soyang)','var(--soeum)'];
+
+  // 4) 신뢰도 계산
+  const maxW=Math.max(...weighted);
+  const sorted=[...weighted].sort((a,b)=>b-a);
+  const gap=sorted[0]-sorted[1];
+  const totalW=weighted.reduce((a,b)=>a+b,0);
+  const dominance=maxW/totalW;
+
+  let reliabilityScore, reliabilityLabel, reliabilityColor;
+  if(dominance>0.55 && gap>15){reliabilityScore=92;reliabilityLabel='높음';reliabilityColor=var_('taeyin');}
+  else if(dominance>0.45 && gap>8){reliabilityScore=75;reliabilityLabel='보통';reliabilityColor=var_('gold');}
+  else{reliabilityScore=55;reliabilityLabel='낮음';reliabilityColor=var_('taeyang');}
+  if(profile.health==='bad')reliabilityScore=Math.max(reliabilityScore-15,40);
+  if(profile.health==='normal')reliabilityScore=Math.max(reliabilityScore-5,50);
+
+  // 5) 보정 메시지
+  const corrections=getCorrections(profile);
+
+  // 6) 프로필 텍스트
+  const ageMap={
+    '10s':'10대','20s':'20대','30s':'30대','40s':'40대','50s':'50대','60s':'60대 이상'
+  };
+  const genderMap={male:'남성',female:'여성'};
+  const healthMap={good:'좋음',normal:'보통',bad:'좋지 않음'};
+
+  const maxScore=Math.max(...weighted);
+
+  let html=`
+  <div class="r-hero anim">
+    <div class="r-tag" style="background:${d.colorPale};color:${d.color}">내 체질 결과</div>
+    <div class="r-char" style="color:${d.color}">${d.char}</div>
+    <div class="r-name-row">
+      <span class="r-name">${d.name}</span>
+      <span class="r-hanja">${d.hanja}</span>
+    </div>
+    <p class="r-organ">${d.organ}</p>
+    <div class="r-divider"></div>
+  </div>
+
+  <!-- 신뢰도 -->
+  <div class="reliability-banner anim d1">
+    <div class="rb-top">
+      <span class="rb-title">📊 판정 신뢰도</span>
+      <span class="rb-badge" style="background:${reliabilityScore>=80?'var(--taeyin-pale)':reliabilityScore>=65?'var(--gold-pale)':'var(--taeyang-pale)'};color:${reliabilityScore>=80?'var(--taeyin)':reliabilityScore>=65?'var(--gold)':'var(--taeyang)'}">${reliabilityLabel} (${reliabilityScore}%)</span>
+    </div>
+    <div class="rb-bars">`;
+
+  weighted.forEach((v,i)=>{
+    const pct=Math.round(v/maxScore*100);
+    html+=`
+      <div class="rb-row">
+        <span class="rb-label">${names[i]}</span>
+        <div class="rb-track"><div class="rb-fill" style="width:${pct}%;background:${colors[i]}"></div></div>
+        <span class="rb-val" style="${i===maxIdx?'color:'+colors[i]:''}">${Math.round(v)}점</span>
+      </div>`;
+  });
+
+  html+=`</div>
+    <div class="rb-note">
+      <strong>신뢰도란?</strong> 가장 높은 체질과 두 번째 체질의 점수 차이, 그리고 나이·성별·건강 상태 보정을 반영한 수치입니다. 점수 차이가 작을수록, 현재 몸 상태가 좋지 않을수록 신뢰도가 낮아집니다. 신뢰도가 낮은 경우 반드시 전문 한의사 상담을 권장합니다.
+    </div>
+  </div>`;
+
+  // 보정 내역
+  if(corrections.length>0){
+    html+=`<div class="correction-box anim d1"><span class="cb-icon">⚙️</span><div class="cb-text"><strong>가중치 보정 적용됨</strong> (${genderMap[profile.gender]} · ${ageMap[profile.age]} · 건강상태 ${healthMap[profile.health]})<br>`;
+    corrections.forEach(c=>{html+=c+'<br>';});
+    html+=`</div></div>`;
+  }
+
+  // 사상의학 이론 설명 (이 체질이 왜 이런지)
+  html+=`
+  <div class="sasang-explain anim d2">
+    <div class="card-title"><span class="ct-icon">📖</span> 사상의학으로 보는 ${d.name}</div>
+    <p style="font-size:14px;color:var(--ink-light);line-height:1.8;margin-bottom:16px">${d.sasang_theory}</p>
+    <div style="background:${d.colorPale};border-radius:var(--radius-sm);padding:13px 16px;font-size:13px;color:var(--ink-light);line-height:1.7">
+      <strong style="color:${d.color}">건강 신호</strong> — ${d.health_signal}
+    </div>
+    <div class="se-grid">
+      <div class="se-item" style="background:${d.colorPale};border-color:transparent">
+        <div class="se-item-title" style="color:${d.color}">강한 장부</div>
+        <div class="se-item-body">${d.organ.split('이 강하고')[0].split('가 강하고')[0]}이 강하여<br>관련 기능이 탁월합니다</div>
+      </div>
+      <div class="se-item">
+        <div class="se-item-title" style="color:var(--ink-muted)">약한 장부</div>
+        <div class="se-item-body">${d.organ.split('약한')[1]?.split('·')[0] || ''}이 약하여<br>관련 질환에 취약합니다</div>
+      </div>
+      <div class="se-item">
+        <div class="se-item-title" style="color:var(--taeyin)">주요 질병 위험</div>
+        <div class="se-item-body">${d.disease_risk}</div>
+      </div>
+      <div class="se-item">
+        <div class="se-item-title" style="color:var(--soeum)">인구 비율</div>
+        <div class="se-item-body">${d.organ.split('·')[d.organ.split('·').length-1].trim()}</div>
+      </div>
+    </div>
+  </div>`;
+
+  // 체형·외모 + 성격
+  html+=`
+  <div class="two-col anim d2">
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title"><span class="ct-icon">👤</span> 체형·외모</div>
+      <ul class="bullet-list">`;
+  d.body.forEach(b=>{html+=`<li>${b}</li>`;});
+  html+=`</ul></div>
+    <div class="card" style="margin-bottom:0">
+      <div class="card-title"><span class="ct-icon">🧠</span> 성격·심성</div>
+      <ul class="bullet-list">`;
+  d.personality.forEach(p=>{html+=`<li>${p}</li>`;});
+  html+=`</ul></div>
+  </div>`;
+
+  // 음식
+  html+=`
+  <div class="two-col anim d3" style="margin-top:14px">
+    <div class="mini-card">
+      <div class="mc-title good">✔ 잘 맞는 음식 (益食)</div>`;
+  d.good_food.forEach(f=>{html+=`<div class="mc-item">${f}</div>`;});
+  html+=`</div>
+    <div class="mini-card">
+      <div class="mc-title warn">✘ 피해야 할 음식 (忌食)</div>`;
+  d.bad_food.forEach(f=>{html+=`<div class="mc-item">${f}</div>`;});
+  html+=`</div>
+  </div>`;
+
+  // 강점·주의
+  html+=`
+  <div class="two-col anim d3" style="margin-top:14px">
+    <div class="mini-card">
+      <div class="mc-title str">✅ 강점</div>`;
+  d.strengths.forEach(s=>{html+=`<div class="mc-item">${s}</div>`;});
+  html+=`</div>
+    <div class="mini-card">
+      <div class="mc-title cau">⚡ 주의사항</div>`;
+  d.cautions.forEach(c=>{html+=`<div class="mc-item">${c}</div>`;});
+  html+=`</div>
+  </div>`;
+
+  // 건강 관리 팁
+  html+=`
+  <div class="card anim d4">
+    <div class="card-title"><span class="ct-icon">💡</span> 일상 건강 관리 팁</div>
+    <ul class="tip-list">`;
+  d.tips.forEach(t=>{html+=`<li><span class="tip-arr">→</span>${t}</li>`;});
+  html+=`</ul>
+    <div class="ex-badge"><span>🏃</span> 추천 운동: ${d.exercise}</div>
+  </div>`;
+
+  // 한약재
+  html+=`
+  <div class="card anim d4">
+    <div class="card-title"><span class="ct-icon">🌿</span> 도움이 되는 한약재·보조식품</div>
+    <div class="herb-wrap">`;
+  d.herb.forEach(h=>{html+=`<span class="herb-tag">${h}</span>`;});
+  html+=`</div>
+    <p style="font-size:12px;color:var(--ink-muted);margin-top:12px">※ 한약재 복용 전 반드시 한의사와 상담하세요.</p>
+  </div>`;
+
+  // 나이·성별·체질 가중치 해설
+  html+=`
+  <div class="weight-explain anim d5">
+    <div class="card-title"><span class="ct-icon">⚙️</span> 가중치 보정이란?</div>
+    <div class="we-row">
+      <div class="we-icon">👶→👴</div>
+      <div class="we-body">
+        <div class="we-title">나이별 보정</div>
+        <div class="we-desc">10대는 체형·성격이 덜 굳어지고, 50~60대는 갱년기·체력 저하로 체온·땀 문항의 신뢰도가 낮아집니다. 이를 반영해 각 섹션의 가중치를 자동 조정합니다.</div>
+      </div>
+    </div>
+    <div class="we-row">
+      <div class="we-icon">⚧️</div>
+      <div class="we-body">
+        <div class="we-title">성별 보정</div>
+        <div class="we-desc">여성은 생리·냉증으로 인해 체온·소화 문항에서 소음인 증상이 실제보다 과도하게 나타날 수 있습니다. 이 편향을 보정해 정확도를 높입니다.</div>
+      </div>
+    </div>
+    <div class="we-row">
+      <div class="we-icon">🏥</div>
+      <div class="we-body">
+        <div class="we-title">건강 상태 보정</div>
+        <div class="we-desc">몸 상태가 좋지 않을 때는 소화·체온 증상이 왜곡됩니다. 예를 들어 소양인이 번아웃 상태면 소음인처럼 보일 수 있습니다. 이 경우 소화·체온 가중치를 낮추고 체형·성격 중심으로 판정합니다.</div>
+      </div>
+    </div>
+    <div class="we-row">
+      <div class="we-icon">⚠️</div>
+      <div class="we-body">
+        <div class="we-title">보정의 한계</div>
+        <div class="we-desc">이 보정은 임상 데이터가 아닌 사상의학 원리와 일반적 경향에 기반한 참고용입니다. 완벽하지 않으며, 정확한 판정은 전문 한의사의 대면 진단만이 가능합니다.</div>
+      </div>
+    </div>
+  </div>`;
+
+  // 경고
+  html+=`
+  <div class="notice-box anim d5">
+    <span class="n-icon">⚠️</span>
+    <p class="n-text">${d.warning}</p>
+  </div>
+  <div class="info-box anim d6">
+    <span class="n-icon">📌</span>
+    <p class="n-text">본 결과는 QSCC II 기반 자가진단 참고용입니다. 정확한 체질 진단은 사상체질 전문 한의사와 상담하시기 바랍니다.<br>한국한의학연구원(KIOM): <a href="https://www.kiom.re.kr" style="color:var(--ink)">www.kiom.re.kr</a> · 사상체질의학회: <a href="https://www.sasang.org" style="color:var(--ink)">www.sasang.org</a></p>
+  </div>
+  <button class="btn-retry anim d6" onclick="resetAll()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7A5 5 0 0111.5 4M12 7A5 5 0 012.5 10M2 2v3h3M12 12v-3h-3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    다시 진단하기
+  </button>`;
+
+  document.getElementById('r-content').innerHTML=html;
+  go('s-result');
+}
+
+function var_(name){
+  return getComputedStyle(document.documentElement).getPropertyValue('--'+name).trim();
+}
+
+function resetAll(){
+  profile={gender:null,age:null,health:null};
+  document.querySelectorAll('.radio-btn').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('health-notice').style.display='none';
+  checkProfileReady();
+  go('s-intro');
+}
+</script>
+</body>
+</html>
