@@ -800,23 +800,23 @@ function showResult(){
   });
   const topEv=evidence.slice(0,4);
 
-  let h=`
-  <div class="rhero a">
+  // 확실도 텍스트·색 설정
+  const clarityMap={
+    clear:   {dot:5, label:'체질 경향이 뚜렷합니다', sub:'응답의 '+Math.round(dom*100)+'%가 '+d.name+' 특징과 일치했습니다.', col:'var(--taeyin)',  bg:'var(--taeyin-pale)',  guide:''},
+    moderate:{dot:3, label:'체질 경향이 확인됩니다', sub:d.name+' 경향이 우세하나, '+names[secI]+'의 특징도 일부 나타났습니다.', col:'var(--gold)', bg:'var(--gold-pale)', guide:'아래 2위 체질 참고도 함께 읽어보세요.'},
+    mixed:   {dot:2, label:'두 체질이 혼재합니다',   sub:d.name+'과 '+names[secI]+'의 특징이 비슷하게 나타났습니다.', col:'var(--soyang)', bg:'var(--soyang-pale)', guide:'두 체질 정보를 모두 참고하시고, 정확한 진단은 한의사 상담을 권장합니다.'}
+  };
+  const cm=clarityMap[clarity];
+  const dotHtml=Array.from({length:5},(_,i)=>'<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+(i<cm.dot?cm.col:'rgba(26,20,16,.12)')+';margin-right:4px"></span>').join('');
+
+  let h='';
+  h+=`<div class="rhero a">
     <div class="rtag" style="background:${d.pale};color:${d.color}">내 체질 결과</div>
     <div class="rchar" style="color:${d.color}">${d.char}</div>
     <div class="rname-row"><span class="rname">${d.name}</span><span class="rhanja">${d.hanja}</span></div>
     <p class="rorgan">${d.organ}</p>
     <div class="rdivdr"></div>
-  </div>
-
-  // 확실도 텍스트·색 설정
-  const clarityMap={
-    clear:   {dot:5, label:'체질 경향이 뚜렷합니다', sub:`응답의 ${Math.round(dom*100)}%가 ${d.name} 특징과 일치했습니다.`, col:'var(--taeyin)',  bg:'var(--taeyin-pale)',  guide:''},
-    moderate:{dot:3, label:'체질 경향이 확인됩니다', sub:`${d.name} 경향이 우세하나, ${names[secI]}의 특징도 일부 나타났습니다.`, col:'var(--gold)', bg:'var(--gold-pale)', guide:'아래 <strong>2위 체질 참고</strong>도 함께 읽어보세요.'},
-    mixed:   {dot:2, label:'두 체질이 혼재합니다',   sub:`${d.name}과 ${names[secI]}의 특징이 비슷하게 나타났습니다.`, col:'var(--soyang)', bg:'var(--soyang-pale)', guide:'두 체질 정보를 모두 참고하시고, 정확한 진단은 한의사 상담을 권장합니다.'}
-  };
-  const cm=clarityMap[clarity];
-  const dots=Array.from({length:5},(_,i)=>`<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:${i<cm.dot?cm.col:'rgba(26,20,16,.12)'};margin-right:4px"></span>`).join('');
+  </div>`;
 
   h+=`<div class="rel-box a d1">
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:14px">
@@ -824,7 +824,7 @@ function showResult(){
         <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px">📊 체질 경향 확실도</div>
         <div style="font-size:15px;font-weight:700;color:${cm.col}">${cm.label}</div>
       </div>
-      <div style="display:flex;align-items:center;flex-shrink:0;margin-top:3px">${dots}</div>
+      <div style="display:flex;align-items:center;flex-shrink:0;margin-top:3px">${dotHtml}</div>
     </div>
     <div style="background:${cm.bg};border-radius:var(--rs);padding:11px 14px;font-size:13px;color:var(--ink-light);line-height:1.65;margin-bottom:14px">
       ${cm.sub}${cm.guide?' '+cm.guide:''}
