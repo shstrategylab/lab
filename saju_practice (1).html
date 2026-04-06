@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주명리학 실전 강좌 — 합충살궁 · 세운분석 · 인생독해</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #12100e;
+    --ink2: #2e2820;
+    --ink3: #5c5248;
+    --paper: #f7f3ed;
+    --paper2: #ede8df;
+    --paper3: #e2dbd0;
+    --crimson: #8b1a1a;
+    --crimson2: #a82020;
+    --crimson-light: #fdecea;
+    --gold: #96720a;
+    --gold2: #b8891a;
+    --gold-light: #f5e8bb;
+    --slate: #1e3a4a;
+    --slate2: #2a5068;
+    --slate-light: #deeaf0;
+    --forest: #1a4a2e;
+    --forest-light: #e8f5ee;
+    --border: rgba(18,16,14,0.11);
+    --border2: rgba(18,16,14,0.22);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'Noto Sans KR',sans-serif; background:var(--paper); color:var(--ink); font-size:16px; line-height:1.85; }
+
+  /* ── HEADER ── */
+  header { background:var(--ink2); color:var(--paper); padding:3rem 1.5rem; text-align:center; position:relative; overflow:hidden; }
+  header::before { content:''; position:absolute; inset:0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(26,74,46,0.22) 0%, transparent 55%),
+                radial-gradient(ellipse at 80% 40%, rgba(150,114,10,0.15) 0%, transparent 55%); }
+  .h-inner { position:relative; z-index:1; max-width:720px; margin:0 auto; }
+  .h-back { display:inline-flex; align-items:center; gap:6px; color:rgba(247,243,237,0.5);
+    font-size:12px; text-decoration:none; border:1px solid rgba(247,243,237,0.15);
+    padding:5px 14px; border-radius:2px; margin-bottom:1rem; transition:color .2s; }
+  .h-back:hover { color:var(--gold2); }
+  .h-nav-row { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-bottom:1rem; }
+  .h-nav-btn { font-size:11.5px; border:1px solid rgba(247,243,237,0.2); color:rgba(247,243,237,0.6);
+    padding:4px 14px; border-radius:2px; text-decoration:none; transition:color .2s,border-color .2s; }
+  .h-nav-btn:hover { color:var(--gold2); border-color:var(--gold2); }
+  .h-level { display:inline-block; background:var(--forest); color:#fff;
+    font-size:10px; letter-spacing:2px; padding:4px 14px; border-radius:1px; margin-bottom:1rem; }
+  header h1 { font-family:'Noto Serif KR',serif; font-size:clamp(1.75rem,4.5vw,2.8rem);
+    font-weight:700; line-height:1.2; margin-bottom:.9rem; }
+  header h1 em { color:var(--gold2); font-style:normal; }
+  header p { font-size:14.5px; color:rgba(247,243,237,0.65); max-width:520px; margin:0 auto; line-height:1.75; }
+  .h-tags { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:1.25rem; }
+  .h-tag { font-size:11px; border:1px solid rgba(247,243,237,0.2); color:rgba(247,243,237,0.55);
+    padding:3px 12px; border-radius:20px; }
+
+  /* ── NAV ── */
+  nav { background:var(--ink); position:sticky; top:0; z-index:100;
+    border-bottom:2px solid var(--forest); }
+  .nav-inner { display:flex; overflow-x:auto; scrollbar-width:none; max-width:960px; margin:0 auto; }
+  nav a { color:rgba(247,243,237,0.55); text-decoration:none; font-size:12.5px;
+    padding:13px 16px; white-space:nowrap; border-bottom:2px solid transparent;
+    transition:color .2s,border-color .2s; }
+  nav a:hover { color:var(--gold2); border-bottom-color:var(--gold2); }
+
+  /* ── LAYOUT ── */
+  .container { max-width:960px; margin:0 auto; padding:0 1.5rem; }
+  .section { padding:4rem 0; border-bottom:1px solid var(--border); }
+  .section:last-child { border-bottom:none; }
+
+  /* ── SECTION HEADER ── */
+  .sec-head { display:flex; align-items:flex-start; gap:14px; margin-bottom:2rem; }
+  .sec-num { min-width:40px; height:40px; background:var(--forest); color:#fff;
+    border-radius:3px; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; letter-spacing:.5px; flex-shrink:0; }
+  .sec-num.crimson { background:var(--crimson); }
+  .sec-num.gold { background:var(--gold); }
+  .sec-num.slate { background:var(--slate); }
+  .sec-title { font-family:'Noto Serif KR',serif; font-size:1.55rem; font-weight:700; line-height:1.3; }
+  .sec-sub { font-size:13.5px; color:var(--ink3); margin-top:5px; }
+
+  /* ── LEAD ── */
+  .lead { font-size:15px; color:var(--ink2); line-height:1.95; margin-bottom:2rem;
+    border-left:3px solid var(--forest); padding-left:1.2rem; }
+
+  /* ── GRID ── */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1.75rem; }
+  .grid-3 { display:grid; grid-template-columns:repeat(3,1fr); gap:1.25rem; margin-bottom:1.75rem; }
+
+  /* ── CARD ── */
+  .card { background:#fff; border:1px solid var(--border); border-radius:8px; padding:1.4rem; }
+  .card-title { font-size:14px; font-weight:700; margin-bottom:.75rem; display:flex; align-items:center; gap:8px; }
+  .card-body { font-size:13.5px; color:var(--ink2); line-height:1.8; }
+  .dot { display:inline-block; width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .d-red { background:var(--crimson); }
+  .d-gold { background:var(--gold2); }
+  .d-slate { background:var(--slate2); }
+  .d-green { background:var(--forest); }
+
+  /* ── STEP BOX ── */
+  .steps { margin:1.5rem 0; }
+  .step { display:flex; gap:1rem; padding:1rem 0; border-bottom:1px solid var(--border); }
+  .step:last-child { border-bottom:none; }
+  .step-num { min-width:32px; height:32px; background:var(--forest); color:#fff;
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; flex-shrink:0; }
+  .step-title { font-size:14.5px; font-weight:700; margin-bottom:.35rem; color:var(--ink2); }
+  .step-desc { font-size:13.5px; color:var(--ink3); line-height:1.75; }
+
+  /* ── CASE STUDY ── */
+  .case { background:#fff; border:1px solid var(--border); border-radius:10px; margin:1.5rem 0; overflow:hidden; }
+  .case-head { background:var(--ink2); color:var(--paper); padding:1rem 1.5rem;
+    display:flex; align-items:center; gap:12px; }
+  .case-badge { background:var(--gold); color:#fff; font-size:11px; letter-spacing:1px;
+    padding:3px 12px; border-radius:1px; white-space:nowrap; }
+  .case-title { font-family:'Noto Serif KR',serif; font-size:1.05rem; font-weight:700; }
+  .case-body { padding:1.5rem; }
+  .case-saju { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.25rem; align-items:center; }
+  .pillar { text-align:center; background:var(--paper2); border:1px solid var(--border2);
+    border-radius:6px; padding:.6rem .9rem; min-width:60px; }
+  .pillar-label { font-size:10px; color:var(--ink3); letter-spacing:.5px; margin-bottom:4px; }
+  .pillar-gan { font-family:'Noto Serif KR',serif; font-size:1.5rem; font-weight:700; color:var(--crimson); }
+  .pillar-ji { font-family:'Noto Serif KR',serif; font-size:1.5rem; font-weight:700; color:var(--slate2); }
+  .pillar-ko { font-size:11px; color:var(--ink3); margin-top:2px; }
+  .saju-arrow { font-size:1.2rem; color:var(--ink3); }
+  .analysis-row { margin:1rem 0; }
+  .ar-label { font-size:11px; font-weight:700; letter-spacing:1.5px; color:var(--forest);
+    margin-bottom:.5rem; text-transform:uppercase; }
+  .ar-content { font-size:13.5px; color:var(--ink2); line-height:1.8;
+    padding:.75rem 1rem; background:var(--paper); border-radius:6px; border-left:3px solid var(--forest); }
+  .ar-content.crimson { border-left-color:var(--crimson); background:var(--crimson-light); }
+  .ar-content.gold { border-left-color:var(--gold); background:var(--gold-light); }
+  .ar-content.slate { border-left-color:var(--slate); background:var(--slate-light); }
+
+  /* ── YEAR RUN ── */
+  .yun-table { width:100%; border-collapse:collapse; margin:1.25rem 0; font-size:13.5px; }
+  .yun-table th { background:var(--ink2); color:var(--paper); padding:10px 14px;
+    font-size:12px; font-weight:600; text-align:left; }
+  .yun-table td { padding:10px 14px; border-bottom:1px solid var(--border); color:var(--ink2); vertical-align:top; }
+  .yun-table tr:last-child td { border-bottom:none; }
+  .yun-table tr:hover td { background:var(--paper2); }
+  .yun-kan { display:inline-block; font-family:'Noto Serif KR',serif; font-size:1.1rem;
+    font-weight:700; color:var(--crimson); margin-right:4px; }
+  .yun-ji { display:inline-block; font-family:'Noto Serif KR',serif; font-size:1.1rem;
+    font-weight:700; color:var(--slate2); }
+  .tag-hap { display:inline-block; background:#dff0e8; color:var(--forest); font-size:10px;
+    font-weight:700; padding:2px 8px; border-radius:10px; margin:0 2px; }
+  .tag-chung { display:inline-block; background:#fce8d5; color:#7a3800; font-size:10px;
+    font-weight:700; padding:2px 8px; border-radius:10px; margin:0 2px; }
+  .tag-hae { display:inline-block; background:var(--crimson-light); color:var(--crimson); font-size:10px;
+    font-weight:700; padding:2px 8px; border-radius:10px; margin:0 2px; }
+  .tag-key { display:inline-block; background:var(--gold-light); color:var(--gold); font-size:10px;
+    font-weight:700; padding:2px 8px; border-radius:10px; margin:0 2px; }
+
+  /* ── FLOW TIMELINE ── */
+  .timeline { position:relative; margin:1.5rem 0; }
+  .timeline::before { content:''; position:absolute; left:22px; top:0; bottom:0;
+    width:2px; background:var(--border2); }
+  .tl-item { display:flex; gap:16px; margin-bottom:1.25rem; position:relative; }
+  .tl-dot { min-width:44px; height:44px; border-radius:50%; background:var(--paper2);
+    border:2px solid var(--border2); display:flex; align-items:center; justify-content:center;
+    font-family:'Noto Serif KR',serif; font-size:1rem; font-weight:700; flex-shrink:0;
+    position:relative; z-index:1; color:var(--ink2); }
+  .tl-dot.bad { background:var(--crimson-light); border-color:rgba(139,26,26,.3); color:var(--crimson); }
+  .tl-dot.good { background:var(--forest-light); border-color:rgba(26,74,46,.3); color:var(--forest); }
+  .tl-dot.peak { background:var(--gold-light); border-color:rgba(150,114,10,.3); color:var(--gold); }
+  .tl-body { padding-top:.35rem; }
+  .tl-year { font-size:12px; font-weight:700; color:var(--ink3); margin-bottom:.2rem; }
+  .tl-text { font-size:13.5px; color:var(--ink2); line-height:1.75; }
+
+  /* ── SIPSEONG BADGE MAP ── */
+  .ss-matrix { display:grid; grid-template-columns:repeat(5,1fr); gap:1px;
+    border:1px solid var(--border2); border-radius:8px; overflow:hidden; background:var(--border2); margin:1.25rem 0; }
+  .ss-cell { background:var(--paper); padding:.75rem .5rem; text-align:center; }
+  .ss-cell-type { font-size:10px; font-weight:700; letter-spacing:.5px; color:var(--ink3); margin-bottom:4px; }
+  .ss-cell-han { font-family:'Noto Serif KR',serif; font-size:1.35rem; font-weight:700; }
+  .ss-cell-ko { font-size:11px; color:var(--ink3); margin-top:3px; }
+
+  /* ── INTERACTIVE SAJU BUILDER ── */
+  .builder { background:#fff; border:1px solid var(--border); border-radius:10px; padding:1.75rem; margin:1.5rem 0; }
+  .builder-title { font-family:'Noto Serif KR',serif; font-size:1.1rem; font-weight:700;
+    margin-bottom:1.25rem; display:flex; align-items:center; gap:10px; color:var(--ink); }
+  .builder-title::before { content:''; display:inline-block; width:4px; height:1.1em;
+    background:var(--forest); border-radius:2px; }
+  .builder-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:1.25rem; }
+  .b-col label { font-size:11px; font-weight:700; color:var(--ink3); letter-spacing:.5px;
+    display:block; margin-bottom:6px; text-align:center; }
+  .b-select { width:100%; border:1px solid var(--border2); border-radius:6px;
+    padding:8px 4px; font-size:14px; font-family:'Noto Serif KR',serif;
+    background:#fff; color:var(--ink); cursor:pointer; text-align:center; }
+  .b-select:focus { outline:none; border-color:var(--forest); }
+  .b-select.gan { color:var(--crimson); font-weight:700; }
+  .b-select.ji { color:var(--slate2); font-weight:700; }
+  .b-btn { background:var(--forest); color:#fff; border:none; border-radius:6px;
+    padding:11px 24px; font-size:14px; font-family:'Noto Sans KR',sans-serif;
+    font-weight:600; cursor:pointer; transition:background .2s; width:100%; }
+  .b-btn:hover { background:var(--crimson); }
+  .b-result { margin-top:1.25rem; display:none; }
+  .b-result-title { font-size:12px; font-weight:700; letter-spacing:1px; color:var(--forest);
+    margin-bottom:.75rem; }
+  .b-cards { display:flex; gap:10px; flex-wrap:wrap; }
+  .b-card { background:var(--paper); border:1px solid var(--border); border-radius:8px;
+    padding:.75rem 1rem; font-size:13px; color:var(--ink2); line-height:1.7; flex:1; min-width:140px; }
+  .b-card strong { color:var(--ink); display:block; margin-bottom:3px; }
+  .b-card.found-hap { background:#dff0e8; border-color:rgba(26,74,46,.25); }
+  .b-card.found-chung { background:#fce8d5; border-color:rgba(122,56,0,.25); }
+  .b-card.found-hae { background:var(--crimson-light); border-color:rgba(139,26,26,.2); }
+  .b-card.found-key { background:var(--gold-light); border-color:rgba(150,114,10,.25); }
+
+  /* ── QNA BOX ── */
+  .qbox { background:var(--paper2); border:1px solid var(--border2); border-radius:8px;
+    padding:1.25rem 1.5rem; font-size:14px; color:var(--ink2); line-height:1.85; margin:1.5rem 0; }
+  .qbox strong { color:var(--ink); }
+
+  /* ── TIP / WARN ── */
+  .tip { background:var(--gold-light); border:1px solid rgba(150,114,10,.25); border-radius:6px;
+    padding:1rem 1.25rem; font-size:13.5px; color:var(--ink2); line-height:1.8; margin:1.25rem 0; }
+  .tip::before { content:'💡 '; }
+  .warn { background:var(--crimson-light); border:1px solid rgba(139,26,26,.2); border-radius:6px;
+    padding:1rem 1.25rem; font-size:13.5px; color:var(--ink2); line-height:1.8; margin:1.25rem 0; }
+  .warn::before { content:'⚠ '; }
+  .insight { background:var(--forest-light); border:1px solid rgba(26,74,46,.2); border-radius:6px;
+    padding:1rem 1.25rem; font-size:13.5px; color:var(--ink2); line-height:1.8; margin:1.25rem 0; }
+  .insight::before { content:'✦ '; }
+
+  /* ── CHECKLIST ── */
+  .cklist { list-style:none; margin:.75rem 0; }
+  .cklist li { display:flex; gap:10px; align-items:flex-start; padding:7px 0;
+    font-size:13.5px; color:var(--ink2); border-bottom:1px solid var(--border); line-height:1.65; }
+  .cklist li:last-child { border-bottom:none; }
+  .cklist li::before { content:'→'; color:var(--forest); font-weight:700; flex-shrink:0; margin-top:1px; }
+
+  /* ── COMPARE ── */
+  .compare { display:grid; grid-template-columns:1fr 1fr; gap:1px;
+    border:1px solid var(--border2); border-radius:8px; overflow:hidden; margin:1.5rem 0; background:var(--border2); }
+  .cmp-box { padding:1.2rem 1.4rem; }
+  .cmp-box.before { background:var(--crimson-light); }
+  .cmp-box.after { background:var(--forest-light); }
+  .cmp-label { font-size:11px; font-weight:700; letter-spacing:1px; margin-bottom:.5rem; }
+  .cmp-box.before .cmp-label { color:var(--crimson); }
+  .cmp-box.after .cmp-label { color:var(--forest); }
+  .cmp-text { font-size:13.5px; color:var(--ink2); line-height:1.75; }
+
+  /* ── WISDOM BOX ── */
+  .wisdom { border:2px solid var(--gold2); border-radius:10px; padding:1.5rem 1.75rem;
+    margin:2rem 0; text-align:center; }
+  .wisdom-ko { font-family:'Noto Serif KR',serif; font-size:1.4rem; font-weight:700;
+    color:var(--crimson); margin-bottom:.5rem; line-height:1.4; }
+  .wisdom-desc { font-size:13.5px; color:var(--ink3); line-height:1.8; }
+
+  /* ── FOOTER ── */
+  footer { background:var(--ink2); color:rgba(247,243,237,.45); text-align:center;
+    padding:2.5rem 1rem; font-size:13px; line-height:2.2; }
+  footer strong { color:var(--gold2); }
+  .footer-links { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top:1rem; }
+  .footer-link { display:inline-block; color:rgba(247,243,237,.6);
+    border:1px solid rgba(247,243,237,.2); border-radius:4px; padding:7px 18px;
+    text-decoration:none; font-size:12.5px; transition:color .2s; }
+  .footer-link:hover { color:var(--gold2); }
+
+  @media(max-width:600px){
+    .grid-2,.grid-3 { grid-template-columns:1fr; }
+    .ss-matrix { grid-template-columns:repeat(3,1fr); }
+    .builder-grid { grid-template-columns:1fr 1fr; }
+    .compare { grid-template-columns:1fr; }
+    .case-saju { gap:5px; }
+    .pillar { min-width:48px; padding:.5rem .6rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-inner">
+    <div class="h-nav-row">
+      <a class="h-nav-btn" href="saju_lecture.html">기초 과정</a>
+      <a class="h-nav-btn" href="saju_advanced.html">심화 과정</a>
+    </div>
+    <div class="h-level">실전 과정 · Practice</div>
+    <h1>사주로 인생을<br><em>실제로 읽는 법</em></h1>
+    <p>기초·심화에서 배운 원리를 실제 사주에 적용한다. 세운 분석·궁 독해·살의 역용·회고록 연결 — 인생의 변곡점을 스스로 읽어내는 실전 능력을 키운다.</p>
+    <div class="h-tags">
+      <span class="h-tag">실전 풀이 프로세스</span>
+      <span class="h-tag">세운(년운) 분석</span>
+      <span class="h-tag">궁(宮) 독해</span>
+      <span class="h-tag">살(殺)의 역용</span>
+      <span class="h-tag">회고록 연결</span>
+      <span class="h-tag">인생 2막 설계</span>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <a href="#process">풀이 프로세스</a>
+    <a href="#case1">실전 사례 1</a>
+    <a href="#yunun">세운 분석</a>
+    <a href="#gung">궁 독해법</a>
+    <a href="#sal">살의 역용</a>
+    <a href="#checker">지지 관계 확인기</a>
+    <a href="#hoegorok">회고록 연결</a>
+    <a href="#life2">인생 2막 설계</a>
+  </div>
+</nav>
+
+<main class="container">
+
+<!-- ═══════════════════════════════════════════ 풀이 프로세스 -->
+<section class="section" id="process">
+  <div class="sec-head">
+    <div class="sec-num">서론</div>
+    <div>
+      <div class="sec-title">실전 풀이의 5단계 프로세스</div>
+      <div class="sec-sub">원칙 없이 보면 사주는 점술이 된다 — 구조부터 읽어야 한다</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    사주팔자는 8개의 글자가 만드는 입체적인 구조물이다. 처음부터 길흉을 단정하려 하면 오독한다. 먼저 <strong>구조(격국) → 세력(신강·신약) → 관계(합충형파해) → 시기(대운·세운) → 영역(궁)</strong>의 순서로 읽어야 인생의 변곡점이 보인다.
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">일간(日干)을 확인하고 오행·음양을 파악한다</div>
+        <div class="step-desc">이것이 '나'다. 일간의 오행과 음양을 기준으로 나머지 7글자가 어떤 십성인지 결정된다. 예: 辛金(음)이면 木은 재성, 火는 관성, 水는 식상, 土는 인성, 金은 비겁.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">월지(月支)로 격국을 잡는다</div>
+        <div class="step-desc">월지 지장간 중 천간에 투출한 글자가 격이다. 격은 이 사람이 사회에서 어떤 방식으로 기능하는지를 결정한다. 성격(成格)이면 그 방향으로, 파격(破格)이면 방향이 흔들린다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">신강·신약을 판단한다 (비겁·인성 vs 식상·재성·관성)</div>
+        <div class="step-desc">월지가 일간을 돕는가(득령), 지지 전반에 뿌리가 있는가(득지), 천간에 비겁·인성이 많은가(득세)로 판단한다. 신강이면 식상·재성·관성이 기쁘고, 신약이면 비겁·인성이 기쁘다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">원국의 합충형파해 관계를 지도로 그린다</div>
+        <div class="step-desc">원국에 이미 충이 있다면 그것이 삶의 반복 패턴이다. 합이 많으면 묶이는 인생이고, 충이 많으면 변화가 잦은 인생이다. 이 지도를 먼저 그려야 세운 해석이 가능하다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">대운·세운을 원국 지도 위에 얹는다 → 사건 발생 시기를 특정한다</div>
+        <div class="step-desc">대운(10년)이 원국의 어느 글자와 충·합을 만드는가. 세운(1년)이 그것을 트리거하는가. 어느 궁에서 발생하는가로 사건의 영역을 특정한다. 대운+세운이 겹치는 해에 가장 강한 사건이 발생한다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="qbox">
+    <strong>핵심 원칙:</strong> 사주는 길흉 판정표가 아니라 <strong>에너지의 흐름도</strong>다. 같은 충(沖)이라도 기신(忌神)이 충되면 전화위복이고, 용신(用神)이 충되면 위기다. 항상 "누가 충되는가"를 먼저 따진 뒤 길흉을 판단한다.
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 실전 사례 1 -->
+<section class="section" id="case1">
+  <div class="sec-head">
+    <div class="sec-num crimson">실</div>
+    <div>
+      <div class="sec-title">실전 사례 — 신금(辛金) 일간 완전 독해</div>
+      <div class="sec-sub">5단계 프로세스를 실제 사주에 적용하는 전 과정</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    동일한 5단계를 <strong>辛金 일간 · 월겁격 · 신왕</strong> 구조의 교육 모델 사주에 적용한다. 이 사례는 부부 갈등·이별·독립이라는 인생 변곡점이 사주 구조와 세운의 충돌에서 어떻게 읽히는지를 교육 목적으로 구성한 것이다. 특정인의 개인 사주가 아닌 <em>유형(類型) 사례</em>로 활용한다.
+  </div>
+
+  <!-- 사주 구성 -->
+  <div class="case">
+    <div class="case-head">
+      <div class="case-badge">STEP 1–2</div>
+      <div class="case-title">사주 구성 파악 — 일간 + 격국 (辛金 월겁격 모델)</div>
+    </div>
+    <div class="case-body">
+
+      <div class="qbox" style="margin-bottom:1.25rem;padding:.9rem 1.1rem;">
+        <strong>📌 사주팔자 배열 순서 — 時日月年 (오른쪽→왼쪽)</strong><br>
+        만세력과 실전 상담 현장에서 사주 기둥은 <strong>時주 · 日주 · 月주 · 年주</strong> 순서(오른쪽에서 왼쪽)로 읽습니다.<br>
+        이렇게 하면 일주(나)가 중심에 가깝고, 가장 먼 년주가 뿌리(조상·가문)임이 직관적으로 보입니다.<br>
+        <span style="color:var(--crimson);">↑ 이 순서 감각이 궁(宮) 해석의 기본입니다.</span>
+      </div>
+
+      <div class="case-saju">
+        <div class="pillar">
+          <div class="pillar-label">시주 時</div>
+          <div class="pillar-gan">己</div>
+          <div class="pillar-ji">丑</div>
+          <div class="pillar-ko">기축</div>
+        </div>
+        <div class="saju-arrow" style="font-size:.85rem;color:var(--ink3);">←읽기</div>
+        <div class="pillar" style="border-color:var(--forest);background:var(--forest-light);">
+          <div class="pillar-label" style="color:var(--forest);">일주 日 ★나</div>
+          <div class="pillar-gan">辛</div>
+          <div class="pillar-ji">亥</div>
+          <div class="pillar-ko">신해</div>
+        </div>
+        <div class="saju-arrow" style="font-size:.85rem;color:var(--ink3);">←읽기</div>
+        <div class="pillar">
+          <div class="pillar-label">월주 月</div>
+          <div class="pillar-gan">甲</div>
+          <div class="pillar-ji">申</div>
+          <div class="pillar-ko">갑신</div>
+        </div>
+        <div class="saju-arrow" style="font-size:.85rem;color:var(--ink3);">←읽기</div>
+        <div class="pillar">
+          <div class="pillar-label">년주 年</div>
+          <div class="pillar-gan">甲</div>
+          <div class="pillar-ji">子</div>
+          <div class="pillar-ko">갑자</div>
+        </div>
+      </div>
+
+      <div class="analysis-row" style="margin-top:1.25rem;">
+        <div class="ar-label">일간 분석</div>
+        <div class="ar-content"><strong>辛金(음):</strong> 정교한 보석, 날카로운 칼날. 완벽주의, 예리한 통찰력, 자존심이 강하다. 열기(火)에 취약하고 물(水)을 만나면 맑게 빛난다. 신금에게 木은 재성(결과물·수익), 火는 관성(직장·명예), 水는 식상(표현·전문성), 土는 인성(지혜·학문), 金은 비겁(형제·자존심).</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">격국 판단</div>
+        <div class="ar-content gold"><strong>월겁격(月劫格) — 신왕(身旺):</strong> 월지 申金이 일간 辛金과 같은 오행(金). 월지를 득령하여 일간의 뿌리가 매우 튼튼하다. 주관·독립심·경쟁심이 강한 사주 구조. 넘치는 金 기운을 어디에 쓰느냐(식상·재성·관성)가 인생 방향을 결정한다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 원국 관계 지도 -->
+  <div class="case">
+    <div class="case-head">
+      <div class="case-badge">STEP 3–4</div>
+      <div class="case-title">원국 관계 지도 — 합충형파해 분석</div>
+    </div>
+    <div class="case-body">
+      <div class="analysis-row">
+        <div class="ar-label">신강·신약</div>
+        <div class="ar-content gold">월지 申(득령) + 시지 丑土(인성, 일간을 생함) → <strong>신왕(身旺)</strong>. 일간의 힘이 강하여 관성(火)·재성(木)을 감당할 여력이 있다. 단, 너무 강해지면 고집과 독선으로 인한 갈등 발생.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">핵심 관계 ①</div>
+        <div class="ar-content crimson"><strong>申亥 해(害):</strong> 월지(申 — 사회·직장·부모) ↔ 일지(亥 — 배우자·자신). 서로의 합을 방해하는 구조. → "직장이 바빠지면 가정에 문제가 생기고, 집안일이 복잡해지면 직장이 흔들리는" 패턴이 반복된다. 또한 부모·형제와 배우자 사이에 갈등(이간질)이 생기기 쉬운 구조.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">핵심 관계 ②</div>
+        <div class="ar-content slate"><strong>亥丑 반합(수 기운):</strong> 일지(亥) — 시지(丑). 수(水)의 반합 형성. 신금에게 수(水)는 식상(표현·전문성). 자신의 재능과 전문성이 말년(시주)의 결실로 이어지는 구조.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">핵심 관계 ③</div>
+        <div class="ar-content"><strong>申子 반합(수 기운):</strong> 월지(申) — 년지(子). 사회적 활동(申)이 지식·표현(子水 식상)과 연결된다. 전문성을 기반으로 사회적 기반을 구축하는 흐름.</div>
+      </div>
+
+      <div class="tip">원국에 申亥 해(害)가 있다는 것은 이 패턴이 이 사람의 인생 전반에 걸쳐 반복된다는 뜻이다. 운에서 이 기운이 활성화될 때마다 같은 종류의 갈등이 발생한다. 단, 합(合)이나 충(沖)이 들어와 해를 희석시키면 일시적으로 완화된다.</div>
+    </div>
+  </div>
+
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 세운 분석 -->
+<section class="section" id="yunun">
+  <div class="sec-head">
+    <div class="sec-num gold">2</div>
+    <div>
+      <div class="sec-title">세운(年運) 실전 분석 — 언제 무슨 일이 생기는가</div>
+      <div class="sec-sub">60갑자의 순환 + 원국 지도 = 사건 발생 시기 특정</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    세운은 매년 바뀌는 새로운 두 글자(천간+지지)가 내 원국에 부딪히는 현상이다. 이 충돌이 <strong>어떤 글자</strong>에서 발생하고, <strong>어느 궁(위치)</strong>에 영향을 미치는지가 그해의 사건 종류를 결정한다.
+  </div>
+
+  <div class="qbox">
+    <strong>세운(년운) 찾는 법 — 60갑자 정확한 계산 원리</strong><br><br>
+
+    <strong>① 왜 경(庚)이 0인가? — 계산 공식의 비밀</strong><br>
+    기준점: <em>서기 4년 = 갑자년(甲子年)</em>입니다. 4를 10으로 나누면 나머지가 4 → "4 = 甲(갑)".<br>
+    여기서 4부터 순서대로 나열하면: 4=甲 → 5=乙 → 6=丙 → 7=丁 → 8=戊 → 9=己 → 0(10)=庚 → 1=辛 → 2=壬 → 3=癸<br>
+    즉, 끝자리 <strong>0은 庚(경)</strong>이 됩니다. 이것은 역사적 기준에서 파생된 <em>수학적 약속</em>입니다.<br><br>
+
+    <strong>② 천간(天干) 계산 — 연도 끝자리 사용</strong>
+    <div style="margin:.6rem 0;padding:.65rem 1rem;background:var(--paper2);border-radius:6px;font-size:13px;line-height:2.1;">
+      끝자리 <strong>0</strong>→庚(경) &nbsp;|&nbsp; <strong>1</strong>→辛(신) &nbsp;|&nbsp; <strong>2</strong>→壬(임) &nbsp;|&nbsp; <strong>3</strong>→癸(계) &nbsp;|&nbsp; <strong>4</strong>→甲(갑)<br>
+      끝자리 <strong>5</strong>→乙(을) &nbsp;|&nbsp; <strong>6</strong>→丙(병) &nbsp;|&nbsp; <strong>7</strong>→丁(정) &nbsp;|&nbsp; <strong>8</strong>→戊(무) &nbsp;|&nbsp; <strong>9</strong>→己(기)
+    </div>
+    예: 2026년 → 끝자리 <strong>6 → 丙(병)</strong><br><br>
+
+    <strong>③ 지지(地支) 계산 — (연도 − 3) ÷ 12의 나머지 사용</strong><br>
+    공식: <code style="background:var(--paper2);padding:2px 8px;border-radius:4px;font-size:13px;">(연도 − 3) ÷ 12 의 나머지</code><br>
+    나머지 1=子(자) / 2=丑(축) / 3=寅(인) / 4=卯(묘) / 5=辰(진) / 6=巳(사)<br>
+    나머지 7=午(오) / 8=未(미) / 9=申(신) / 10=酉(유) / 11=戌(술) / 0=亥(해)<br><br>
+    <div style="margin:.6rem 0;padding:.75rem 1.1rem;background:var(--slate-light);border-radius:6px;font-size:13px;line-height:1.9;">
+      <strong>계산 예시 — 2026년 지지:</strong><br>
+      ① 2026 − 3 = <strong>2023</strong><br>
+      ② 2023 ÷ 12 = 168 몫, 나머지 <strong>7</strong> &nbsp;(검산: 12 × 168 = 2016, 2023 − 2016 = <strong>7</strong>)<br>
+      ③ 나머지 7 → <strong>午(오)</strong><br>
+      ✓ 2026년 = <strong>丙午(병오)년</strong> — 붉은 말의 해<br><br>
+      <strong>계산기로 나눗셈할 때 나머지 구하는 법:</strong><br>
+      2023 ÷ 12 = 168.5833... → 소수점 이하 0.5833 × 12 = <strong>약 7</strong> (이것이 나머지)
+    </div>
+
+    <strong>④ 실전 조합 예시</strong>
+    <div style="margin:.6rem 0;padding:.65rem 1rem;background:var(--gold-light);border-radius:6px;font-size:13px;line-height:2.1;">
+      2024년 → 끝자리 4=甲 / (2024−3)÷12 나머지 5=辰 → <strong>甲辰(갑진)년</strong> ✓<br>
+      2025년 → 끝자리 5=乙 / (2025−3)÷12 나머지 6=巳 → <strong>乙巳(을사)년</strong> ✓<br>
+      2026년 → 끝자리 6=丙 / (2026−3)÷12 나머지 7=午 → <strong>丙午(병오)년</strong> ✓<br>
+      2027년 → 끝자리 7=丁 / (2027−3)÷12 나머지 8=未 → <strong>丁未(정미)년</strong> ✓<br>
+      2028년 → 끝자리 8=戊 / (2028−3)÷12 나머지 9=申 → <strong>戊申(무신)년</strong> ✓<br>
+      2029년 → 끝자리 9=己 / (2029−3)÷12 나머지 10=酉 → <strong>己酉(기유)년</strong> ✓
+    </div>
+    ※ 천간 10개 × 지지 12개 = 최소공배수 <strong>60</strong> → 60년마다 한 바퀴 순환 (60갑자)
+  </div>
+
+  <!-- 실전 세운 분석표 -->
+  <h3 style="font-family:'Noto Serif KR',serif;margin:1.5rem 0 .75rem;font-size:1.1rem;">辛金 일간 기준 · 2012~2015년 세운 분석</h3>
+
+  <div class="tip" style="margin-bottom:1rem;">
+    <strong>이 표를 읽는 법:</strong> 세운 글자가 내 원국의 어느 글자(일간·월지·일지)에 부딪히는지가 핵심입니다.<br>
+    ① <strong>일간 辛金</strong>에게 세운이 어떤 십성인가 → 그 해의 심리적 주제<br>
+    ② <strong>월지 申</strong>(직장·사회 자리)과 무슨 관계인가 → 직장·사회 환경의 변화<br>
+    ③ <strong>일지 亥</strong>(배우자·안방 자리)과 무슨 관계인가 → 가정·관계의 변화<br>
+    세 가지가 동시에 큰 변화를 만들 때 삶에 가장 강한 사건이 발생합니다.
+  </div>
+  <table class="yun-table">
+    <thead>
+      <tr>
+        <th>년도</th>
+        <th>세운</th>
+        <th>원국과의 관계</th>
+        <th>辛金에게 미친 영향</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>2012</strong><br><span style="font-size:11px;color:var(--ink3);">갈등 잠복</span></td>
+        <td><span class="yun-kan">壬</span><span class="yun-ji">辰</span><br><small>임진</small></td>
+        <td>
+          <strong style="color:var(--forest);">일간 辛金에게:</strong> 壬水 = 상관 → "표현하고 싶은 욕구"가 강해지는 해<br>
+          <strong style="color:var(--slate2);">월지 申과:</strong> 申子辰 수 삼합 완성 <span class="tag-hap">삼합</span> → 직장 환경이 수(水) 기운으로 가득 참<br>
+          <strong style="color:var(--crimson);">일지 亥와:</strong> 辰은 亥와 직접 관계 없음 → 배우자 궁은 아직 직접 충격 없음
+        </td>
+        <td>
+          <strong>쉽게 설명하면:</strong> "말 못 하고 속으로만 쌓이는 해"<br>
+          내 불만과 표현욕(상관)이 강해지지만, 진토(辰)라는 습한 흙이 그것을 덮어버린다. 마치 꽉 막힌 배수구처럼 불만이 내부에 고인다. 부부 갈등이 겉으로 드러나지 않고 안에서 쌓이기 시작.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>2013</strong><br><span style="font-size:11px;color:var(--ink3);">균열 시작</span></td>
+        <td><span class="yun-kan">癸</span><span class="yun-ji">巳</span><br><small>계사</small></td>
+        <td>
+          <strong style="color:var(--forest);">일간 辛金에게:</strong> 癸水 = 식신 / 巳火 = 정관(남편·직장) → 직장·남편 기운이 들어옴<br>
+          <strong style="color:var(--slate2);">월지 申과:</strong> 巳申 <span class="tag-hap">육합</span> → 직장(申)이 巳와 묶인다 — 직장이 바빠지거나 새 프로젝트에 묶임<br>
+          <strong style="color:var(--crimson);">일지 亥와:</strong> 巳亥 <span class="tag-chung">충(沖)!</span> → 배우자 자리(亥)를 巳火가 정면으로 친다 = <strong>배우자와의 관계에 직접 균열 발생</strong>
+        </td>
+        <td>
+          <strong>쉽게 설명하면:</strong> "배우자 궁이 처음으로 직격탄을 맞는 해"<br>
+          巳亥충은 불(巳)과 물(亥)이 정면으로 충돌하는 가장 강한 충 중 하나다. 배우자 자리(일지 亥)가 충돌을 받으면 — 배우자와 갈등이 표면화되거나, 배우자가 갑자기 변하거나, 집안에 예상치 못한 사건이 생긴다. 동시에 직장(申)이 巳와 합으로 묶이니 바깥 일이 바빠져 집안 문제가 더 방치된다.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>2014</strong><br><span style="font-size:11px;color:var(--crimson);">폭발의 해</span></td>
+        <td><span class="yun-kan">甲</span><span class="yun-ji">午</span><br><small>갑오</small></td>
+        <td>
+          <strong style="color:var(--forest);">일간 辛金에게:</strong> 甲木 = 정재 / 午火 = 편관(칠살) → "나를 강하게 압박하는 관성"이 정점<br>
+          <strong style="color:var(--slate2);">월지 申과:</strong> 午는 申과 직접 관계 없음 — 그러나 寅午戌 화 삼합의 왕지(정점) <span class="tag-key">삼합 왕지</span><br>
+          <strong style="color:var(--crimson);">일지 亥와:</strong> 午亥 — 亥는 물, 午는 불 → 간접적 충돌 + 亥가 이미 약해진 상태(작년 巳亥충 후)
+        </td>
+        <td>
+          <strong>쉽게 설명하면:</strong> "불꽃이 가장 뜨거운 해 — 보석이 녹을 위기"<br>
+          辛金(보석)에게 午火(편관·칠살)는 "나를 녹이려는 가장 강한 불"이다. 이 불이 절정에 달하니 직장 스트레스·부부 갈등·심리적 압박이 동시에 폭발한다.<br>
+          <em>단, 반전이 있다:</em> 가을(7~9월, 申酉戌 달)이 오면 금(金) 기운이 강해져 辛金의 자기 에너지가 살아난다. 녹아내리던 보석이 다시 단단해지며 "더는 이렇게 살 수 없다"는 결단이 형성된다. 새로운 인연이 들어오는 시기도 이 가을 무렵이다.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>2015</strong><br><span style="font-size:11px;color:var(--forest);">정리·실행</span></td>
+        <td><span class="yun-kan">乙</span><span class="yun-ji">未</span><br><small>을미</small></td>
+        <td>
+          <strong style="color:var(--forest);">일간 辛金에게:</strong> 乙木 = 편재 → "내 것을 만들고 싶다"는 현실적 욕구 강화<br>
+          <strong style="color:var(--slate2);">월지 申과:</strong> 未와 申은 오미합(午未합과 연결) — 사오미 방합 마무리로 화기운 소진 시작<br>
+          <strong style="color:var(--crimson);">일지 亥와:</strong> 亥未 반합 <span class="tag-hap">반합(목)</span> → 배우자 자리(亥)가 미(未)와 합쳐져 목(재성) 기운 형성 = <strong>"내 영역을 찾아가는" 에너지로 전환</strong>
+        </td>
+        <td>
+          <strong>쉽게 설명하면:</strong> "뜨거운 여름이 끝나고 행동이 시작되는 해"<br>
+          사오미 방합(3년간의 화 기운)이 未로 마무리되며 그 열기가 빠진다. 배우자 궁(亥)이 未와 반합을 이루니, 오히려 그 에너지가 "나만의 목(木) 재성 — 내 영역, 내 사업, 내 독립"으로 흐른다. 겨울(亥子丑 달)이 오면 차가운 물 기운이 그동안 달궈진 辛金을 완전히 식히며 결단이 최종 실행으로 이어진다.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 타임라인 -->
+  <h3 style="font-family:'Noto Serif KR',serif;margin:1.75rem 0 .75rem;font-size:1.1rem;">인생 변곡점 타임라인 — 에너지 흐름으로 읽기</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot bad">壬辰</div>
+      <div class="tl-body">
+        <div class="tl-year">2012년 (임진) — 갈등 잠복기</div>
+        <div class="tl-text">수기운 극대화(申子辰 수 삼합 완성). 辛金의 식상이 폭발적으로 상승하지만 진토(습한 흙)에 덮여 표출되지 못한다. 내부에 불만이 고이기 시작.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot bad">癸巳</div>
+      <div class="tl-body">
+        <div class="tl-year">2013년 (계사) — 균열 시작</div>
+        <div class="tl-text">巳亥충으로 배우자 궁(일지 亥)이 직접 충격을 받는다. 감정적 전조 단계. 동시에 巳申합으로 월지(사회·직장)가 묶여 에너지가 혼재된다.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot bad">甲午</div>
+      <div class="tl-body">
+        <div class="tl-year">2014년 (갑오) — 폭발의 해</div>
+        <div class="tl-text">화국(火局) 왕지의 정점. 辛金을 녹이는 가장 강한 불기운. 부부 갈등 폭발 + 새로운 인연과의 강한 연결. 가을(申酉月)에 자기 기운이 살아나며 결단 형성.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot peak">乙未</div>
+      <div class="tl-body">
+        <div class="tl-year">2015년 (을미) — 정리와 실행</div>
+        <div class="tl-text">사오미 방합의 마무리. 재성(목) 기운 완성 → "내 영역"을 찾아 나가는 실행력 발동. 겨울에 집을 나오며 새로운 인생 단계 시작.</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot good">2016~</div>
+      <div class="tl-body">
+        <div class="tl-year">2016년 이후 — 별거·안정화</div>
+        <div class="tl-text">화기운의 소용돌이에서 벗어나 살의 기운이 가라앉기 시작. 전문성을 기반으로 새로운 방향을 모색하는 시기.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="insight">세운 분석의 핵심은 <strong>"어느 글자가 어느 궁을 건드리는가"</strong>이다. 2013년의 巳亥충이 인상적인 이유는 충이 일지(배우자 궁)를 정면으로 건드렸기 때문이다. 같은 충이라도 년지를 건드리면 부모·가문 문제가 되고, 시지를 건드리면 자녀·노년 문제가 된다.</div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 궁 독해법 -->
+<section class="section" id="gung">
+  <div class="sec-head">
+    <div class="sec-num">3</div>
+    <div>
+      <div class="sec-title">궁(宮) 독해법 — 어디서 일어나는가</div>
+      <div class="sec-sub">사건의 영역을 특정하는 핵심 좌표계</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    합충형파해가 <strong>무슨 일이 생기는가</strong>를 알려준다면, 궁(宮)은 <strong>어디서 생기는가</strong>를 알려준다. 같은 충이라도 월지에서 일어나면 직장·사회의 문제이고, 일지에서 일어나면 배우자·건강의 문제다. 궁을 모르면 사건의 영역을 특정할 수 없다.
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot d-green"></span>4궁(四宮)의 의미와 시기</div>
+      <div class="card-body">
+        <strong>년궁(年宮):</strong> 조상·가문·국가 환경. 초년(0~20대). 부모 덕·고향.<br><br>
+        <strong>월궁(月宮):</strong> 부모·형제·직장·사회. 청장년(20~40대). 격국의 중심. 가장 영향력이 큰 궁.<br><br>
+        <strong>일궁(日宮):</strong> 나 자신(일간) + 배우자(일지). 중년(40~60대). 부부 관계·건강·안방.<br><br>
+        <strong>시궁(時宮):</strong> 자녀·말년·결과물. 노년(60대~). 인생의 열매.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot d-red"></span>궁(위치) + 성(글자) 결합 해석법</div>
+      <div class="card-body">
+        사주 해석은 "어느 자리에, 어떤 글자가 앉아 있는가"의 결합이다.<br><br>
+        <strong>배우자 궁(일지)에 정재:</strong> 배우자가 안정적인 재물을 가져다주는 형상.<br>
+        <strong>배우자 궁(일지)에 상관:</strong> 배우자가 재능 있고 표현이 강한 사람. 단 잔소리 가능.<br>
+        <strong>자녀 궁(시지)에 정인:</strong> 자녀가 학구적이고 정적인 성향.<br><br>
+        같은 글자라도 앉은 자리에 따라 의미가 완전히 달라진다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 신해 일주 궁 실전 -->
+  <div class="case">
+    <div class="case-head">
+      <div class="case-badge">실전 적용</div>
+      <div class="case-title">辛亥 일주의 궁 분석 — 배우자·자녀·사회</div>
+    </div>
+    <div class="case-body">
+      <div class="analysis-row">
+        <div class="ar-label">배우자 궁 (일지 亥 — 상관)</div>
+        <div class="ar-content crimson">亥水는 辛金에게 상관이다. <strong>배우자가 재능 많고 표현이 강하며 자유로운 성향.</strong> 辛金(나)이 亥水(배우자)를 생하는 구조 → 내가 배우자에게 더 많이 베푸는 형태. 상관이 배우자 궁에 있으면 부부 사이에 잔소리·간섭으로 인한 갈등이 생기기 쉽다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">사회 궁과 배우자 궁의 관계 (申亥 해)</div>
+        <div class="ar-content crimson"><strong>신해해(申亥害):</strong> 사회(월지 申)와 배우자(일지 亥) 사이에 해(害)가 있다. "속으로 앓는 갈등" 구조. 구체적 발현: ① 일과 가정의 악순환(워라밸 붕괴) ② 부모·형제와 배우자 사이의 이간질 ③ 서로가 원하는 합(巳申합, 寅亥합)을 방해하는 관계. → 이것이 삶의 반복 패턴이 된다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">자녀 궁 (시주 己丑 — 편인)</div>
+        <div class="ar-content slate">기축(己丑)은 土. 辛金에게 土는 인성(나를 생하는 기운). <strong>자녀가 나를 든든히 받쳐주는 흙</strong>처럼 인생 후반의 기반이 된다. 자녀는 공부·사색을 좋아하는 정적인 성향. 시지 丑土가 일지 亥水와 亥丑 반합을 이루어 자녀 궁의 기운이 식상(수)으로 흘러 내 전문성과 연결된다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="compare">
+    <div class="cmp-box before">
+      <div class="cmp-label">파격적인 궁 상태의 특징</div>
+      <div class="cmp-text">배우자 궁(일지)에 충·형·해가 원국에 이미 있다면 어떤 배우자를 만나도 그 관계에서 비슷한 갈등 패턴이 반복된다. 이것은 배우자의 문제가 아니라 내 사주 구조가 만드는 환경이다.</div>
+    </div>
+    <div class="cmp-box after">
+      <div class="cmp-label">궁과 대운의 결합 해석</div>
+      <div class="cmp-text">대운에서 해(害)를 희석시키는 글자(합을 완성하거나 해를 중화하는 글자)가 들어오면 그 10년은 갈등 패턴이 약해진다. 50대 대운에서 卯木이 들어오면 亥卯 반합이 이루어져 배우자 궁이 안정되기 시작한다.</div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 살의 역용 -->
+<section class="section" id="sal">
+  <div class="sec-head">
+    <div class="sec-num crimson">4</div>
+    <div>
+      <div class="sec-title">살(殺)의 역용(逆用) — 독(毒)을 약(藥)으로 바꾸는 법</div>
+      <div class="sec-sub">살은 무조건 나쁜 게 아니다 — 어떻게 쓰느냐가 관건이다</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    살(殺)은 충·형·파·해와 특정 신살 공식에서 발생하는 강렬한 에너지다. 이것은 칼과 같다. 강도의 손에 쥐어주면 흉기가 되지만, 외과의사의 손에 쥐어주면 사람을 살리는 메스가 된다. <strong>살의 역용</strong>이란 이 에너지를 직업적 능력이나 인생의 추진력으로 승화시키는 것이다.
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title"><span class="dot d-red"></span>주요 살(殺)의 종류와 역용</div>
+      <div class="card-body">
+        <strong>역마살(驛馬殺):</strong> 이동·변화·이직의 기운 → 역용: 글로벌 활동, 영업·유통, 여행업.<br><br>
+        <strong>도화살(桃花殺):</strong> 매력·인기·이성의 기운 → 역용: 연예·예술·서비스·상담.<br><br>
+        <strong>현침살(懸針殺):</strong> 날카로운 바늘 기운 → 역용: 외과·침술·분석·심리 진단.<br><br>
+        <strong>화개살(華蓋殺):</strong> 고독·고상함·종교 기운 → 역용: 철학·명상·연구·독창적 창작.
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot d-red"></span>관살혼잡(官殺混雜)의 역용</div>
+      <div class="card-body">
+        정관(합리적 압박)과 편관(강렬한 압박)이 사주에 함께 있는 상태. 이것이 삶에서는 직장 스트레스와 인간관계 갈등으로 발현되지만, 역용하면 강한 리더십과 다방면의 관리 능력이 된다.<br><br>
+        관살혼잡이 있고 식신이 강한 사람 → 압박을 예술로 승화하는 창작자 유형.<br>
+        관살혼잡이 있고 인성이 강한 사람 → 압박을 견디며 학문적 성취를 이루는 유형.
+      </div>
+    </div>
+  </div>
+
+  <!-- 신금의 현침살 -->
+  <div class="case">
+    <div class="case-head">
+      <div class="case-badge">심화 적용</div>
+      <div class="case-title">辛金 일간의 현침살(懸針殺) — 통찰의 메스로 역용하기</div>
+    </div>
+    <div class="case-body">
+      <div class="analysis-row">
+        <div class="ar-label">현침살의 원래 작용</div>
+        <div class="ar-content crimson">辛金은 그 자체로 날카로운 바늘·송곳의 기운을 가진다. 이것이 부정적으로 발현되면 → 예민함, 잔소리, 관계에서의 날카로운 상처. 특히 2014~2015년의 뜨거운 화기운이 이 바늘을 달궈 관계를 끊어내는 단호한 행동(이별·독립)으로 이어졌다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">현침살의 역용</div>
+        <div class="ar-content"><strong>살(殺)을 활인(活人)의 도구로:</strong> 과거에 내가 고통받았던 기운(화기운·갈등·살)을 연구하여 타인의 아픔을 진단하고 분석하는 도구로 승화할 때, 사주 이론에서는 이것을 "살이 가장 아름답게 쓰이는 것"이라 본다. 자신이 직접 불길을 통과했기에 그 열기를 아는 깊이가 외부의 지식만으로는 얻을 수 없는 것이다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">식신생재(食神生財)의 구조</div>
+        <div class="ar-content gold"><strong>辛金의 전문성(식상/수) → 결과물·수익(재성/목)으로 이어지는 흐름:</strong> 날카로운 분석력(현침살 역용)을 심리 진단·투자 분석 도구로 만들고, 그 전문성이 수익(재성)을 생성하는 구조. 이것이 辛金 일간에게 가장 자연스러운 성공 경로다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wisdom">
+    <div class="wisdom-ko">가장 예리한 보석이 가장 깊은 곳을 비춥니다</div>
+    <div class="wisdom-desc">살(殺)은 에너지가 방향을 잃은 상태다. 목적이 생기면 가장 강력한 추진력이 된다.<br>내가 가장 고통받았던 기운이 남을 도울 수 있는 가장 강한 도구가 되는 이치.</div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 지지 관계 확인기 -->
+<section class="section" id="checker">
+  <div class="sec-head">
+    <div class="sec-num">⚙</div>
+    <div>
+      <div class="sec-title">지지 관계 실전 확인기</div>
+      <div class="sec-sub">2글자 기본 분석 + 3글자 삼합·방합 완성 여부까지 확인</div>
+    </div>
+  </div>
+
+  <!-- 2-JIJI CHECKER -->
+  <div class="builder">
+    <div class="builder-title">① 두 지지 관계 분석기 (합·충·형·파·해)</div>
+    <p style="font-size:13.5px;color:var(--ink3);margin-bottom:1.25rem;line-height:1.7;">
+      원국의 두 글자, 또는 원국 글자 + 세운 지지를 비교해 보세요.<br>
+      이것이 기본 분석입니다. 여기서 나온 관계가 어느 궁(년·월·일·시)에서 발생하는지까지 확인하면 사건 영역이 특정됩니다.
+    </p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1rem;">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px;">첫 번째 지지 (원국·대운)</label>
+        <select id="jj1" class="b-select ji">
+          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
+          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
+          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
+          <option value="午">午 (오)</option><option value="未">未 (미)</option>
+          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
+          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px;">두 번째 지지 (세운·비교)</label>
+        <select id="jj2" class="b-select ji">
+          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
+          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
+          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
+          <option value="午">午 (오)</option><option value="未">未 (미)</option>
+          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
+          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
+        </select>
+      </div>
+    </div>
+    <button class="b-btn" onclick="checkRel()">관계 분석하기</button>
+    <div class="b-result" id="relResult">
+      <div class="b-result-title">분석 결과</div>
+      <div class="b-cards" id="resultCards"></div>
+    </div>
+  </div>
+
+  <!-- 3-JIJI CHECKER -->
+  <div class="builder" style="margin-top:1.5rem;">
+    <div class="builder-title">② 세 지지 삼합·방합·삼형 완성 확인기</div>
+    <p style="font-size:13.5px;color:var(--ink3);margin-bottom:.75rem;line-height:1.7;">
+      <strong>삼합·방합은 세 글자가 모두 모여야 완전한 오행 기운이 폭발합니다.</strong><br>
+      원국에 두 글자가 있을 때(반합 상태) → 운에서 나머지 한 글자가 들어오는 해에 강력한 변화가 발생합니다.<br>
+      세 글자를 선택하면 어떤 합·형이 완성되는지, 그 의미가 무엇인지 즉시 확인할 수 있습니다.
+    </p>
+
+    <div class="qbox" style="margin-bottom:1.25rem;padding:.85rem 1.1rem;font-size:13px;">
+      <strong>예시로 먼저 이해하기 — 亥卯未 목국(木局) 삼합:</strong><br>
+      원국에 亥(해)와 卯(묘)가 있다면 이것은 <em>반합(목 기운 50%)</em>입니다.<br>
+      2015년 乙<strong>未</strong>(을미)처럼 미(未)가 세운으로 들어오는 해에 삼합이 완성됩니다.<br>
+      → 목(木) 기운이 폭발적으로 강해짐 → 辛金에게 목은 재성(재물·독립적 영역) → <strong>"내 영역을 찾아 나가는" 강한 실행 에너지 발동</strong><br>
+      이것이 "세운 한 글자가 삶을 바꾸는" 실제 메커니즘입니다.
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:1rem;">
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px;">지지 1 (원국)</label>
+        <select id="j3a" class="b-select ji">
+          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
+          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
+          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
+          <option value="午">午 (오)</option><option value="未">未 (미)</option>
+          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
+          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--ink3);display:block;margin-bottom:6px;">지지 2 (원국)</label>
+        <select id="j3b" class="b-select ji">
+          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
+          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
+          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
+          <option value="午">午 (오)</option><option value="未">未 (미)</option>
+          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
+          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;font-weight:700;color:var(--crimson);display:block;margin-bottom:6px;">지지 3 (운에서 들어오는 글자)</label>
+        <select id="j3c" class="b-select ji" style="border-color:var(--crimson);">
+          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
+          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
+          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
+          <option value="午">午 (오)</option><option value="未">未 (미)</option>
+          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
+          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
+        </select>
+      </div>
+    </div>
+    <button class="b-btn" onclick="check3()">삼합·방합·삼형 완성 여부 확인</button>
+    <div class="b-result" id="result3">
+      <div class="b-result-title">3글자 조합 분석 결과</div>
+      <div class="b-cards" id="cards3"></div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 회고록 연결 -->
+<section class="section" id="hoegorok">
+  <div class="sec-head">
+    <div class="sec-num slate">5</div>
+    <div>
+      <div class="sec-title">사주 + 회고록 연결 — 인생을 객관화하는 법</div>
+      <div class="sec-sub">과거의 사건을 사주 원리로 재해석하면 삶의 패턴이 보인다</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    회고록은 인생에서 발생한 사건들의 목록이다. 사주는 그 사건들이 발생한 에너지적 이유를 설명하는 원리다. 이 두 가지를 연결하면 <strong>"왜 그런 선택을 했는가, 그것이 내 기질인가 아니면 운의 흐름인가"</strong>를 냉정하게 구분할 수 있다.
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div>
+        <div class="step-title">인생의 굵직한 사건을 연도별로 정리한다</div>
+        <div class="step-desc">이직·이사·결혼·이별·사업·사고·질병·만남 등 삶에 변화를 준 사건들을 연도와 함께 나열한다. 상세할수록 좋다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div>
+        <div class="step-title">해당 연도의 세운을 찾아 원국과의 관계를 분석한다</div>
+        <div class="step-desc">60갑자 계산법으로 그 해의 간지를 찾고, 내 원국의 어느 글자와 충·합·형·파·해가 발생했는지 파악한다. 사건의 종류와 에너지 관계가 일치하는지 확인한다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div>
+        <div class="step-title">패턴을 찾는다 — 어떤 운이 들어올 때 어떤 사건이 반복되는가</div>
+        <div class="step-desc">예: "화기운이 강한 해마다 갈등이 발생했다" / "수기운이 들어오는 해에 새로운 공부가 시작됐다" → 이것이 나의 사주 패턴이다. 이 패턴을 아는 것이 자기객관화의 시작이다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div>
+        <div class="step-title">기질과 환경을 분리한다</div>
+        <div class="step-desc">원국(타고난 8글자)의 문제인가, 운(대운·세운의 문제)인가를 구분한다. 원국의 구조적 문제라면 패턴이 반복되므로 삶의 방식을 바꿔야 한다. 운의 문제라면 그 시기만 조심하면 된다.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div>
+        <div class="step-title">회고록에서 드러난 지혜와 강점을 십성으로 분류한다</div>
+        <div class="step-desc">살아온 경험에서 반복적으로 드러나는 강점은 무엇인가? 그것이 식신(전문성)인지, 정관(원칙)인지, 편재(사업 감각)인지를 분류하면 인생 2막의 방향이 보인다.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-head">
+      <div class="case-badge">회고록 분석 예시</div>
+      <div class="case-title">辛金 일간의 2012~2015년 회고록 연결</div>
+    </div>
+    <div class="case-body">
+      <div class="analysis-row">
+        <div class="ar-label">사건 기록</div>
+        <div class="ar-content">"2012년부터 부부 갈등이 쌓이기 시작했고, 2014년 가을 무렵 새로운 인연을 만났으며, 2015년 겨울에 집을 나왔다."</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">사주 분석 결과</div>
+        <div class="ar-content gold">2012(壬辰): 申子辰 수 삼합 완성 → 식상(불만 표현) 극대화, 내부 고임 / 2013(癸巳): 巳亥충 → 일지(배우자 궁) 직격 / 2014(甲午): 인오술 화 삼합 왕지 → 편관(압박) 절정 + 가을 金운 → 결단 / 2015(乙未): 목 재성 완성 + 겨울 水 → 실행·독립.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">패턴 발견</div>
+        <div class="ar-content slate"><strong>화기운(火)이 극대화될 때마다 관계가 위기에 처하고, 금기운(金)이 살아날 때 결단이 이루어진다.</strong> 이것은 辛金 일간의 본질적 패턴이다: 열기(압박)에 녹다가 서늘한 계절(자기 기운)에 칼날처럼 결단한다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">기질 vs 환경 분리</div>
+        <div class="ar-content">부부 갈등은 원국의 <strong>申亥 해(害) 구조(기질)</strong>와 2013~2014년의 <strong>세운 화기운(환경)</strong>이 겹쳐 발생했다. 구조적 문제(해)가 있기에 갈등 패턴은 앞으로도 주의해야 하지만, 화기운이 약한 시기에는 관계가 유지될 수 있다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ 인생 2막 설계 -->
+<section class="section" id="life2">
+  <div class="sec-head">
+    <div class="sec-num gold">6</div>
+    <div>
+      <div class="sec-title">인생 2막 설계 — 사주 기질 × 회고록 지혜 × 미래 운</div>
+      <div class="sec-sub">50~60대, 무형의 지혜를 유형의 가치로 전환하는 사주적 설계</div>
+    </div>
+  </div>
+
+  <div class="lead">
+    50~60대는 인생의 가을(申酉戌)에 접어드는 시기다. 지금까지의 여름(사오미) 같은 사회적 열기가 식으면서 "이제 어떻게 살아야 하는가"가 가장 큰 숙제가 된다. 사주는 이 질문에 대한 가장 구체적인 에너지 지도를 제공한다.
+  </div>
+
+  <div class="grid-3">
+    <div class="card">
+      <div class="card-title"><span class="dot d-green"></span>식상(食傷) — 지혜의 발견</div>
+      <div class="card-body">사주에서 식신·상관이 강한 위치에 있다면 그것이 당신의 진짜 전문성이다. 수십 년간 쌓인 경험·기술·노하우를 <strong>강의·콘텐츠·상담·저술</strong>로 전환하는 것이 식상을 쓰는 인생 2막이다.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot d-gold"></span>재성(財星) — 수익 구조</div>
+      <div class="card-body">내 지혜(식상)가 돈(재성)으로 이어지는 경로를 설계한다. 편재격이라면 큰 사업보다 여러 수익원을, 정재격이라면 안정적인 고정 수입 채널을. <strong>지식 사업·컨설팅·디지털 콘텐츠</strong>가 현대의 식신생재 구조다.</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot d-slate"></span>인성(印星) — 지혜의 정리</div>
+      <div class="card-body">인성이 강한 사람은 먼저 <strong>정리·체계화·문서화</strong>가 필요하다. 회고록 작성, 강의 교재 개발, 책 집필이 인성의 에너지를 쓰는 방식이다. 정리된 지혜만이 남을 도울 수 있다.</div>
+    </div>
+  </div>
+
+  <div class="case">
+    <div class="case-head">
+      <div class="case-badge">50~60대 설계 로드맵</div>
+      <div class="case-title">사주 원국 기반 인생 2막 3단계 설계</div>
+    </div>
+    <div class="case-body">
+      <div class="analysis-row">
+        <div class="ar-label">1단계 — 회고 (인성)</div>
+        <div class="ar-content slate"><strong>생년월일시를 입력하고 인생 전체를 사주로 복기한다.</strong> 어떤 운이 들어올 때 성공했고, 어떤 운에서 실패했는가. 그 안에서 반복적으로 드러난 나의 강점과 패턴은 무엇인가. 이 과정 자체가 자기객관화이며, 회고록의 소재가 된다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">2단계 — 추출 (식상)</div>
+        <div class="ar-content"><strong>회고에서 드러난 지혜를 십성으로 분류하고 전문성으로 포장한다.</strong> 식신이 강한 분야 → 그것이 당신의 콘텐츠다. 상관이 강한 분야 → 기존 방식을 깨는 혁신적 관점으로 포장하라. 이것이 다른 사람과 차별화되는 당신만의 지식 자산이다.</div>
+      </div>
+      <div class="analysis-row">
+        <div class="ar-label">3단계 — 수익화 (재성)</div>
+        <div class="ar-content gold"><strong>추출된 전문성을 수익 모델로 연결한다.</strong> 강의(단기 수익), 상담(중기 수익), 디지털 콘텐츠(장기 수익)의 3개 채널을 동시에 설계한다. 삼합처럼 세 개의 기운이 모일 때 가장 강한 에너지가 발생한다. 단, AI와 전문가가 협업하는 구조를 만들어야 확장성이 생긴다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 미래 운 흐름 -->
+  <h3 style="font-family:'Noto Serif KR',serif;margin:1.75rem 0 .75rem;font-size:1.1rem;">辛金 일간 기준 · 2025~2030년 미래 운 흐름</h3>
+  <table class="yun-table">
+    <thead>
+      <tr>
+        <th>년도</th>
+        <th>세운</th>
+        <th>辛金에게 미치는 의미</th>
+        <th>인생 2막 전략</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>2025</strong></td>
+        <td><span class="yun-kan">乙</span><span class="yun-ji">巳</span> 을사</td>
+        <td>乙木(편재) 천간 등장 → 수익화 욕구 강화. 巳火(정관) — 조직·협업 기운.</td>
+        <td>지금 개발 중인 서비스가 시장에서 <strong>평가받는 시기</strong>. 공신력 있는 기관·파트너와 연결될 기회. 협업 구조를 본격화할 최적의 해.</td>
+      </tr>
+      <tr>
+        <td><strong>2026</strong></td>
+        <td><span class="yun-kan">丙</span><span class="yun-ji">午</span> 병오</td>
+        <td>丙火(정관) + 午火(편관) — 뜨거운 불이 다시 등장. 단, 이번 불은 서비스를 비추는 조명.</td>
+        <td>2014년의 불이 나를 녹였다면 <strong>이번 불은 내 서비스를 세상에 드러내는 조명</strong>이 된다. 사회적 노출·홍보가 자연스럽게 이루어지는 시기.</td>
+      </tr>
+      <tr>
+        <td><strong>2028</strong></td>
+        <td><span class="yun-kan">戊</span><span class="yun-ji">申</span> 무신</td>
+        <td>申金(비겁·뿌리) — 일간의 강력한 지지. 금 기운 강화.</td>
+        <td>"내 판단이 틀리지 않았다"는 확신이 드는 해. <strong>주도권을 쥐고 독립적으로 운영하는 힘</strong>이 최대화. 서비스의 시장 지위가 단단해진다.</td>
+      </tr>
+      <tr>
+        <td><strong>2029</strong></td>
+        <td><span class="yun-kan">己</span><span class="yun-ji">酉</span> 기유</td>
+        <td>酉金 — 辛金의 록(祿). 보석이 제 자리를 찾는 해. 가장 강한 금 기운.</td>
+        <td>인생 2막의 <strong>결실이 가장 크게 나타나는 해</strong>. 그동안 쌓은 전문성과 브랜드가 안정적인 자산이 된다. 2015년의 결단이 이 해에 진정한 의미를 갖는다.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="wisdom">
+    <div class="wisdom-ko">신금은 가을의 서리이자 보석입니다</div>
+    <div class="wisdom-desc">뜨거운 여름(2012~2015년)을 지나 긴 별거 기간(겨울과 봄)을 버텨오신 분은<br>이제 곧 다가올 본인의 계절인 가을(2028~2029년)에 결실을 맺을 것입니다.<br>살(殺)은 고통이 아니라 세공의 과정이었습니다.</div>
+  </div>
+
+  <div class="insight">
+    <strong>실전 사주 공부의 완성:</strong> 기초(오행·천간지지·십성)는 단어를 배우는 것, 심화(합충형파해·격국)는 문법을 배우는 것, 실전(세운·궁·살 역용·회고록)은 그 언어로 자신의 인생을 직접 읽어내는 것이다. 이 세 층위가 갖춰질 때 비로소 사주는 점술이 아닌 <strong>인생 설계 도구</strong>가 된다.
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <strong>사주명리학 실전 과정</strong><br>
+  세운 분석 · 궁 독해 · 살의 역용 · 회고록 연결 · 인생 2막 설계<br>
+  인생의 변곡점을 스스로 읽어내는 실전 능력
+  <div class="footer-links">
+    <a class="footer-link" href="saju_lecture.html">← 기초 과정</a>
+    <a class="footer-link" href="saju_advanced.html">← 심화 과정</a>
+  </div>
+</footer>
+
+<script>
+/* ═══ 합충형파해 데이터베이스 ═══ */
+const RELATIONS = {
+  hap6: [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']],
+  hapResult: {
+    '子丑':'土 — 안정·문서 결합. 재물이 묶이며 끈끈한 관계 형성.','丑子':'土 — 안정·문서 결합.',
+    '寅亥':'木 — 역마 기운이 안정됨. 이동·변화가 잠시 멈추고 안착.','亥寅':'木 — 역마 기운이 안정됨.',
+    '卯戌':'火 — 감정·이성 결합. 서로 다른 성질이 매력적으로 끌린다.','戌卯':'火 — 감정·이성 결합.',
+    '辰酉':'金 — 계약·거래 성사. 실질적·물질적 결합.','酉辰':'金 — 계약·거래 성사.',
+    '巳申':'水 — 강한 두 기운 결합. 기술·전문성 발휘. 충돌 리스크도 잠재.','申巳':'水 — 강한 두 기운 결합.',
+    '午未':'火·土 — 따뜻하고 온화한 결합. 명예·사회적 인정.','未午':'火·土 — 온화한 명예 결합.'
+  },
+  chung: [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']],
+  chungDesc: {
+    '子午':'수화충 — 감정 폭발·주거 이동·부부 갈등. 일지면 배우자·건강 변동.','午子':'수화충',
+    '丑未':'토토충 — 창고 열림·부동산 변동·내부 갈등. 숨겨진 것이 드러난다.','未丑':'토토충',
+    '寅申':'목금충 — 강한 이동수·이직·교통 주의. 새로운 시작을 강제한다.','申寅':'목금충',
+    '卯酉':'목금충 — 날카로운 분리·이별·소송. 칼처럼 관계가 끊긴다.','酉卯':'목금충',
+    '辰戌':'토토충 — 기반 변동·수술·환경 전환. 토대가 바뀐다.','戌辰':'토토충',
+    '巳亥':'화수충 — 역마·심리 불안·계약 파기. 파격적 환경 변화.','亥巳':'화수충'
+  },
+  hyeong2: [['子','卯'],['卯','子']],
+  hyeongDesc: {'子卯':'무례지형 — 구설·분쟁·예의 문제. 수가 목을 과잉 생해 통제불능.','卯子':'무례지형'},
+  pa: [['子','酉'],['卯','午'],['寅','亥'],['巳','申'],['辰','丑'],['戌','未']],
+  paDesc: {
+    '子酉':'파(破) — 진행중 일 균열·예상 밖 파손.','酉子':'파(破)',
+    '卯午':'파(破) — 관계 균열·계획 파기.','午卯':'파(破)',
+    '寅亥':'파(破) — 육합 관계이면서 파. 친밀한 관계가 갑자기 깨짐.','亥寅':'파(破)+육합',
+    '巳申':'파(破)+육합 — 결합이면서 충돌. 복잡한 이중 관계.','申巳':'파(破)+육합',
+    '辰丑':'파(破) — 토끼리 균열·문서 파기.','丑辰':'파(破)',
+    '戌未':'파(破) — 토끼리 균열·인간관계 파손.','未戌':'파(破)'
+  },
+  hae: [['子','未'],['丑','午'],['寅','巳'],['卯','辰'],['申','亥'],['酉','戌']],
+  haeDesc: {
+    '子未':'해(害) — 시기·질투·배신·숨은 건강 문제. 속으로 앓는 갈등.','未子':'해(害)',
+    '丑午':'해(害) — 오해·방해·음해.','午丑':'해(害)',
+    '寅巳':'해(害) — 경쟁자의 방해.','巳寅':'해(害)',
+    '卯辰':'해(害) — 가까운 이의 방해·심리 고통.','辰卯':'해(害)',
+    '申亥':'해(害) — 속으로 앓는 갈등. 일과 가정의 악순환.','亥申':'해(害) — 속으로 앓는 갈등.',
+    '酉戌':'해(害) — 미묘한 질투·숨은 건강 이상.','戌酉':'해(害)'
+  }
+};
+
+function checkRel() {
+  const a = document.getElementById('jj1').value;
+  const b = document.getElementById('jj2').value;
+  const cards = document.getElementById('resultCards');
+  const result = document.getElementById('relResult');
+
+  let items = [];
+
+  if (a === b) {
+    const selfH = ['辰','午','酉','亥'];
+    if (selfH.includes(a)) items.push({cls:'found-hae', title:'자형(自刑)', desc:`${a}${b} 자형 — 스스로 만든 꼬임. 반복되는 실수·집착·내면 갈등.`});
+    else items.push({cls:'', title:'관계 없음', desc:`${a}와 ${b}는 같은 글자입니다.`});
+  } else {
+    let found = false;
+    const key = a+b, rkey = b+a;
+
+    for (const pair of RELATIONS.hap6) {
+      if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+        items.push({cls:'found-hap', title:'육합(六合)', desc:`${a}${b} 육합 → ${RELATIONS.hapResult[key]||RELATIONS.hapResult[rkey]||''}`});
+        found = true;
+      }
+    }
+    for (const pair of RELATIONS.chung) {
+      if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+        items.push({cls:'found-chung', title:'충(沖)', desc:`${a}${b} ${RELATIONS.chungDesc[key]||RELATIONS.chungDesc[rkey]||''}`});
+        found = true;
+      }
+    }
+    for (const pair of RELATIONS.hyeong2) {
+      if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+        items.push({cls:'found-hae', title:'형(刑)', desc:`${a}${b} ${RELATIONS.hyeongDesc[key]||RELATIONS.hyeongDesc[rkey]||''}`});
+        found = true;
+      }
+    }
+    for (const pair of RELATIONS.pa) {
+      if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+        items.push({cls:'found-hae', title:'파(破)', desc:`${a}${b} ${RELATIONS.paDesc[key]||RELATIONS.paDesc[rkey]||''}`});
+        found = true;
+      }
+    }
+    for (const pair of RELATIONS.hae) {
+      if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+        items.push({cls:'found-hae', title:'해(害)', desc:`${a}${b} ${RELATIONS.haeDesc[key]||RELATIONS.haeDesc[rkey]||''}`});
+        found = true;
+      }
+    }
+    if (!found) items.push({cls:'', title:'특별 관계 없음', desc:`${a}와 ${b} 사이에는 2자 합·충·형·파·해 관계가 없습니다. 삼합·방합·삼형 조합은 세 글자로 확인하세요.`});
+  }
+
+  cards.innerHTML = items.map(i =>
+    `<div class="b-card ${i.cls}"><strong>${i.title}</strong>${i.desc}</div>`
+  ).join('');
+  result.style.display = 'block';
+}
+
+/* ═══ 3글자 삼합·방합·삼형 확인기 ═══ */
+const SAMHAP = [
+  { set:['亥','卯','未'], name:'亥卯未 목국(木局) 삼합', ohaeng:'木', wang:'卯', meaning:'나무 기운 폭발. 성장·추진·재물 성취 극대화. 사업 확장, 독립, 새로운 영역 개척.' },
+  { set:['寅','午','戌'], name:'寅午戌 화국(火局) 삼합', ohaeng:'火', wang:'午', meaning:'불 기운 폭발. 명예·인기·사회적 성취 극대화. 승진, 발표, 사회적 존재감 최고조.' },
+  { set:['巳','酉','丑'], name:'巳酉丑 금국(金局) 삼합', ohaeng:'金', wang:'酉', meaning:'쇠 기운 폭발. 독립심·자존감·결단력 극대화. 전문성 강화, 경쟁 두각, 자기 주도.' },
+  { set:['申','子','辰'], name:'申子辰 수국(水局) 삼합', ohaeng:'水', wang:'子', meaning:'물 기운 폭발. 표현력·재능·지식 활동 극대화. 창작, 글쓰기, IT, 전문 기술 전성기.' },
+];
+const BANGHAP = [
+  { set:['寅','卯','辰'], name:'寅卯辰 목 방합', ohaeng:'木(강)', meaning:'봄·동쪽. 성장과 추진력 극대화. 사업 확장, 새로운 시작, 상승 에너지.' },
+  { set:['巳','午','未'], name:'巳午未 화 방합', ohaeng:'火(강)', meaning:'여름·남쪽. 명예·인기·열정 폭발. 사회적 존재감 최고조, 뜨거운 활동기.' },
+  { set:['申','酉','戌'], name:'申酉戌 금 방합', ohaeng:'金(강)', meaning:'가을·서쪽. 절제·완성·수확. 결실을 거두는 시기, 내실을 다지는 단계.' },
+  { set:['亥','子','丑'], name:'亥子丑 수 방합', ohaeng:'水(강)', meaning:'겨울·북쪽. 내면·저장·지혜. 공부·준비·잠복, 다음 도약을 위한 축적기.' },
+];
+const SAMHYEONG = [
+  { set:['寅','巳','申'], name:'寅巳申 삼형(역마형)', meaning:'교통사고 주의, 수술, 법적 분쟁. 단 의료·기술·군경 분야에서는 강한 능력 발휘.' },
+  { set:['丑','戌','未'], name:'丑戌未 삼형(기술형)', meaning:'배신·조정·전문 기술 문제. 전문직 두각. 인간관계 지속적 갈등.' },
+];
+
+function check3() {
+  const a = document.getElementById('j3a').value;
+  const b = document.getElementById('j3b').value;
+  const c = document.getElementById('j3c').value;
+  const cards = document.getElementById('cards3');
+  const result = document.getElementById('result3');
+
+  const selected = [a, b, c];
+  const selSet = new Set(selected);
+  let items = [];
+  let found = false;
+
+  // 삼합 체크
+  for (const s of SAMHAP) {
+    const matched = s.set.filter(x => selSet.has(x));
+    const matchCount = matched.length;
+    if (matchCount === 3) {
+      items.push({cls:'found-hap',
+        title:`✦ 삼합 완성! ${s.name}`,
+        desc:`<strong>오행:</strong> ${s.ohaeng} 기운이 폭발적으로 강해집니다.<br><strong>왕지(정점):</strong> ${s.wang} — 이 글자가 있을 때 기운이 가장 강합니다.<br><strong>의미:</strong> ${s.meaning}<br><br><em>세 글자가 모두 모이면 그 오행의 에너지가 3배 이상 증폭됩니다. 이 삼합이 완성되는 해에 해당 기운의 영역(재물·명예·전문성 등)에서 가장 강한 변화가 발생합니다.</em>`
+      });
+      found = true;
+    } else if (matchCount === 2) {
+      const missing = s.set.find(x => !selSet.has(x));
+      const presentStr = s.set.filter(x => selSet.has(x)).join(' · ');
+      items.push({cls:'found-key',
+        title:`◐ 반합 상태 — ${s.name} 미완성`,
+        desc:`원국에 <strong>${presentStr}</strong> 두 글자가 있으면 <em>반합</em>입니다 (기운 약 50% 활성).<br>운(대운·세운)에서 <strong>${missing}</strong>이 들어오는 해에 삼합이 완성되어 강력한 변화가 발생합니다.<br><strong>완성 시:</strong> ${s.ohaeng} — ${s.meaning}`
+      });
+      found = true;
+    }
+  }
+
+  // 방합 체크
+  for (const s of BANGHAP) {
+    const matched = s.set.filter(x => selSet.has(x));
+    const matchCount = matched.length;
+    if (matchCount === 3) {
+      items.push({cls:'found-hap',
+        title:`✦ 방합 완성! ${s.name}`,
+        desc:`<strong>오행:</strong> ${s.ohaeng}<br><strong>의미:</strong> ${s.meaning}<br><br><em>방합은 같은 계절·방향의 글자들이 모두 모인 것으로, 혈연·가족·동일 집단의 강한 결속력도 의미합니다. 삼합보다 더 강한 경우도 있습니다.</em>`
+      });
+      found = true;
+    } else if (matchCount === 2) {
+      const missing = s.set.find(x => !selSet.has(x));
+      const presentStr = s.set.filter(x => selSet.has(x)).join(' · ');
+      items.push({cls:'found-key',
+        title:`◐ 방합 2/3 — ${s.name} 미완성`,
+        desc:`<strong>${presentStr}</strong> 두 글자가 있습니다. <strong>${missing}</strong>이 운에서 들어오면 방합이 완성됩니다.<br><strong>완성 시:</strong> ${s.ohaeng} — ${s.meaning}`
+      });
+      found = true;
+    }
+  }
+
+  // 삼형 체크
+  for (const s of SAMHYEONG) {
+    const matched = s.set.filter(x => selSet.has(x));
+    const matchCount = matched.length;
+    if (matchCount === 3) {
+      items.push({cls:'found-chung',
+        title:`⚡ 삼형(三刑) 완성! ${s.name}`,
+        desc:`<strong>주의:</strong> ${s.meaning}<br><br><em>삼형은 충만큼 강렬한 에너지입니다. 부정적으로 쓰면 사고·분쟁이지만, 직업적으로 역용하면 강력한 전문 능력이 됩니다.</em>`
+      });
+      found = true;
+    } else if (matchCount === 2) {
+      const missing = s.set.find(x => !selSet.has(x));
+      items.push({cls:'found-chung',
+        title:`⚡ 삼형 2/3 — ${s.name} 미완성`,
+        desc:`<strong>${missing}</strong>이 운에서 들어오면 삼형이 완성됩니다. 주의 또는 역용 준비: ${s.meaning}`
+      });
+      found = true;
+    }
+  }
+
+  if (!found) {
+    items.push({cls:'',
+      title:'삼합·방합·삼형 해당 없음',
+      desc:`선택한 세 글자(${a} · ${b} · ${c})는 삼합·방합·삼형 조합에 해당하지 않습니다.<br>두 글자씩 나눠 위 ① 확인기에서 2자 관계(합·충·형·파·해)를 각각 확인해 보세요.`
+    });
+  }
+
+  cards.innerHTML = items.map(i =>
+    `<div class="b-card ${i.cls}" style="min-width:100%;flex:none;"><strong>${i.title}</strong><br><span style="font-size:13px;line-height:1.8;">${i.desc}</span></div>`
+  ).join('');
+  result.style.display = 'block';
+}
+</script>
+</body>
+</html>
