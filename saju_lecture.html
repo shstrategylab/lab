@@ -553,6 +553,10 @@
     line-height: 2;
   }
   footer strong { color: var(--gold2); }
+  .footer-link { display:inline-block; margin-top:.75rem; color:rgba(250,247,242,.6);
+    border:1px solid rgba(250,247,242,.2); border-radius:4px; padding:7px 18px;
+    text-decoration:none; font-size:12.5px; transition:color .2s; }
+  .footer-link:hover { color:var(--gold2); }
 
   @media (max-width: 600px) {
     .pillars, .result-pillars { grid-template-columns: repeat(2, 1fr); }
@@ -1369,13 +1373,8 @@
   <strong>사주명리학 독학 가이드</strong><br>
   천간·지지·오행 원리로 스스로 읽는 내 삶의 기운<br>
   이 자료는 학습 목적으로 제작되었으며, 명리학은 통계적 패턴과 동양 기호학의 인문학적 체계입니다.
-  <div style="margin-top:1.5rem;">
-    <a href="saju_advanced.html" style="display:inline-block;background:var(--gold);color:#fff;text-decoration:none;
-      padding:12px 28px;border-radius:4px;font-size:14px;font-weight:600;letter-spacing:.5px;
-      transition:background .2s;">
-      심화 과정으로 이동 → 합충형파해 · 격국 · 변곡점 독해
-    </a>
-  </div>
+  <br>
+  <a class="footer-link" href="saju_advanced.html">»» 심화 과정으로 이동</a>
 </footer>
 
 <script>
