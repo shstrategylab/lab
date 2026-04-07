@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>자기객관화 진단 시스템</title>
+
+<!-- OG Meta (공유 시 미리보기) -->
+<meta property="og:title" content="자기객관화 진단 시스템">
+<meta property="og:description" content="나는 나 자신을 제대로 보고 있을까? 검증된 심리 이론 기반 10문항 진단">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE6;
+    --text-primary: #1A1815;
+    --text-secondary: #6B6560;
+    --text-muted: #A09A93;
+    --border: rgba(26,24,21,0.10);
+    --border-strong: rgba(26,24,21,0.22);
+    --accent: #1A1815;
+    --green: #2E6B3E;
+    --green-light: #EAF2EC;
+    --amber: #8B5E15;
+    --amber-light: #FBF0DC;
+    --red: #8B2020;
+    --red-light: #FBEAEA;
+    --serif: 'Noto Serif KR', serif;
+    --sans: 'Noto Sans KR', sans-serif;
+    --radius: 14px;
+    --radius-sm: 9px;
+    --shadow: 0 2px 16px rgba(0,0,0,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141210;
+      --surface: #1E1C19;
+      --surface2: #272420;
+      --text-primary: #F0EDE6;
+      --text-secondary: #A09A93;
+      --text-muted: #6B6560;
+      --border: rgba(240,237,230,0.10);
+      --border-strong: rgba(240,237,230,0.22);
+      --accent: #F0EDE6;
+      --green: #5BB578;
+      --green-light: #0E2315;
+      --amber: #D4A55A;
+      --amber-light: #211608;
+      --red: #D46060;
+      --red-light: #200E0E;
+      --shadow: 0 2px 16px rgba(0,0,0,0.3);
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { min-height: 100vh; display: flex; flex-direction: column; }
+
+  .header {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px; height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .header-logo { font-family: var(--serif); font-size: 14px; color: var(--text-secondary); letter-spacing: 0.03em; }
+  .header-progress { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+
+  .container { flex: 1; width: 100%; max-width: 680px; margin: 0 auto; padding: 0 24px 80px; }
+
+  .phase { display: none; }
+  .phase.active { display: block; }
+
+  /* ── Intro ── */
+  .intro-hero { padding: 56px 0 44px; text-align: center; }
+  .intro-icon { width: 68px; height: 68px; margin: 0 auto 28px; background: var(--surface); border: 1px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; }
+  .intro-eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 16px; }
+  .intro-title { font-family: var(--serif); font-size: clamp(26px,5vw,38px); font-weight: 600; color: var(--text-primary); line-height: 1.35; margin-bottom: 20px; }
+  .intro-desc { font-size: 15px; color: var(--text-secondary); line-height: 1.85; max-width: 420px; margin: 0 auto 36px; }
+  .intro-meta { display: flex; justify-content: center; gap: 32px; margin-bottom: 36px; flex-wrap: wrap; }
+  .meta-item { text-align: center; }
+  .meta-num { font-family: var(--serif); font-size: 28px; font-weight: 600; color: var(--text-primary); display: block; }
+  .meta-label { font-size: 11px; color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; }
+  .meta-divider { width: 1px; background: var(--border); align-self: stretch; }
+  .theory-chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 40px; }
+  .theory-chip { font-size: 11px; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 100px; padding: 5px 12px; background: var(--surface); }
+  .start-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--accent); color: var(--bg); border: none; border-radius: 100px; padding: 16px 36px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: var(--sans); letter-spacing: 0.02em; transition: transform 0.15s, opacity 0.15s; -webkit-tap-highlight-color: transparent; }
+  .start-btn:hover { opacity: 0.85; }
+  .start-btn:active { transform: scale(0.97); }
+  .start-btn .arrow { display: inline-block; transition: transform 0.2s; }
+  .start-btn:hover .arrow { transform: translateX(3px); }
+  .intro-note { margin-top: 18px; font-size: 12px; color: var(--text-muted); }
+
+  /* ── Progress ── */
+  .progress-section { padding: 28px 0 0; margin-bottom: 32px; }
+  .progress-info { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .progress-step { font-family: var(--serif); font-size: 13px; color: var(--text-secondary); }
+  .progress-pct { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-muted); }
+  .progress-track { height: 2px; background: var(--border); border-radius: 2px; position: relative; }
+  .progress-fill { height: 2px; background: var(--text-primary); border-radius: 2px; transition: width 0.5s cubic-bezier(0.4,0,0.2,1); position: relative; }
+  .progress-dot { position: absolute; right: -4px; top: -3px; width: 8px; height: 8px; background: var(--text-primary); border-radius: 50%; }
+
+  /* ── Question ── */
+  .q-card { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); padding: 32px 28px; margin-bottom: 14px; box-shadow: var(--shadow); animation: slideUp 0.3s ease; }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .q-top-row { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+  .q-num-badge { width: 28px; height: 28px; background: var(--surface2); border-radius: 50%; font-size: 11px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .q-dim-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--border); border-radius: 100px; padding: 3px 10px; }
+  .q-text { font-family: var(--serif); font-size: clamp(16px,2.8vw,19px); font-weight: 400; color: var(--text-primary); line-height: 1.7; }
+  .q-theory-hint { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-muted); line-height: 1.6; display: flex; align-items: flex-start; gap: 6px; }
+  .hint-icon { font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ── Options ── */
+  .opts { display: flex; flex-direction: column; gap: 10px; }
+  .opt { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 16px 20px; font-size: 14px; font-family: var(--sans); color: var(--text-primary); text-align: left; cursor: pointer; line-height: 1.55; transition: all 0.18s; display: flex; align-items: flex-start; gap: 12px; -webkit-tap-highlight-color: transparent; }
+  .opt-check { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--border-strong); flex-shrink: 0; margin-top: 1px; transition: all 0.18s; display: flex; align-items: center; justify-content: center; }
+  .opt-text { flex: 1; }
+  .opt:hover { border-color: var(--border-strong); background: var(--surface2); }
+  .opt.selected { border-color: var(--text-primary); background: var(--surface2); }
+  .opt.selected .opt-check { background: var(--text-primary); border-color: var(--text-primary); }
+  .opt.selected .opt-check::after { content: ''; display: block; width: 6px; height: 6px; background: var(--bg); border-radius: 50%; }
+
+  /* ── Nav ── */
+  .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 12px; }
+  .nav-prev { background: transparent; border: 1px solid var(--border-strong); border-radius: 100px; padding: 12px 22px; font-size: 14px; font-weight: 500; font-family: var(--sans); color: var(--text-primary); cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; }
+  .nav-prev:disabled { opacity: 0.3; cursor: default; }
+  .nav-prev:not(:disabled):hover { background: var(--surface2); }
+  .nav-next { flex: 1; background: var(--accent); color: var(--bg); border: none; border-radius: 100px; padding: 14px 28px; font-size: 15px; font-weight: 700; font-family: var(--sans); cursor: pointer; transition: all 0.15s; -webkit-tap-highlight-color: transparent; letter-spacing: 0.02em; }
+  .nav-next:disabled { opacity: 0.3; cursor: default; }
+  .nav-next:not(:disabled):hover { opacity: 0.85; }
+  .nav-next:not(:disabled):active { transform: scale(0.98); }
+
+  /* ── Loading ── */
+  .loading-phase { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; }
+  .loading-ring { width: 48px; height: 48px; border: 2px solid var(--border); border-top-color: var(--text-primary); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 24px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 14px; color: var(--text-secondary); }
+
+  /* ── Result ── */
+  .result-hero { padding: 48px 0 32px; text-align: center; }
+  .result-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); border: 1px solid var(--border); border-radius: 100px; padding: 5px 14px; margin-bottom: 24px; }
+  .result-score-wrap { margin-bottom: 12px; }
+  .result-score { font-family: var(--serif); font-size: clamp(60px,12vw,88px); font-weight: 600; line-height: 1; display: inline-block; transition: color 0.5s; }
+  .result-score-den { font-family: var(--serif); font-size: clamp(22px,4vw,32px); color: var(--text-muted); font-weight: 400; }
+  .result-level { font-family: var(--serif); font-size: clamp(18px,3vw,24px); font-weight: 600; margin-bottom: 12px; }
+  .result-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.85; max-width: 440px; margin: 0 auto; }
+
+  .meter-section { margin: 28px 0; }
+  .meter-track { height: 6px; background: var(--border); border-radius: 100px; overflow: hidden; }
+  .meter-fill { height: 6px; border-radius: 100px; width: 0%; transition: width 1.2s cubic-bezier(0.4,0,0.2,1); }
+  .meter-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-muted); margin-top: 8px; }
+
+  .section-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+
+  /* 항목 + 이론 */
+  .theory-section { margin: 28px 0; }
+  .theory-list { display: flex; flex-direction: column; }
+  .theory-item { display: flex; gap: 16px; padding: 18px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.4s ease both; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .theory-item-left { min-width: 0; flex: 1; }
+  .theory-item-dim { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+  .theory-item-name { font-size: 12px; color: var(--text-secondary); margin-bottom: 3px; line-height: 1.5; }
+  .theory-item-source { font-size: 11px; color: var(--text-muted); font-style: italic; line-height: 1.5; }
+  .theory-item-status { flex-shrink: 0; display: flex; align-items: flex-start; padding-top: 2px; }
+  .status-pill { font-size: 11px; font-weight: 700; border-radius: 100px; padding: 4px 10px; white-space: nowrap; }
+  .status-good { background: var(--green-light); color: var(--green); }
+  .status-warn { background: var(--amber-light); color: var(--amber); }
+  .status-bad  { background: var(--red-light); color: var(--red); }
+
+  .highlight-card { background: var(--surface2); border-radius: var(--radius); padding: 22px 24px; margin: 24px 0; border-left: 3px solid var(--text-primary); }
+  .highlight-card p { font-family: var(--serif); font-size: 15px; color: var(--text-secondary); line-height: 1.85; }
+
+  .rx-section { margin: 28px 0; }
+  .rx-header { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .rx-icon { width: 32px; height: 32px; background: var(--surface2); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--text-secondary); font-family: var(--serif); }
+  .rx-title { font-size: 15px; font-weight: 700; color: var(--text-primary); }
+  .rx-list { display: flex; flex-direction: column; }
+  .rx-item { display: flex; gap: 16px; padding: 20px 0; border-bottom: 1px solid var(--border); animation: fadeIn 0.4s ease both; }
+  .rx-num { font-family: var(--serif); font-size: 22px; font-weight: 600; color: var(--border-strong); min-width: 28px; line-height: 1.2; }
+  .rx-head { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .rx-body { font-size: 13px; color: var(--text-secondary); line-height: 1.8; }
+
+  /* ── Share 버튼 영역 ── */
+  .share-section { margin: 36px 0 0; }
+  .share-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 14px; }
+  .share-buttons { display: flex; flex-wrap: wrap; gap: 10px; }
+
+  .btn-share-image {
+    flex: 1; min-width: 140px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--accent); color: var(--bg);
+    border: none; border-radius: 100px; padding: 14px 20px;
+    font-size: 14px; font-weight: 700; font-family: var(--sans);
+    cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-share-image:hover { opacity: 0.85; }
+  .btn-share-image:active { transform: scale(0.97); }
+
+  .btn-share-url {
+    flex: 1; min-width: 140px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: var(--surface); color: var(--text-primary);
+    border: 1px solid var(--border-strong); border-radius: 100px; padding: 14px 20px;
+    font-size: 14px; font-weight: 500; font-family: var(--sans);
+    cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-share-url:hover { background: var(--surface2); }
+
+  .btn-restart {
+    width: 100%; margin-top: 10px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    background: transparent; color: var(--text-muted);
+    border: 1px solid var(--border); border-radius: 100px; padding: 12px 20px;
+    font-size: 13px; font-weight: 500; font-family: var(--sans);
+    cursor: pointer; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-restart:hover { background: var(--surface2); color: var(--text-primary); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--text-primary); color: var(--bg);
+    font-size: 13px; font-weight: 500; font-family: var(--sans);
+    padding: 12px 24px; border-radius: 100px;
+    opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap; z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── Canvas 결과카드 (숨김 — 이미지 생성용) ── */
+  #result-canvas { display: none; }
+
+  footer { text-align: center; padding: 32px 24px; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--border); line-height: 1.9; }
+
+  @media (max-width: 400px) {
+    .container { padding: 0 16px 80px; }
+    .q-card { padding: 22px 18px; }
+    .opt { padding: 14px 16px; }
+    .intro-meta { gap: 20px; }
+    .share-buttons { flex-direction: column; }
+    .btn-share-image, .btn-share-url { min-width: unset; }
+  }
+  @media (min-width: 768px) {
+    .container { padding: 0 40px 80px; }
+    .header { padding: 0 40px; }
+    .q-card { padding: 40px 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="header">
+    <span class="header-logo">자기객관화 진단</span>
+    <span class="header-progress" id="hdr-progress"></span>
+  </header>
+
+  <div class="container">
+
+    <!-- Intro -->
+    <div class="phase active" id="phase-intro">
+      <div class="intro-hero">
+        <div class="intro-icon">🪞</div>
+        <div class="intro-eyebrow">Self-Objectification Diagnosis</div>
+        <h1 class="intro-title">나는 나 자신을<br>제대로 보고 있을까?</h1>
+        <p class="intro-desc">관계의 반복된 갈등, 그 중심에 내가 있을 수 있습니다.<br>검증된 심리 이론을 바탕으로 설계된 10개의 질문으로<br>당신의 자기객관화 수준을 진단합니다.</p>
+        <div class="intro-meta">
+          <div class="meta-item"><span class="meta-num">10</span><span class="meta-label">문항</span></div>
+          <div class="meta-divider"></div>
+          <div class="meta-item"><span class="meta-num">3분</span><span class="meta-label">소요</span></div>
+          <div class="meta-divider"></div>
+          <div class="meta-item"><span class="meta-num">7</span><span class="meta-label">이론 근거</span></div>
+        </div>
+        <div class="theory-chips">
+          <span class="theory-chip">Self-Consciousness Scale</span>
+          <span class="theory-chip">IRI 공감 척도</span>
+          <span class="theory-chip">DSQ-40 방어기제</span>
+          <span class="theory-chip">Beck 인지왜곡</span>
+          <span class="theory-chip">STAXI-2 분노</span>
+          <span class="theory-chip">5 Love Languages</span>
+          <span class="theory-chip">Thomas-Kilmann 갈등</span>
+        </div>
+        <button class="start-btn" onclick="startDiag()">진단 시작하기 <span class="arrow">→</span></button>
+        <p class="intro-note">솔직하게 답할수록 정확한 결과를 얻을 수 있습니다</p>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div class="phase" id="phase-q">
+      <div class="progress-section">
+        <div class="progress-info">
+          <span class="progress-step" id="prog-step">1 / 10</span>
+          <span class="progress-pct" id="prog-pct">10%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="prog-fill" style="width:10%"><div class="progress-dot"></div></div>
+        </div>
+      </div>
+      <div class="q-card" id="q-card">
+        <div class="q-top-row">
+          <span class="q-num-badge" id="q-num">1</span>
+          <span class="q-dim-tag" id="q-dim"></span>
+        </div>
+        <p class="q-text" id="q-text"></p>
+        <div class="q-theory-hint">
+          <span class="hint-icon">📎</span>
+          <span id="q-hint-text"></span>
+        </div>
+      </div>
+      <div class="opts" id="opts"></div>
+      <div class="nav-bar">
+        <button class="nav-prev" id="prev-btn" onclick="prevQ()" disabled>← 이전</button>
+        <button class="nav-next" id="next-btn" onclick="nextQ()" disabled>다음 →</button>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="phase" id="phase-loading">
+      <div class="loading-phase">
+        <div class="loading-ring"></div>
+        <p class="loading-text">답변을 분석하고 있습니다...</p>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="phase" id="phase-result">
+      <div class="result-hero">
+        <div class="result-badge">✦ 진단 완료</div>
+        <div class="result-score-wrap">
+          <span class="result-score" id="res-score">0</span>
+          <span class="result-score-den"> / 10</span>
+        </div>
+        <div class="result-level" id="res-level"></div>
+        <p class="result-desc" id="res-desc"></p>
+      </div>
+
+      <div class="meter-section">
+        <div class="meter-track"><div class="meter-fill" id="meter-fill"></div></div>
+        <div class="meter-labels"><span>건강한 자기인식</span><span>즉각적 변화 필요</span></div>
+      </div>
+
+      <div class="theory-section">
+        <div class="section-label">항목별 분석 및 이론 근거</div>
+        <div class="theory-list" id="theory-list"></div>
+      </div>
+
+      <div class="highlight-card"><p id="highlight-text"></p></div>
+
+      <div class="rx-section">
+        <div class="rx-header">
+          <div class="rx-icon">Rx</div>
+          <div class="rx-title">맞춤 처방전</div>
+        </div>
+        <div class="rx-list" id="rx-list"></div>
+      </div>
+
+      <!-- 공유 버튼 -->
+      <div class="share-section">
+        <div class="share-title">결과 공유하기</div>
+        <div class="share-buttons">
+          <button class="btn-share-image" onclick="shareImage()">🖼 이미지로 저장</button>
+          <button class="btn-share-url" onclick="shareURL()">🔗 링크 공유</button>
+        </div>
+        <button class="btn-restart" onclick="restart()">↺ 다시 진단하기</button>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <!-- 이미지 생성용 canvas (숨김) -->
+  <canvas id="result-canvas"></canvas>
+
+  <footer>
+    인간분석 사례연구 시리즈 · 자기객관화 진단 시스템<br>
+    본 진단은 검증된 심리학 이론을 참고하여 교육 목적으로 제작되었습니다.<br>임상적 진단을 대체하지 않습니다.
+  </footer>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════════
+   DATA
+══════════════════════════════════════ */
+const DIMS = {
+  "자기객관화": { theory: "자기인식 이론 (Self-Awareness Theory)", source: "Fenigstein, Scheier & Buss (1975), Self-Consciousness Scale", max: 2 },
+  "방어기제":   { theory: "방어기제 이론 (Defense Mechanisms)",   source: "Andrews, Singh & Bond (1993), DSQ-40",                    max: 2 },
+  "공감 능력":  { theory: "대인관계 반응성 지수 (IRI)",            source: "Davis (1980), Interpersonal Reactivity Index",            max: 2 },
+  "피해의식":   { theory: "인지왜곡 이론 (Cognitive Distortions)", source: "Beck (1979), Cognitive Therapy",                          max: 2 },
+  "분노 전이":  { theory: "상태-특성 분노 표현 척도 (STAXI-2)",    source: "Spielberger (1999), STAXI-2",                             max: 1 },
+  "소통 방식":  { theory: "갈등 양식 모델 (TKI)",                  source: "Thomas & Kilmann (1974), Conflict Mode Instrument",       max: 1 },
+  "사랑의 언어":{ theory: "사랑의 언어 이론",                      source: "Gary Chapman (1992), The Five Love Languages",            max: 1 }
+};
+
+const questions = [
+  { text: "다른 사람과 갈등이 생겼을 때, '내가 어떻게 행동했는지'를 먼저 떠올리나요, 아니면 '저 사람이 왜 저랬는지'를 먼저 생각하나요?", dim: "자기객관화", hint: "Fenigstein 외 (1975), Self-Consciousness Scale — 자기반성(self-reflection) 문항 참고", opts: ["내 행동과 말을 먼저 되돌아본다","상대방의 의도나 잘못을 먼저 생각한다","상황에 따라 다르다"], scores: [0,1,0] },
+  { text: "대화 중에 '내가 지금 어떻게 보일까'를 의식하는 편인가요?", dim: "자기객관화", hint: "Fenigstein 외 (1975), Self-Consciousness Scale — 공적 자기의식(public self-consciousness) 문항 참고", opts: ["자주 의식하고, 그 시선을 기준으로 행동을 조절한다","가끔 의식하지만 크게 신경 쓰지 않는다","거의 의식하지 않는다"], scores: [0,0,1] },
+  { text: "누군가 내 잘못을 지적했을 때 어떻게 반응하나요?", dim: "방어기제", hint: "Andrews 외 (1993), DSQ-40 — 회피형 방어기제(denial, displacement) 문항 참고", opts: ["불편하지만 내용을 곱씹어본다","'왜 저렇게 말하지?' 하는 감정이 먼저 올라온다","웃음으로 넘기거나 다른 주제로 돌린다"], scores: [0,1,1] },
+  { text: "여러 사람과 비슷한 이유로 반복해서 갈등을 겪은 적이 있나요?", dim: "방어기제", hint: "Andrews 외 (1993), DSQ-40 — 투사(projection) 및 패턴 반복성 측정", opts: ["없다","한두 번은 있다","여러 번, 패턴처럼 반복되는 것 같다"], scores: [0,0,1] },
+  { text: "상대방이 왜 서운해하는지 이해가 잘 되나요?", dim: "공감 능력", hint: "Davis (1980), IRI — 관점 취하기(perspective taking) 하위 척도 참고", opts: ["대체로 이해가 된다","이해는 하지만, 나도 더 서운할 때가 많다","솔직히 잘 모르겠고 오히려 내가 더 억울하다"], scores: [0,1,1] },
+  { text: "가까운 사람이 힘들다고 할 때, 어떤 반응이 가장 자연스럽게 나오나요?", dim: "공감 능력", hint: "Davis (1980), IRI — 공감적 관심(empathic concern) 하위 척도 참고", opts: ["그 감정에 공감하고 어떻게 도울지를 먼저 생각한다","공감은 하지만, '나도 힘들다'는 말이 함께 나온다","해결책을 먼저 제시하거나, '그게 왜 힘드냐'고 되묻는다"], scores: [0,0,1] },
+  { text: "'내가 이만큼 해줬는데 왜 몰라주지'라는 생각이 드는 빈도는?", dim: "피해의식", hint: "Beck (1979), Cognitive Therapy — 선택적 추상화(selective abstraction) 및 피해자 도식 측정", opts: ["거의 없다","가끔 든다","자주, 그리고 그 감정이 오래 간다"], scores: [0,0,1] },
+  { text: "사과를 하고 나서도 남는 감정이 있다면?", dim: "피해의식", hint: "Beck (1979), Cognitive Therapy — 외부 귀인 편향(external attribution bias) 측정", opts: ["개운하게 마무리된 느낌이다","'그래도 원래 저쪽이 잘못한 거잖아'라는 생각이 든다","사과 자체를 거의 하지 않는 편이다"], scores: [0,1,1] },
+  { text: "지금 나를 화나게 하는 사람이나 상황이 진짜 원인인지 되돌아본 적 있나요?", dim: "분노 전이", hint: "Spielberger (1999), STAXI-2 — 분노 표현 내재화/외재화 + Freud 전위(Displacement) 참고", opts: ["자주 돌아보는 편이다","가끔 생각해보지만, 대부분 맞다고 느낀다","별로 생각해본 적 없다"], scores: [0,0,1] },
+  { text: "소통이 막히거나 갈등이 생겼을 때 주로 어떻게 하나요?", dim: "소통 방식", hint: "Thomas & Kilmann (1974), TKI — 갈등 양식 중 회피(avoiding) 및 경쟁(competing) 패턴 측정", opts: ["대화로 풀려고 시도한다","시간이 지나길 기다린다","관계를 끊거나 거리를 두는 편이다"], scores: [0,0,1] }
+];
+
+const levels = [
+  { min:0, max:2,  label:"건강한 자기인식",    color:"#2E6B3E", meterColor:"#4CAF70", desc:"자기객관화 능력이 잘 발달되어 있습니다. 관계에서 자신의 역할을 균형 있게 바라볼 수 있는 상태입니다. 이 수준을 꾸준히 유지하는 것이 중요합니다." },
+  { min:3, max:5,  label:"경계선 — 점검 필요", color:"#8B5E15", meterColor:"#D4A020", desc:"특정 관계나 상황에서 자기객관화의 어려움이 나타납니다. 어떤 패턴에서 방어기제가 작동하는지 점검이 필요한 시점입니다." },
+  { min:6, max:8,  label:"자기객관화 어려움",   color:"#8B2020", meterColor:"#D45050", desc:"자기객관화에 지속적인 어려움이 있습니다. 신뢰할 수 있는 사람의 피드백을 의식적으로 수용하는 연습이 필요합니다." },
+  { min:9, max:10, label:"즉각적 변화 필요",    color:"#5A1010", meterColor:"#D45050", desc:"관계 단절이 반복될 위험이 있습니다. 지금 당장 변화를 위한 행동이 필요합니다. 아래 처방을 주의 깊게 읽어보세요." }
+];
+
+const highlights = [
+  "지금 이 수준을 유지하면서, 주변 사람들의 작은 피드백에도 귀 기울이는 습관을 이어가세요.",
+  "갈등이 반복되는 특정 관계가 있다면, 그 패턴에서 나의 역할을 한 번 더 돌아보세요.",
+  "자기객관화가 안 되는 사람은, 도움을 주려는 사람도 '내 편이 아니다'라며 밀어냅니다. 이 역설을 인식하는 것 자체가 변화의 시작입니다.",
+  "변화는 외부의 조언보다 스스로 바닥을 인식할 때 일어납니다. 지금 이 진단이 그 시작점이 되기를 바랍니다."
+];
+
+const prescriptions = [
+  { head:"작은 소통의 습관화",         body:"오늘 기분이 어땠는지, 무엇이 불만이었는지 — 작은 것부터 매일 말하고 듣는 연습을 하세요. 큰 갈등의 폭발은 모두 작은 소통의 막힘이 쌓인 결과입니다." },
+  { head:"불편한 피드백을 3초 버티기", body:"쓴소리를 들을 때 즉각 반박하거나 화제를 돌리기 전에 3초를 멈추세요. '저 말이 맞을 수 있다'는 가능성을 1%라도 열어두는 것이 자기객관화의 시작입니다." },
+  { head:"분노의 출처를 거슬러 올라가기", body:"지금 화가 나는 대상이 진짜 분노의 원인인지 점검하세요. 분노는 자주 엉뚱한 곳에 내려앉습니다. 진짜 상처와 지금의 반응을 분리하는 작업이 필요합니다." },
+  { head:"상대의 언어로 사랑 표현하기", body:"내가 주고 싶은 방식이 아니라 상대가 받고 싶은 방식으로 표현해야 합니다. '나는 다 해줬는데'는 착각일 수 있습니다." },
+  { head:"자기 인정이 먼저",           body:"'나도 힘들었고, 잘못도 있었다'를 동시에 인정하는 것이 자기객관화입니다. 방어막을 내려놓는 것은 약함이 아니라 용기입니다." }
+];
+
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+let cur = 0;
+let answers = new Array(10).fill(-1);
+let currentResult = null; // { total, dimMap, lv, lvIdx }
+
+/* ══════════════════════════════════════
+   URL 파라미터 처리 — 페이지 로드 시
+══════════════════════════════════════ */
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const r = params.get('r');
+  if (r && /^[0-2]{10}$/.test(r)) {
+    // URL에서 답변 복원
+    answers = r.split('').map(Number);
+    showPhase('phase-loading');
+    setTimeout(showResult, 800);
+  }
+});
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+function showPhase(id) {
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function startDiag() {
+  cur = 0; answers = new Array(10).fill(-1);
+  // URL 파라미터 제거
+  history.replaceState(null, '', window.location.pathname);
+  document.getElementById('hdr-progress').textContent = '1 / 10';
+  showPhase('phase-q');
+  renderQ();
+}
+
+function renderQ() {
+  const q = questions[cur];
+  const pct = Math.round(((cur+1)/10)*100);
+  document.getElementById('prog-step').textContent = (cur+1)+' / 10';
+  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('hdr-progress').textContent = (cur+1)+' / 10';
+  document.getElementById('q-num').textContent = cur+1;
+  document.getElementById('q-dim').textContent = q.dim;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('q-hint-text').textContent = q.hint;
+
+  const card = document.getElementById('q-card');
+  card.style.animation = 'none'; card.offsetHeight;
+  card.style.animation = 'slideUp 0.3s ease';
+
+  const optsEl = document.getElementById('opts');
+  optsEl.innerHTML = '';
+  q.opts.forEach((o, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt' + (answers[cur] === i ? ' selected' : '');
+    btn.innerHTML = `<div class="opt-check"></div><span class="opt-text">${o}</span>`;
+    btn.onclick = () => selectOpt(i);
+    optsEl.appendChild(btn);
+  });
+
+  document.getElementById('prev-btn').disabled = cur === 0;
+  document.getElementById('next-btn').disabled = answers[cur] === -1;
+  document.getElementById('next-btn').textContent = cur === 9 ? '결과 보기 →' : '다음 →';
+}
+
+function selectOpt(i) {
+  answers[cur] = i;
+  document.querySelectorAll('.opt').forEach((b, idx) => {
+    b.className = 'opt' + (idx === i ? ' selected' : '');
+  });
+  document.getElementById('next-btn').disabled = false;
+}
+
+function nextQ() {
+  if (answers[cur] === -1) return;
+  if (cur === 9) { showPhase('phase-loading'); setTimeout(showResult, 1400); return; }
+  cur++; renderQ();
+}
+
+function prevQ() { if (cur > 0) { cur--; renderQ(); } }
+
+/* ══════════════════════════════════════
+   RESULT
+══════════════════════════════════════ */
+function showResult() {
+  let total = 0;
+  const dimMap = {};
+  questions.forEach((q, i) => {
+    if (answers[i] !== -1) {
+      const s = q.scores[answers[i]];
+      total += s;
+      dimMap[q.dim] = (dimMap[q.dim] || 0) + s;
+    }
+  });
+
+  const lv = levels.find(l => total >= l.min && total <= l.max) || levels[3];
+  const lvIdx = levels.indexOf(lv);
+  currentResult = { total, dimMap, lv, lvIdx };
+
+  // 점수
+  document.getElementById('res-score').textContent = total;
+  document.getElementById('res-score').style.color = lv.color;
+  document.getElementById('res-level').textContent = lv.label;
+  document.getElementById('res-level').style.color = lv.color;
+  document.getElementById('res-desc').textContent = lv.desc;
+
+  // 미터
+  setTimeout(() => {
+    const fill = document.getElementById('meter-fill');
+    fill.style.width = (total/10*100)+'%';
+    fill.style.background = lv.meterColor;
+  }, 200);
+
+  // 항목별 이론 출처
+  const theoryList = document.getElementById('theory-list');
+  theoryList.innerHTML = '';
+  Object.keys(DIMS).forEach((dimKey, idx) => {
+    const d = DIMS[dimKey];
+    const sc = dimMap[dimKey] || 0;
+    const ratio = d.max > 0 ? sc/d.max : 0;
+    let statusText, statusClass;
+    if (ratio >= 0.8)      { statusText='주의'; statusClass='status-bad'; }
+    else if (ratio >= 0.4) { statusText='경계'; statusClass='status-warn'; }
+    else                   { statusText='양호'; statusClass='status-good'; }
+
+    const item = document.createElement('div');
+    item.className = 'theory-item';
+    item.style.animationDelay = (idx*0.07)+'s';
+    item.innerHTML = `
+      <div class="theory-item-left">
+        <div class="theory-item-dim">${dimKey}</div>
+        <div class="theory-item-name">${d.theory}</div>
+        <div class="theory-item-source">${d.source}</div>
+      </div>
+      <div class="theory-item-status">
+        <span class="status-pill ${statusClass}">${statusText}</span>
+      </div>`;
+    theoryList.appendChild(item);
+  });
+
+  // 하이라이트
+  document.getElementById('highlight-text').textContent = highlights[lvIdx];
+
+  // 처방전
+  const rxIndices = total<=2 ? [0,1] : total<=5 ? [0,1,2] : total<=8 ? [1,2,3,4] : [0,1,2,3,4];
+  const rxList = document.getElementById('rx-list');
+  rxList.innerHTML = '';
+  rxIndices.forEach((ri, i) => {
+    const rx = prescriptions[ri];
+    const div = document.createElement('div');
+    div.className = 'rx-item';
+    div.style.animationDelay = (i*0.1)+'s';
+    div.innerHTML = `<div class="rx-num">0${i+1}</div><div><div class="rx-head">${rx.head}</div><div class="rx-body">${rx.body}</div></div>`;
+    rxList.appendChild(div);
+  });
+
+  document.getElementById('hdr-progress').textContent = '';
+  showPhase('phase-result');
+}
+
+/* ══════════════════════════════════════
+   SHARE — URL
+══════════════════════════════════════ */
+function shareURL() {
+  const answerStr = answers.map(a => a === -1 ? 0 : a).join('');
+  const url = window.location.origin + window.location.pathname + '?r=' + answerStr;
+
+  if (navigator.share) {
+    navigator.share({
+      title: '자기객관화 진단 결과',
+      text: `내 자기객관화 점수: ${currentResult.total}/10 — ${currentResult.lv.label}`,
+      url: url
+    }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      showToast('링크가 복사되었습니다 🔗');
+    }).catch(() => {
+      prompt('아래 링크를 복사하세요:', url);
+    });
+  }
+}
+
+/* ══════════════════════════════════════
+   SHARE — IMAGE (Canvas)
+══════════════════════════════════════ */
+function shareImage() {
+  if (!currentResult) return;
+  const { total, dimMap, lv } = currentResult;
+
+  const DPR = window.devicePixelRatio || 1;
+  const W = 800, H = 960;
+  const canvas = document.getElementById('result-canvas');
+  canvas.width  = W * DPR;
+  canvas.height = H * DPR;
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(DPR, DPR);
+
+  // 배경
+  ctx.fillStyle = '#F5F3EE';
+  ctx.fillRect(0, 0, W, H);
+
+  // 상단 장식선
+  ctx.fillStyle = '#1A1815';
+  ctx.fillRect(0, 0, W, 4);
+
+  // 타이틀
+  ctx.fillStyle = '#A09A93';
+  ctx.font = '500 13px "Noto Sans KR", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('자기객관화 진단 시스템', W/2, 52);
+
+  // 점수
+  ctx.fillStyle = lv.color;
+  ctx.font = '600 110px "Noto Serif KR", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(total, W/2 - 30, 200);
+
+  ctx.fillStyle = '#A09A93';
+  ctx.font = '400 36px "Noto Serif KR", serif';
+  ctx.fillText('/ 10', W/2 + 64, 188);
+
+  // 레벨
+  ctx.fillStyle = lv.color;
+  ctx.font = '600 28px "Noto Serif KR", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(lv.label, W/2, 248);
+
+  // 구분선
+  ctx.strokeStyle = 'rgba(26,24,21,0.12)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, 278); ctx.lineTo(W-60, 278); ctx.stroke();
+
+  // 설명
+  ctx.fillStyle = '#6B6560';
+  ctx.font = '400 15px "Noto Sans KR", sans-serif';
+  ctx.textAlign = 'center';
+  const descLines = wrapText(ctx, lv.desc, W - 120, 15);
+  descLines.forEach((line, i) => ctx.fillText(line, W/2, 312 + i*26));
+
+  // 항목별 결과 바
+  const dimKeys = Object.keys(DIMS);
+  const barY = 420;
+  const barH = 28;
+  const barGap = 42;
+  const barX = 60;
+  const barMaxW = W - 200;
+
+  ctx.fillStyle = '#A09A93';
+  ctx.font = '700 11px "Noto Sans KR", sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('항목별 분석', barX, barY - 14);
+
+  dimKeys.forEach((key, i) => {
+    const d = DIMS[key];
+    const sc = dimMap[key] || 0;
+    const ratio = d.max > 0 ? sc/d.max : 0;
+    const y = barY + i * barGap;
+    const barColor = ratio>=0.8 ? '#D45050' : ratio>=0.4 ? '#D4A020' : '#4CAF70';
+    const statusText = ratio>=0.8 ? '주의' : ratio>=0.4 ? '경계' : '양호';
+
+    // 라벨
+    ctx.fillStyle = '#1A1815';
+    ctx.font = '500 13px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(key, barX, y + 18);
+
+    // 트랙
+    ctx.fillStyle = 'rgba(26,24,21,0.08)';
+    roundRect(ctx, barX + 90, y + 6, barMaxW, 10, 5);
+    ctx.fill();
+
+    // 채움
+    ctx.fillStyle = barColor;
+    roundRect(ctx, barX + 90, y + 6, Math.max(barMaxW * ratio, 10), 10, 5);
+    ctx.fill();
+
+    // 상태
+    ctx.fillStyle = barColor;
+    ctx.font = '700 12px "Noto Sans KR", sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(statusText, W - 60, y + 18);
+  });
+
+  // 하단 구분선 + 출처
+  const footY = barY + dimKeys.length * barGap + 28;
+  ctx.strokeStyle = 'rgba(26,24,21,0.10)';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(60, footY); ctx.lineTo(W-60, footY); ctx.stroke();
+
+  ctx.fillStyle = '#A09A93';
+  ctx.font = '400 12px "Noto Sans KR", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('인간분석 사례연구 시리즈 · 자기객관화 진단 시스템', W/2, footY + 26);
+  ctx.fillText('검증된 심리학 이론 기반 · 교육 목적으로 제작', W/2, footY + 46);
+
+  // 저장 또는 공유
+  canvas.toBlob(blob => {
+    if (!blob) { showToast('이미지 생성에 실패했습니다'); return; }
+    const file = new File([blob], '자기객관화진단결과.png', { type: 'image/png' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+      navigator.share({ files: [file], title: '자기객관화 진단 결과' }).catch(() => downloadImage(canvas));
+    } else {
+      downloadImage(canvas);
+    }
+  }, 'image/png');
+}
+
+function downloadImage(canvas) {
+  const a = document.createElement('a');
+  a.download = '자기객관화진단결과.png';
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+  showToast('이미지가 저장되었습니다 🖼');
+}
+
+/* ══════════════════════════════════════
+   HELPERS
+══════════════════════════════════════ */
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function wrapText(ctx, text, maxWidth, fontSize) {
+  const words = text.split(' ');
+  const lines = [];
+  let line = '';
+  words.forEach(word => {
+    const test = line + (line ? ' ' : '') + word;
+    if (ctx.measureText(test).width > maxWidth && line) {
+      lines.push(line); line = word;
+    } else { line = test; }
+  });
+  if (line) lines.push(line);
+  return lines;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function restart() {
+  history.replaceState(null, '', window.location.pathname);
+  document.getElementById('hdr-progress').textContent = '';
+  showPhase('phase-intro');
+}
+</script>
+</body>
+</html>
