@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>음양오행 — 신해전략연구소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;700&family=Noto+Sans+KR:wght@300;400;500&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:    #1a1714;
+  --ink2:   #3d3830;
+  --ink3:   #7a7060;
+  --ink4:   #b0a898;
+  --paper:  #faf8f4;
+  --paper2: #f2ede4;
+  --paper3: #e8e0d0;
+  --gold:   #b89a5a;
+  --gold2:  #d4b870;
+
+  --mok-bg: #eaf3de; --mok-c: #3b6d11; --mok-d: #27500a; --mok-hex: #639922;
+  --hwa-bg: #faece7; --hwa-c: #993c1d; --hwa-d: #712b13; --hwa-hex: #d85a30;
+  --to-bg:  #faeeda; --to-c:  #854f0b; --to-d:  #633806; --to-hex:  #ba7517;
+  --geum-bg:#f1efe8; --geum-c:#5f5e5a; --geum-d:#444441; --geum-hex:#888780;
+  --su-bg:  #e6f1fb; --su-c:  #185fa5; --su-d:  #0c447c; --su-hex:  #378add;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── 배경 패턴 ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(184,154,90,.06) 0%, transparent 50%),
+    radial-gradient(circle at 85% 75%, rgba(99,153,34,.04) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(216,90,48,.03) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 헤더 ── */
+header {
+  position: relative;
+  text-align: center;
+  padding: 60px 24px 48px;
+  border-bottom: 1px solid var(--paper3);
+  z-index: 1;
+}
+.header-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: .3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+header h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 300;
+  letter-spacing: .15em;
+  color: var(--ink);
+  line-height: 1.2;
+}
+header h1 strong { font-weight: 700; color: var(--gold); }
+.header-hanja {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(48px, 8vw, 80px);
+  font-weight: 300;
+  color: var(--paper3);
+  letter-spacing: .2em;
+  line-height: 1;
+  margin: 16px 0 12px;
+  user-select: none;
+}
+.header-desc {
+  font-size: 14px;
+  color: var(--ink3);
+  line-height: 1.8;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ── 내비 탭 ── */
+.nav-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--paper3);
+  overflow-x: auto;
+  background: var(--paper);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  scrollbar-width: none;
+}
+.nav-tabs::-webkit-scrollbar { display: none; }
+.nav-tab {
+  flex: 1;
+  min-width: 80px;
+  padding: 14px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink3);
+  cursor: pointer;
+  border: none;
+  background: none;
+  border-bottom: 2px solid transparent;
+  transition: all .2s;
+  white-space: nowrap;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.nav-tab:hover { color: var(--ink); background: var(--paper2); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* ── 섹션 ── */
+.section { display: none; padding: 40px 24px 60px; max-width: 780px; margin: 0 auto; position: relative; z-index: 1; }
+.section.active { display: block; animation: fadeIn .3s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.sec-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: .25em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.sec-heading {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(20px, 3.5vw, 26px);
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.sec-sub {
+  font-size: 13px;
+  color: var(--ink3);
+  line-height: 1.8;
+  margin-bottom: 32px;
+  border-left: 2px solid var(--gold);
+  padding-left: 14px;
+}
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--paper3), transparent);
+  margin: 28px 0;
+}
+
+/* ── 카드 ── */
+.card {
+  background: var(--paper);
+  border: 1px solid var(--paper3);
+  border-radius: 12px;
+  padding: 20px 22px;
+}
+.card-sm {
+  background: var(--paper2);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+/* ── 음양 섹션 ── */
+.yin-yang-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.yy-card {
+  border-radius: 12px;
+  padding: 24px 20px;
+  border: 1px solid var(--paper3);
+}
+.yy-card.yang { background: linear-gradient(135deg, #fffdf7, #fdf5e0); }
+.yy-card.yin  { background: linear-gradient(135deg, #f0f4fa, #e8eef8); }
+.yy-big {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 42px;
+  font-weight: 300;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+.yy-card.yang .yy-big { color: #b8820a; }
+.yy-card.yin  .yy-big { color: #2a5ba0; }
+.yy-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.yy-list {
+  font-size: 12px;
+  color: var(--ink3);
+  line-height: 2;
+}
+.principle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.principle-item {
+  background: var(--paper2);
+  border-radius: 8px;
+  padding: 14px 16px;
+  border-left: 3px solid var(--gold);
+}
+.principle-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  margin-bottom: 5px;
+}
+.principle-desc { font-size: 11px; color: var(--ink3); line-height: 1.7; }
+
+/* ── 오행 탭 ── */
+.oh-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.oh-tab {
+  border: 1px solid var(--paper3);
+  border-radius: 10px;
+  padding: 14px 8px;
+  cursor: pointer;
+  text-align: center;
+  transition: all .2s;
+  background: var(--paper);
+}
+.oh-tab:hover { transform: translateY(-2px); }
+.oh-tab.active { border-width: 1.5px; transform: translateY(-2px); }
+.oh-hanja { font-family: 'Noto Serif KR', serif; font-size: 22px; font-weight: 400; line-height: 1.2; }
+.oh-key   { font-size: 11px; margin-top: 4px; }
+
+.oh-detail {
+  border-radius: 12px;
+  padding: 24px;
+  border: 1px solid var(--paper3);
+  transition: all .25s;
+  margin-bottom: 20px;
+  min-height: 200px;
+}
+.oh-d-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.oh-d-circle {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 24px; font-weight: 400;
+  flex-shrink: 0;
+  border: 1.5px solid;
+}
+.oh-d-nature { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 500; color: var(--ink); }
+.oh-d-sub    { font-size: 12px; color: var(--ink3); margin-top: 3px; }
+.oh-d-char   { font-size: 13px; color: var(--ink2); line-height: 1.8; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--paper3); }
+.oh-attrs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+@media (max-width: 500px) { .oh-attrs { grid-template-columns: repeat(2, 1fr); } }
+.oh-attr {
+  background: var(--paper2);
+  border-radius: 6px;
+  padding: 10px 10px;
+}
+.oh-attr-label { font-size: 10px; color: var(--ink4); margin-bottom: 3px; letter-spacing: .05em; }
+.oh-attr-val   { font-size: 12px; color: var(--ink); font-weight: 500; }
+
+/* ── 배속표 ── */
+.attr-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+.attr-table th {
+  padding: 10px 8px;
+  font-weight: 500;
+  color: var(--ink3);
+  border-bottom: 1px solid var(--paper3);
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: .05em;
+}
+.attr-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--paper2);
+  color: var(--ink2);
+  vertical-align: middle;
+}
+.attr-table tr:last-child td { border-bottom: none; }
+.oh-dot {
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 12px;
+  font-weight: 400;
+  border: 1px solid;
+}
+
+/* ── 상생상극 ── */
+.rel-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.rel-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: 1px solid var(--paper3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink3);
+  transition: all .2s;
+}
+.rel-btn.active-ss { background: #eaf3de; border-color: #3b6d11; color: #27500a; }
+.rel-btn.active-sk { background: #faece7; border-color: #993c1d; color: #712b13; }
+
+.rel-cycle {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  color: var(--ink3);
+  text-align: center;
+  padding: 10px;
+  background: var(--paper2);
+  border-radius: 8px;
+  margin-bottom: 16px;
+  letter-spacing: .05em;
+}
+.rel-list { display: flex; flex-direction: column; gap: 10px; }
+.rel-item {
+  border-radius: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--paper3);
+  background: var(--paper);
+}
+.rel-arrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.rel-from, .rel-to {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+}
+.rel-mid {
+  font-size: 16px;
+  color: var(--ink4);
+}
+.rel-desc { font-size: 12px; color: var(--ink2); line-height: 1.6; }
+.rel-ex   { font-size: 11px; color: var(--ink3); margin-top: 4px; font-style: italic; }
+
+/* ── 기질 ── */
+.qi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (max-width: 480px) { .qi-grid { grid-template-columns: repeat(2, 1fr); } }
+.qi-box {
+  border-radius: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--paper3);
+}
+.qi-box-label { font-size: 10px; color: var(--ink4); margin-bottom: 5px; letter-spacing: .05em; }
+.qi-box-text  { font-size: 12px; color: var(--ink2); line-height: 1.65; }
+.food-row { margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--paper3); font-size: 12px; color: var(--ink3); }
+
+/* ── 사주 연결 ── */
+.saju-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.saju-card {
+  border-radius: 10px;
+  padding: 18px 16px;
+  border: 1px solid var(--paper3);
+  background: var(--paper);
+  cursor: pointer;
+  transition: all .2s;
+}
+.saju-card:hover { background: var(--paper2); transform: translateY(-2px); }
+.saju-card-title { font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+.saju-card-body  { font-size: 11px; color: var(--ink3); line-height: 2; }
+.saju-card-hint  { font-size: 10px; color: var(--gold); margin-top: 10px; }
+
+/* ── 퀴즈 ── */
+.quiz-card { border-radius: 12px; padding: 24px; border: 1px solid var(--paper3); background: var(--paper); }
+.quiz-prog { display: flex; gap: 6px; margin-bottom: 18px; }
+.quiz-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--paper3); transition: background .3s; }
+.quiz-dot.done { background: var(--gold); }
+.quiz-q { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 18px; line-height: 1.6; }
+.quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+.quiz-opt {
+  padding: 12px 16px;
+  border: 1px solid var(--paper3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  text-align: left;
+  transition: all .15s;
+}
+.quiz-opt:hover:not(:disabled) { background: var(--paper2); }
+.quiz-opt.correct { background: #eaf3de; border-color: #3b6d11; color: #27500a; }
+.quiz-opt.wrong   { background: #faece7; border-color: #993c1d; color: #712b13; }
+.quiz-fb { margin-top: 12px; font-size: 13px; min-height: 20px; }
+.quiz-score { text-align: right; font-size: 12px; color: var(--ink3); margin-bottom: 8px; }
+
+/* ── 푸터 ── */
+footer {
+  text-align: center;
+  padding: 32px 24px;
+  border-top: 1px solid var(--paper3);
+  font-size: 11px;
+  color: var(--ink4);
+  letter-spacing: .1em;
+  position: relative;
+  z-index: 1;
+}
+footer strong { color: var(--gold); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-sub">Shin Hae Strategy Lab · 신해전략연구소</div>
+  <div class="header-hanja">陰陽五行</div>
+  <h1>음양오행이란 <strong>무엇인가</strong></h1>
+  <p class="header-desc" style="margin-top:14px">
+    우주 만물의 생성과 변화를 음양의 대립·조화와<br>
+    다섯 가지 기운의 상호작용으로 설명하는 동양 철학의 근본 원리
+  </p>
+</header>
+
+<nav class="nav-tabs">
+  <button class="nav-tab active" onclick="showSection('s1',this)">① 음양</button>
+  <button class="nav-tab" onclick="showSection('s2',this)">② 오행 탐구</button>
+  <button class="nav-tab" onclick="showSection('s3',this)">③ 상생·상극</button>
+  <button class="nav-tab" onclick="showSection('s4',this)">④ 배속표</button>
+  <button class="nav-tab" onclick="showSection('s5',this)">⑤ 기질 진단</button>
+  <button class="nav-tab" onclick="showSection('s6',this)">⑥ 사주 연결</button>
+  <button class="nav-tab" onclick="showSection('s7',this)">⑦ 복습 퀴즈</button>
+</nav>
+
+<!-- ─────────────── 1. 음양 ─────────────── -->
+<section class="section active" id="s1">
+  <div class="sec-title">Part 01</div>
+  <div class="sec-heading">음양(陰陽) — 우주의 두 얼굴</div>
+  <div class="sec-sub">
+    달과 해처럼 대립하면서도 서로 의존하는 두 가지 기운.<br>
+    음과 양은 배척이 아니라 <em>조화</em>로 만물을 생성한다.
+  </div>
+
+  <div class="yin-yang-grid">
+    <div class="yy-card yang">
+      <div class="yy-big">陽</div>
+      <div class="yy-name">양 — 팽창·발산·능동</div>
+      <div class="yy-list">
+        밝음 · 하늘 · 낮 · 남성<br>
+        따뜻함 · 활동적 · 진보적<br>
+        여름 · 불 · 외향적 에너지
+      </div>
+    </div>
+    <div class="yy-card yin">
+      <div class="yy-big">陰</div>
+      <div class="yy-name">음 — 응축·수렴·수동</div>
+      <div class="yy-list">
+        어둠 · 땅 · 밤 · 여성<br>
+        차가움 · 정적 · 보수적<br>
+        겨울 · 물 · 내향적 에너지
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-family:'Noto Serif KR',serif;font-size:13px;color:var(--ink3);margin-bottom:16px;letter-spacing:.05em">음양의 4대 원리</div>
+  <div class="principle-grid">
+    <div class="principle-item">
+      <div class="principle-name">대립(對立)</div>
+      <div class="principle-desc">음과 양은 서로 반대이지만 어느 쪽도 단독으로 존재할 수 없다. 어둠이 없으면 빛도 없다.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">상호의존(相互依存)</div>
+      <div class="principle-desc">음은 양이 있어야 음이고, 양은 음이 있어야 양이다. 밤 없이 낮도 존재하지 않는다.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">소장(消長)</div>
+      <div class="principle-desc">음이 커지면 양이 줄고, 양이 극에 달하면 음으로 전환된다. 인생의 굴곡도 이 원리다.</div>
+    </div>
+    <div class="principle-item">
+      <div class="principle-name">전화(轉化)</div>
+      <div class="principle-desc">극음은 양이 되고, 극양은 음이 된다. 가장 추울 때가 봄의 시작인 이유다.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div class="card-sm" style="font-size:13px;color:var(--ink2);line-height:1.9;font-family:'Noto Serif KR',serif;font-style:italic;text-align:center;padding:20px;">
+    "음양은 단순히 반대가 아니다.<br>
+    상대가 있어야 내가 드러난다 — 이것이 관계의 원리다."
+  </div>
+</section>
+
+<!-- ─────────────── 2. 오행 탐구 ─────────────── -->
+<section class="section" id="s2">
+  <div class="sec-title">Part 02</div>
+  <div class="sec-heading">오행(五行) — 다섯 가지 기운</div>
+  <div class="sec-sub">
+    나무·불·흙·쇠·물의 다섯 가지 움직임.<br>
+    클릭해서 각 오행의 성질과 의미를 탐구하세요.
+  </div>
+
+  <div class="oh-tabs" id="oh-tabs"></div>
+  <div class="oh-detail" id="oh-detail"></div>
+</section>
+
+<!-- ─────────────── 3. 상생·상극 ─────────────── -->
+<section class="section" id="s3">
+  <div class="sec-title">Part 03</div>
+  <div class="sec-heading">상생(相生) · 상극(相剋)</div>
+  <div class="sec-sub">
+    오행은 서로 돕기도 하고 견제하기도 한다.<br>
+    이 두 관계가 우주와 인간사의 균형을 만든다.
+  </div>
+
+  <div class="rel-toggle">
+    <button class="rel-btn active-ss" id="btn-ss" onclick="showRel('ss')">상생(相生) — 서로 낳고 돕는다</button>
+    <button class="rel-btn" id="btn-sk" onclick="showRel('sk')">상극(相剋) — 서로 억제하고 견제한다</button>
+  </div>
+  <div class="rel-cycle" id="rel-cycle">木 → 火 → 土 → 金 → 水 → 木</div>
+  <div class="rel-list" id="rel-list"></div>
+</section>
+
+<!-- ─────────────── 4. 배속표 ─────────────── -->
+<section class="section" id="s4">
+  <div class="sec-title">Part 04</div>
+  <div class="sec-heading">오행 배속표(配屬表)</div>
+  <div class="sec-sub">
+    오행은 색·계절·방위·장기·감정·음식 등 자연과 인체의<br>
+    모든 요소에 대응한다. 사주 공부의 핵심 암기 자료.
+  </div>
+  <div style="overflow-x:auto">
+    <table class="attr-table" id="attr-table"></table>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-family:'Noto Serif KR',serif;font-size:13px;color:var(--ink3);margin-bottom:14px;letter-spacing:.05em">오방색(五方色) — 한국 전통 문화의 뿌리</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+    <div style="text-align:center;padding:14px 6px;border-radius:8px;background:#eaf3de;border:1px solid #97c459">
+      <div style="font-size:18px;font-weight:500;color:#27500a;font-family:'Noto Serif KR',serif">靑</div>
+      <div style="font-size:11px;color:#3b6d11;margin-top:4px">청색·동</div>
+    </div>
+    <div style="text-align:center;padding:14px 6px;border-radius:8px;background:#faece7;border:1px solid #f0997b">
+      <div style="font-size:18px;font-weight:500;color:#712b13;font-family:'Noto Serif KR',serif">赤</div>
+      <div style="font-size:11px;color:#993c1d;margin-top:4px">적색·남</div>
+    </div>
+    <div style="text-align:center;padding:14px 6px;border-radius:8px;background:#faeeda;border:1px solid #ef9f27">
+      <div style="font-size:18px;font-weight:500;color:#633806;font-family:'Noto Serif KR',serif">黃</div>
+      <div style="font-size:11px;color:#854f0b;margin-top:4px">황색·중앙</div>
+    </div>
+    <div style="text-align:center;padding:14px 6px;border-radius:8px;background:#f1efe8;border:1px solid #b4b2a9">
+      <div style="font-size:18px;font-weight:500;color:#444441;font-family:'Noto Serif KR',serif">白</div>
+      <div style="font-size:11px;color:#5f5e5a;margin-top:4px">백색·서</div>
+    </div>
+    <div style="text-align:center;padding:14px 6px;border-radius:8px;background:#e6f1fb;border:1px solid #85b7eb">
+      <div style="font-size:18px;font-weight:500;color:#042c53;font-family:'Noto Serif KR',serif">黑</div>
+      <div style="font-size:11px;color:#185fa5;margin-top:4px">흑색·북</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── 5. 기질 진단 ─────────────── -->
+<section class="section" id="s5">
+  <div class="sec-title">Part 05</div>
+  <div class="sec-heading">오행 기질(氣質) 특성</div>
+  <div class="sec-sub">
+    오행의 과다·부족이 성격과 건강에 미치는 영향.<br>
+    사주에서 어떤 오행이 강하고 약한지 파악하는 기준이 된다.
+  </div>
+
+  <div class="oh-tabs" id="qi-tabs"></div>
+  <div class="oh-detail" id="qi-detail" style="min-height:220px"></div>
+</section>
+
+<!-- ─────────────── 6. 사주 연결 ─────────────── -->
+<section class="section" id="s6">
+  <div class="sec-title">Part 06</div>
+  <div class="sec-heading">사주명리(四柱命理)와의 연결</div>
+  <div class="sec-sub">
+    사주 공부의 핵심은 천간·지지를 오행으로 읽는 것.<br>
+    음양오행을 이해하면 사주팔자의 구조가 보이기 시작한다.
+  </div>
+
+  <div class="saju-grid">
+    <div class="saju-card">
+      <div class="saju-card-title">천간 (天干) 10개</div>
+      <div class="saju-card-body">
+        甲乙 — 木 (목)<br>
+        丙丁 — 火 (화)<br>
+        戊己 — 土 (토)<br>
+        庚辛 — 金 (금)<br>
+        壬癸 — 水 (수)
+      </div>
+      <div class="saju-card-hint">홀수(甲丙戊庚壬) = 양 / 짝수(乙丁己辛癸) = 음</div>
+    </div>
+    <div class="saju-card">
+      <div class="saju-card-title">지지 (地支) 12개</div>
+      <div class="saju-card-body">
+        寅卯 — 木 / 巳午 — 火<br>
+        辰戌丑未 — 土<br>
+        申酉 — 金 / 亥子 — 水
+      </div>
+      <div class="saju-card-hint">토(土)가 4개 — 환절기마다 배치</div>
+    </div>
+    <div class="saju-card">
+      <div class="saju-card-title">용신 · 기신</div>
+      <div class="saju-card-body">
+        부족한 오행 → 용신(用神)<br>
+        과다한 오행 → 기신(忌神)<br>
+        균형이 핵심
+      </div>
+      <div class="saju-card-hint">오행 강약 균형 = 사주 분석의 출발점</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+  <div style="font-family:'Noto Serif KR',serif;font-size:13px;color:var(--ink3);margin-bottom:14px;letter-spacing:.05em">오행별 사주 보완법</div>
+  <div id="saju-oh-tabs" style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:12px"></div>
+  <div class="card-sm" id="saju-oh-detail" style="min-height:80px"></div>
+
+  <div class="divider"></div>
+  <div class="card" style="font-size:13px;color:var(--ink2);line-height:1.9;background:var(--paper2)">
+    <div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:500;color:var(--ink);margin-bottom:10px">사주 오행 분석 순서</div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="min-width:22px;height:22px;border-radius:50%;background:var(--paper3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">1</span>
+        <span>만세력으로 사주팔자(8글자) 뽑기</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="min-width:22px;height:22px;border-radius:50%;background:var(--paper3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">2</span>
+        <span>각 글자를 오행(木火土金水)으로 배속</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="min-width:22px;height:22px;border-radius:50%;background:var(--paper3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">3</span>
+        <span>어느 오행이 많고(과다), 어느 오행이 없는지(부족) 확인</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start">
+        <span style="min-width:22px;height:22px;border-radius:50%;background:var(--paper3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;flex-shrink:0">4</span>
+        <span>부족한 오행을 용신으로 삼아 색·음식·직업·방위로 보완</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────────── 7. 퀴즈 ─────────────── -->
+<section class="section" id="s7">
+  <div class="sec-title">Part 07</div>
+  <div class="sec-heading">복습 퀴즈</div>
+  <div class="sec-sub">
+    지금까지 공부한 내용을 확인하세요.<br>
+    틀려도 괜찮습니다 — 틀린 문제가 가장 좋은 스승입니다.
+  </div>
+
+  <div class="quiz-card">
+    <div class="quiz-score" id="quiz-score">점수: 0 / 0</div>
+    <div class="quiz-prog" id="quiz-prog"></div>
+    <div class="quiz-q" id="quiz-q"></div>
+    <div class="quiz-opts" id="quiz-opts"></div>
+    <div class="quiz-fb" id="quiz-fb"></div>
+  </div>
+
+  <div style="margin-top:20px;text-align:center">
+    <button onclick="resetQuiz()" style="font-family:'Noto Sans KR',sans-serif;font-size:13px;padding:10px 24px;border:1px solid var(--paper3);border-radius:8px;background:var(--paper);color:var(--ink3);cursor:pointer;">처음부터 다시</button>
+  </div>
+</section>
+
+<footer>
+  <strong>신해전략연구소</strong> &nbsp;·&nbsp; 음양오행 학습 시스템 &nbsp;·&nbsp; 사주명리 기초 과정<br>
+  <span style="margin-top:6px;display:block">전통 지혜와 현대 AI의 융합</span>
+</footer>
+
+<script>
+const OH = [
+  { key:'목', hanja:'木', eng:'Wood',
+    bg:'#eaf3de', c:'#3b6d11', d:'#27500a', hex:'#639922',
+    dir:'동쪽', season:'봄', color:'청(靑)', organ:'간·담낭',
+    emotion:'화(怒)', taste:'신맛',
+    food:'시금치·쑥갓·브로콜리·청포도·매실',
+    nature:'솟아오르는 기운 — 시작과 성장',
+    char:'창의적이고 진취적이며 성장하려는 의지가 강하다. 부드러워 보이나 곧게 뻗으려는 성질이 있다.',
+    excess:'고집이 세짐, 간 기능 주의',
+    lack:'끈기 부족, 결단력 약함',
+    saju:'甲·乙 (천간) / 寅·卯 (지지)',
+    supp:'청색·초록 음식 섭취, 동쪽 방향, 새벽 기상' },
+  { key:'화', hanja:'火', eng:'Fire',
+    bg:'#faece7', c:'#993c1d', d:'#712b13', hex:'#d85a30',
+    dir:'남쪽', season:'여름', color:'적(赤)', organ:'심장·소장',
+    emotion:'기쁨(喜)', taste:'쓴맛',
+    food:'토마토·사과·붉은고추·딸기·대추·오미자',
+    nature:'확산하는 기운 — 열정과 표현',
+    char:'열정적이고 활동적이며 솔직담백하다. 감정 기복이 있고 성격이 급한 편이다.',
+    excess:'감정 기복 큼, 심장·혈압 주의',
+    lack:'매사 무기력, 사교성 부족',
+    saju:'丙·丁 (천간) / 巳·午 (지지)',
+    supp:'적색·주황 음식, 남쪽 방향, 활발한 운동' },
+  { key:'토', hanja:'土', eng:'Earth',
+    bg:'#faeeda', c:'#854f0b', d:'#633806', hex:'#ba7517',
+    dir:'중앙', season:'환절기', color:'황(黃)', organ:'비장·위장',
+    emotion:'걱정(思)', taste:'단맛',
+    food:'단호박·귤·콩·된장·소고기·고구마',
+    nature:'조화와 중재 — 변화의 중심축',
+    char:'안정적이고 현실적이며 포용력이 좋다. 묵묵히 제 자리를 지키는 중재자 역할을 한다.',
+    excess:'변화 거부, 고집, 소화 장애',
+    lack:'주관이 흔들림, 우유부단',
+    saju:'戊·己 (천간) / 辰·戌·丑·未 (지지)',
+    supp:'황색·노란 음식, 규칙적인 생활, 안정적 환경' },
+  { key:'금', hanja:'金', eng:'Metal',
+    bg:'#f1efe8', c:'#5f5e5a', d:'#444441', hex:'#888780',
+    dir:'서쪽', season:'가을', color:'백(白)', organ:'폐·대장',
+    emotion:'슬픔(悲)', taste:'매운맛',
+    food:'마늘·양파·무·연근·배·도라지·굴',
+    nature:'수렴하는 기운 — 결실과 결단',
+    char:'결단력이 있고 의리가 있다. 체계적이고 냉철하며 뒤끝이 없는 편이다.',
+    excess:'비판적 성향, 호흡기 주의',
+    lack:'결단력 약함, 흐지부지',
+    saju:'庚·辛 (천간) / 申·酉 (지지)',
+    supp:'백색·흰 음식, 서쪽 방향, 정리정돈 습관' },
+  { key:'수', hanja:'水', eng:'Water',
+    bg:'#e6f1fb', c:'#185fa5', d:'#0c447c', hex:'#378add',
+    dir:'북쪽', season:'겨울', color:'흑(黑)', organ:'신장·방광',
+    emotion:'공포(恐)', taste:'짠맛',
+    food:'검은콩·검은깨·미역·김·목이버섯·블루베리',
+    nature:'저장·응축하는 기운 — 지혜와 순환',
+    char:'지혜롭고 유연하며 사색적이다. 조용하지만 깊은 생각을 가지고 있다.',
+    excess:'생각 너무 많음, 신장·방광 주의',
+    lack:'융통성 부족, 행동력 약함',
+    saju:'壬·癸 (천간) / 亥·子 (지지)',
+    supp:'검은색 음식, 북쪽 방향, 충분한 수면·수분' },
+];
+
+const SS = [
+  { from:'목(木)', to:'화(火)', desc:'나무가 불을 일으킨다', ex:'봄의 기운이 여름 열정으로 이어진다' },
+  { from:'화(火)', to:'토(土)', desc:'불이 타고 남아 흙이 된다', ex:'열정의 결과물이 안정적 토대가 된다' },
+  { from:'토(土)', to:'금(金)', desc:'흙 속에서 쇠가 생겨난다', ex:'현실적 노력이 구체적 결실로 굳어진다' },
+  { from:'금(金)', to:'수(水)', desc:'쇠가 녹아 물이 된다', ex:'냉철한 결단이 유연한 지혜로 이어진다' },
+  { from:'수(水)', to:'목(木)', desc:'물이 나무를 키운다', ex:'깊은 사색이 새로운 시작의 자양분이 된다' },
+];
+const SK = [
+  { from:'목(木)', to:'토(土)', desc:'나무 뿌리가 흙을 뚫고 파고든다', ex:'진취성이 안정 추구를 흔든다' },
+  { from:'토(土)', to:'수(水)', desc:'흙이 물길을 막는다', ex:'현실주의가 유연성을 제약한다' },
+  { from:'수(水)', to:'화(火)', desc:'물이 불을 끈다', ex:'냉철함이 열정을 꺾는다' },
+  { from:'화(火)', to:'금(金)', desc:'불이 쇠를 녹인다', ex:'감정이 냉철한 결단을 무너뜨린다' },
+  { from:'금(金)', to:'목(木)', desc:'쇠가 나무를 자른다', ex:'엄격한 기준이 창의적 성장을 억누른다' },
+];
+const QUIZ = [
+  { q:'오행 중 봄·동쪽·간(肝)·청색에 해당하는 것은?', opts:['목(木)','화(火)','토(土)','금(金)'], ans:0 },
+  { q:'상생(相生) 순서에서 화(火) 다음에 오는 오행은?', opts:['목(木)','금(金)','토(土)','수(水)'], ans:2 },
+  { q:'수(水)가 화(火)를 억제하는 관계를 무엇이라 하는가?', opts:['상생','상극','소장','전화'], ans:1 },
+  { q:'음(陰)의 특성이 아닌 것은?', opts:['응축','수동','팽창','차가움'], ans:2 },
+  { q:'오행 중 중앙·환절기·포용력·비장에 해당하는 것은?', opts:['금(金)','토(土)','수(水)','목(木)'], ans:1 },
+  { q:'사주 천간 甲(갑)은 어느 오행인가?', opts:['화(火)','금(金)','목(木)','수(水)'], ans:2 },
+  { q:'음양의 소장(消長) 원리를 가장 잘 설명한 것은?', opts:['음과 양은 항상 같은 크기다','음이 커지면 양이 줄어든다','음과 양은 서로 독립적이다','양만이 변화한다'], ans:1 },
+];
+
+let curOh = 0, curQi = 0, relMode = 'ss', curSajuOh = 0;
+let qIdx = 0, qScore = 0, qAnswered = false, qTotal = 0;
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ── 오행 탭 공통 렌더 ── */
+function makeOhTabs(containerId, cur, clickFn) {
+  const c = document.getElementById(containerId);
+  c.innerHTML = OH.map((o,i) => `
+    <div onclick="${clickFn}(${i})"
+      style="border:${i===cur?'1.5px':'1px'} solid ${i===cur?o.c:getComputedStyle(document.documentElement).getPropertyValue('--paper3').trim()};
+             border-radius:10px;padding:14px 8px;cursor:pointer;text-align:center;
+             background:${i===cur?o.bg:'var(--paper)'};
+             transition:all .2s;transform:${i===cur?'translateY(-2px)':'none'}">
+      <div style="font-family:'Noto Serif KR',serif;font-size:22px;font-weight:400;color:${i===cur?o.d:'var(--ink)'};line-height:1.2">${o.hanja}</div>
+      <div style="font-size:11px;color:${i===cur?o.c:'var(--ink3)'};margin-top:4px">${o.key}</div>
+    </div>`).join('');
+}
+
+function renderOhDetail() {
+  const o = OH[curOh];
+  document.getElementById('oh-detail').style.background = o.bg;
+  document.getElementById('oh-detail').style.borderColor = o.c;
+  document.getElementById('oh-detail').innerHTML = `
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+      <div style="width:56px;height:56px;border-radius:50%;background:var(--paper);border:1.5px solid ${o.c};
+                  display:flex;align-items:center;justify-content:center;
+                  font-family:'Noto Serif KR',serif;font-size:24px;color:${o.d};flex-shrink:0">${o.hanja}</div>
+      <div>
+        <div style="font-family:'Noto Serif KR',serif;font-size:15px;font-weight:500;color:var(--ink)">${o.key}(${o.eng}) — ${o.nature}</div>
+        <div style="font-size:12px;color:var(--ink3);margin-top:3px">${o.dir} · ${o.season} · ${o.color}</div>
+      </div>
+    </div>
+    <div style="font-size:13px;color:var(--ink2);line-height:1.8;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid ${o.c}33">${o.char}</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      ${[['장기',o.organ],['감정',o.emotion],['맛',o.taste],['사주 배속',o.saju]].map(([l,v])=>`
+        <div style="background:rgba(255,255,255,.6);border-radius:6px;padding:10px">
+          <div style="font-size:10px;color:${o.c};margin-bottom:3px;letter-spacing:.05em">${l}</div>
+          <div style="font-size:11px;color:var(--ink);font-weight:500">${v}</div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function selectOh(i) { curOh=i; makeOhTabs('oh-tabs',curOh,'selectOh'); renderOhDetail(); }
+
+function renderQiDetail() {
+  const o = OH[curQi];
+  document.getElementById('qi-detail').style.background = o.bg;
+  document.getElementById('qi-detail').style.borderColor = o.c;
+  document.getElementById('qi-detail').innerHTML = `
+    <div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:500;color:var(--ink);margin-bottom:12px">${o.hanja}(${o.key}) 기질 특성</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px">
+      <div style="background:rgba(255,255,255,.7);border-radius:8px;padding:12px">
+        <div style="font-size:10px;color:${o.c};margin-bottom:5px;letter-spacing:.05em">기본 성향</div>
+        <div style="font-size:12px;color:var(--ink2);line-height:1.65">${o.char}</div>
+      </div>
+      <div style="background:#fff0ee;border-radius:8px;padding:12px;border:1px solid #f0997b">
+        <div style="font-size:10px;color:#993c1d;margin-bottom:5px;letter-spacing:.05em">과다(過多)할 때</div>
+        <div style="font-size:12px;color:#712b13;line-height:1.65">${o.excess}</div>
+      </div>
+      <div style="background:#e8f4ff;border-radius:8px;padding:12px;border:1px solid #85b7eb">
+        <div style="font-size:10px;color:#185fa5;margin-bottom:5px;letter-spacing:.05em">부족(不足)할 때</div>
+        <div style="font-size:12px;color:#0c447c;line-height:1.65">${o.lack}</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--ink3);line-height:1.7">
+      <span style="font-weight:500;color:var(--ink2)">음식으로 보완:</span> ${o.food}
+    </div>`;
+}
+
+function selectQi(i) { curQi=i; makeOhTabs('qi-tabs',curQi,'selectQi'); renderQiDetail(); }
+
+/* ── 상생상극 ── */
+function showRel(mode) {
+  relMode = mode;
+  const ss = document.getElementById('btn-ss');
+  const sk = document.getElementById('btn-sk');
+  ss.className = 'rel-btn' + (mode==='ss'?' active-ss':'');
+  sk.className = 'rel-btn' + (mode==='sk'?' active-sk':'');
+  const data = mode==='ss' ? SS : SK;
+  document.getElementById('rel-cycle').textContent =
+    mode==='ss' ? '木 → 火 → 土 → 金 → 水 → 木  (서로 낳고 돕는 순환)'
+                : '木 → 土 → 水 → 火 → 金 → 木  (서로 억제하고 견제하는 순환)';
+  document.getElementById('rel-list').innerHTML = data.map(r=>`
+    <div style="border-radius:10px;padding:14px 16px;border:1px solid var(--paper3);background:var(--paper)">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font-size:13px;font-weight:500;color:var(--ink)">${r.from}</span>
+        <span style="font-size:18px;color:${mode==='ss'?'#3b6d11':'#993c1d'}">→</span>
+        <span style="font-size:13px;font-weight:500;color:var(--ink)">${r.to}</span>
+      </div>
+      <div style="font-size:12px;color:var(--ink2);line-height:1.6">${r.desc}</div>
+      <div style="font-size:11px;color:var(--ink4);margin-top:4px;font-style:italic">${r.ex}</div>
+    </div>`).join('');
+}
+
+/* ── 배속표 ── */
+function renderTable() {
+  const cols = ['오행','색','계절','방위','장기','감정','맛','음식(예)'];
+  let h = '<thead><tr>' + cols.map(c=>`<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+  OH.forEach(o => {
+    h += `<tr>
+      <td><span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:${o.bg};border:1px solid ${o.c};font-family:'Noto Serif KR',serif;font-size:13px;color:${o.d}">${o.hanja}</span> <span style="font-size:12px;color:var(--ink3);margin-left:4px">${o.key}</span></td>
+      <td>${o.color}</td><td>${o.season}</td><td>${o.dir}</td>
+      <td>${o.organ}</td><td>${o.emotion}</td><td>${o.taste}</td>
+      <td style="color:var(--ink3)">${o.food.split('·')[0]}·…</td>
+    </tr>`;
+  });
+  h += '</tbody>';
+  document.getElementById('attr-table').innerHTML = h;
+}
+
+/* ── 사주 오행 보완 ── */
+function renderSajuOhTabs() {
+  const c = document.getElementById('saju-oh-tabs');
+  c.innerHTML = OH.map((o,i)=>`
+    <div onclick="selectSajuOh(${i})"
+      style="border:${i===curSajuOh?'1.5px':'1px'} solid ${i===curSajuOh?o.c:'var(--paper3)'};
+             border-radius:8px;padding:10px 6px;cursor:pointer;text-align:center;
+             background:${i===curSajuOh?o.bg:'var(--paper)'};transition:all .2s">
+      <div style="font-family:'Noto Serif KR',serif;font-size:18px;color:${i===curSajuOh?o.d:'var(--ink)'}">${o.hanja}</div>
+      <div style="font-size:10px;color:${i===curSajuOh?o.c:'var(--ink3)'};margin-top:2px">${o.key}</div>
+    </div>`).join('');
+}
+function renderSajuOhDetail() {
+  const o = OH[curSajuOh];
+  document.getElementById('saju-oh-detail').innerHTML = `
+    <div style="font-size:12px;font-weight:500;color:var(--ink);margin-bottom:6px">${o.hanja}(${o.key})이 부족할 때 — ${o.supp}</div>
+    <div style="font-size:12px;color:var(--ink3);line-height:1.7">권장 음식: ${o.food}</div>`;
+}
+function selectSajuOh(i) { curSajuOh=i; renderSajuOhTabs(); renderSajuOhDetail(); }
+
+/* ── 퀴즈 ── */
+function renderQuizProg() {
+  document.getElementById('quiz-prog').innerHTML =
+    QUIZ.map((_,i)=>`<div style="width:8px;height:8px;border-radius:50%;background:${i<qIdx?'var(--gold)':'var(--paper3)'}"></div>`).join('');
+}
+function renderQuiz() {
+  const q = QUIZ[qIdx];
+  document.getElementById('quiz-score').textContent = `점수: ${qScore} / ${qIdx}`;
+  renderQuizProg();
+  document.getElementById('quiz-q').textContent = q.q;
+  document.getElementById('quiz-fb').textContent = '';
+  document.getElementById('quiz-opts').innerHTML = q.opts.map((o,i)=>`
+    <button id="qo${i}" class="quiz-opt" onclick="answerQuiz(${i})">${o}</button>`).join('');
+  qAnswered = false;
+}
+function answerQuiz(i) {
+  if(qAnswered) return;
+  qAnswered = true;
+  const correct = i === QUIZ[qIdx].ans;
+  if(correct) qScore++;
+  qTotal++;
+  QUIZ[qIdx].opts.forEach((_,j)=>{
+    const el = document.getElementById('qo'+j);
+    el.disabled = true;
+    if(j===QUIZ[qIdx].ans) el.className='quiz-opt correct';
+    else if(j===i && !correct) el.className='quiz-opt wrong';
+  });
+  const fb = document.getElementById('quiz-fb');
+  fb.style.color = correct ? '#27500a' : '#712b13';
+  fb.textContent = correct ? '정답입니다!' : `오답 — 정답은 "${QUIZ[qIdx].opts[QUIZ[qIdx].ans]}"`;
+  setTimeout(()=>{
+    qIdx = (qIdx+1) % QUIZ.length;
+    renderQuiz();
+  }, 1800);
+}
+function resetQuiz() { qIdx=0; qScore=0; qAnswered=false; qTotal=0; renderQuiz(); }
+
+/* ── 초기화 ── */
+window.onload = () => {
+  makeOhTabs('oh-tabs', curOh, 'selectOh'); renderOhDetail();
+  makeOhTabs('qi-tabs', curQi, 'selectQi'); renderQiDetail();
+  showRel('ss');
+  renderTable();
+  renderSajuOhTabs(); renderSajuOhDetail();
+  renderQuiz();
+};
+</script>
+</body>
+</html>
