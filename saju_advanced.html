@@ -570,35 +570,25 @@
       <div class="sec-num">⚙</div>
       <div>
         <div class="sec-title">지지 관계 확인기</div>
-        <div class="sec-sub">두 지지를 선택하면 합·충·형·파·해 관계를 즉시 확인</div>
+        <div class="sec-sub">지지를 2~3개 선택하면 방합·삼합·육합·충·형·파·해·생·극·중첩 관계를 즉시 확인</div>
       </div>
     </div>
 
     <div class="checker">
-      <div class="checker-title">두 지지의 관계 조회</div>
-      <div class="sel-row">
-        <label>첫 번째 지지</label>
-        <select id="jj1" class="jj-select">
-          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
-          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
-          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
-          <option value="午">午 (오)</option><option value="未">未 (미)</option>
-          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
-          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
-        </select>
+      <div class="checker-title">지지 관계 조회 (2~3개 선택)</div>
+
+      <!-- 지지 버튼 선택 UI -->
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:12.5px;color:var(--ink3);font-weight:600;margin-bottom:.6rem;">지지를 클릭하여 선택 (최대 3개)</div>
+        <div id="jijiButtons" style="display:flex;flex-wrap:wrap;gap:8px;">
+        </div>
       </div>
-      <div class="sel-row">
-        <label>두 번째 지지</label>
-        <select id="jj2" class="jj-select">
-          <option value="子">子 (자)</option><option value="丑">丑 (축)</option>
-          <option value="寅">寅 (인)</option><option value="卯">卯 (묘)</option>
-          <option value="辰">辰 (진)</option><option value="巳">巳 (사)</option>
-          <option value="午">午 (오)</option><option value="未">未 (미)</option>
-          <option value="申">申 (신)</option><option value="酉">酉 (유)</option>
-          <option value="戌">戌 (술)</option><option value="亥">亥 (해)</option>
-        </select>
+
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:.75rem;">
+        <div style="font-size:13.5px;color:var(--ink2);">선택: <span id="selectedDisplay" style="font-family:'Noto Serif KR',serif;font-size:1.1rem;font-weight:700;color:var(--crimson);letter-spacing:2px;">—</span></div>
+        <button class="check-btn" onclick="checkRel()">관계 확인</button>
+        <button class="check-btn" style="background:var(--ink3);" onclick="clearSel()">초기화</button>
       </div>
-      <button class="check-btn" onclick="checkRel()">관계 확인하기</button>
       <div class="result-box" id="relResult"></div>
     </div>
 
@@ -1085,128 +1075,346 @@
 </footer>
 
 <script>
-/* ── 합충형파해 관계 데이터베이스 ── */
-const JIJI = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
-const JIJI_KO = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
+/* ── 12지지 데이터 ── */
+const JIJI     = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const JIJI_KO  = ['자','축','인','묘','진','사','오','미','신','유','술','해'];
 
-const RELATIONS = {
+/* ── 지지의 오행·음양 ── */
+const OHAENG = {子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+const EUMYANG = {子:'음',丑:'음',寅:'양',卯:'음',辰:'양',巳:'음',午:'양',未:'음',申:'양',酉:'음',戌:'양',亥:'음'};
+
+/* ── 상생·상극 관계 ── */
+const SAENG_MAP = {木:'火',火:'土',土:'金',金:'水',水:'木'};
+const GEUK_MAP  = {木:'土',土:'水',水:'火',火:'金',金:'木'};
+
+/* ── 관계 데이터베이스 ── */
+const REL = {
+  /* 육합 */
   hap6: [['子','丑'],['寅','亥'],['卯','戌'],['辰','酉'],['巳','申'],['午','未']],
-  hapResult: {
-    '子丑':'土(안정·문서 결합)','丑子':'土(안정·문서 결합)',
-    '寅亥':'木(이동이 안정됨)','亥寅':'木(이동이 안정됨)',
-    '卯戌':'火(감정·이성 인연)','戌卯':'火(감정·이성 인연)',
-    '辰酉':'金(계약·거래 성사)','酉辰':'金(계약·거래 성사)',
-    '巳申':'水(강한 두 기운 결합)','申巳':'水(강한 두 기운 결합)',
-    '午未':'火·土(온화한 명예 결합)','未午':'火·土(온화한 명예 결합)'
+  hap6Desc: {
+    '子丑':'土 — 안정·문서 결합. 보수적이고 끈끈한 관계.',
+    '寅亥':'木 — 역마 에너지가 안착. 이동이 안정됨.',
+    '卯戌':'火 — 감정적 결합. 이성 인연·매력.',
+    '辰酉':'金 — 계약·거래 성사. 실질적 결합.',
+    '巳申':'水 — 강한 두 기운 결합. 기술 발휘, 충돌 리스크 잠재.',
+    '午未':'火·土 — 온화한 명예 결합. 부드러운 인연.',
   },
+  /* 방합 */
+  banghap: [
+    {chars:['寅','卯','辰'], ohaeng:'木(강)', desc:'동쪽·봄. 성장·추진력 극대화. 사업 확장, 새로운 시작.'},
+    {chars:['巳','午','未'], ohaeng:'火(강)', desc:'남쪽·여름. 명예·인기·열정 폭발. 사회적 존재감 최고조.'},
+    {chars:['申','酉','戌'], ohaeng:'金(강)', desc:'서쪽·가을. 절제·완성·수확. 결실을 거두는 시기.'},
+    {chars:['亥','子','丑'], ohaeng:'水(강)', desc:'북쪽·겨울. 내면·저장·지혜. 공부·준비·은둔.'},
+  ],
+  /* 삼합 */
+  samhap: [
+    {chars:['亥','卯','未'], ohaeng:'木局', desc:'목국. 재물·사업·부동산 성취 기운 극대화.'},
+    {chars:['寅','午','戌'], ohaeng:'火局', desc:'화국. 명예·관성 기운 극대화. 승진·사회적 인정.'},
+    {chars:['巳','酉','丑'], ohaeng:'金局', desc:'금국. 비겁·경쟁·독립 의식 강화.'},
+    {chars:['申','子','辰'], ohaeng:'水局', desc:'수국. 식상(재능·표현) 기운 극대화. 창작·기술 전성기.'},
+  ],
+  /* 반합 (왕지 포함 2글자) */
+  banhap: [
+    {chars:['亥','卯'], ohaeng:'木局 반합', desc:'목국 반합 — 卯(왕지) 포함. 운에서 未가 들어오면 삼합 완성.'},
+    {chars:['卯','未'], ohaeng:'木局 반합', desc:'목국 반합 — 卯(왕지) 포함. 운에서 亥가 들어오면 삼합 완성.'},
+    {chars:['寅','午'], ohaeng:'火局 반합', desc:'화국 반합 — 午(왕지) 포함. 운에서 戌이 들어오면 삼합 완성.'},
+    {chars:['午','戌'], ohaeng:'火局 반합', desc:'화국 반합 — 午(왕지) 포함. 운에서 寅이 들어오면 삼합 완성.'},
+    {chars:['巳','酉'], ohaeng:'金局 반합', desc:'금국 반합 — 酉(왕지) 포함. 운에서 丑이 들어오면 삼합 완성.'},
+    {chars:['酉','丑'], ohaeng:'金局 반합', desc:'금국 반합 — 酉(왕지) 포함. 운에서 巳가 들어오면 삼합 완성.'},
+    {chars:['申','子'], ohaeng:'水局 반합', desc:'수국 반합 — 子(왕지) 포함. 운에서 辰이 들어오면 삼합 완성.'},
+    {chars:['子','辰'], ohaeng:'水局 반합', desc:'수국 반합 — 子(왕지) 포함. 운에서 申이 들어오면 삼합 완성.'},
+  ],
+  /* 충 */
   chung: [['子','午'],['丑','未'],['寅','申'],['卯','酉'],['辰','戌'],['巳','亥']],
   chungDesc: {
-    '子午':'수화충 — 감정폭발·주거이동·부부갈등','午子':'수화충 — 감정폭발·주거이동·부부갈등',
-    '丑未':'토토충 — 창고 열림·부동산변동·내부갈등','未丑':'토토충 — 창고 열림·부동산변동·내부갈등',
-    '寅申':'목금충 — 강한 이동수·이직·교통주의','申寅':'목금충 — 강한 이동수·이직·교통주의',
-    '卯酉':'목금충 — 날카로운 분리·이별·소송','酉卯':'목금충 — 날카로운 분리·이별·소송',
-    '辰戌':'토토충 — 기반변동·수술·환경전환','戌辰':'토토충 — 기반변동·수술·환경전환',
-    '巳亥':'화수충 — 역마·심리불안·계약파기','亥巳':'화수충 — 역마·심리불안·계약파기'
+    '子午':'수화충 — 감정 폭발·주거 이동·부부 갈등. 일지 충이면 배우자·건강 변동.',
+    '丑未':'토토충 — 창고 열림·부동산 변동·내부 갈등. 숨겨진 재산·관계가 드러남.',
+    '寅申':'목금충 — 강한 이동수·이직·교통사고 주의. 새로운 시작을 강제하는 충.',
+    '卯酉':'목금충 — 날카로운 분리·이별·소송. 칼처럼 관계가 끊김.',
+    '辰戌':'토토충 — 기반·토대 변동. 부동산·터전 교체. 큰 수술·건강 이상.',
+    '巳亥':'화수충 — 역마·심리 불안·계약 파기. 파격적 환경 변화.',
   },
-  hyeong2: [['子','卯'],['卯','子']],
-  hyeongDesc: {'子卯':'무례지형 — 구설·분쟁·예의 문제','卯子':'무례지형 — 구설·분쟁·예의 문제'},
+  /* 형 */
+  hyeong: [
+    {chars:['寅','巳','申'], name:'인사신 삼형', type:'지세지형·역마형', desc:'교통사고·수술·법적 분쟁. 의료·군경·기술 분야에서는 능력 발휘. 인생에 굵직한 사건 다수.'},
+    {chars:['丑','戌','未'], name:'축술미 삼형', type:'지세지형·기술형', desc:'배신·조정·기술적 문제. 전문직·기술직에서 두각. 인간관계 지속적 갈등.'},
+    {chars:['子','卯'],      name:'자묘형',     type:'무례지형', desc:'예의 없는 행동으로 구설. 수가 목을 과잉 생해 통제불능. 말과 행동이 상황에 맞지 않아 인간관계 갈등.'},
+  ],
+  /* 자형 */
+  jaHyeong: ['辰','午','酉','亥'],
+  /* 파 */
   pa: [['子','酉'],['卯','午'],['寅','亥'],['巳','申'],['辰','丑'],['戌','未']],
   paDesc: {
-    '子酉':'파 — 진행중 일 균열·예상 밖 파손','酉子':'파 — 진행중 일 균열·예상 밖 파손',
-    '卯午':'파 — 관계 균열·계획 파기','午卯':'파 — 관계 균열·계획 파기',
-    '寅亥':'파 — 친밀한 관계가 갑자기 깨짐','亥寅':'파 — 친밀한 관계가 갑자기 깨짐',
-    '巳申':'파+육합 — 결합이면서 충돌 (복잡 관계)','申巳':'파+육합 — 결합이면서 충돌 (복잡 관계)',
-    '辰丑':'파 — 토끼리 균열·문서 파기','丑辰':'파 — 토끼리 균열·문서 파기',
-    '戌未':'파 — 토끼리 균열·인간관계 파손','未戌':'파 — 토끼리 균열·인간관계 파손'
+    '子酉':'진행 중인 일 균열·예상 밖 파손.',
+    '卯午':'관계 균열·계획 파기.',
+    '寅亥':'친밀한 관계가 갑자기 깨짐. (육합이면서 파)',
+    '巳申':'결합이면서 충돌 — 복잡 관계. (육합이면서 파)',
+    '辰丑':'토끼리 균열·문서 파기.',
+    '戌未':'토끼리 균열·인간관계 파손.',
   },
+  /* 해 */
   hae: [['子','未'],['丑','午'],['寅','巳'],['卯','辰'],['申','亥'],['酉','戌']],
   haeDesc: {
-    '子未':'해 — 시기·질투·배신·숨은 건강 문제','未子':'해 — 시기·질투·배신·숨은 건강 문제',
-    '丑午':'해 — 오해·방해·음해','午丑':'해 — 오해·방해·음해',
-    '寅巳':'해 — 경쟁자의 방해','巳寅':'해 — 경쟁자의 방해',
-    '卯辰':'해 — 가까운 이의 방해·심리 고통','辰卯':'해 — 가까운 이의 방해·심리 고통',
-    '申亥':'해 — 속으로 앓는 갈등','亥申':'해 — 속으로 앓는 갈등',
-    '酉戌':'해 — 미묘한 질투·건강 이상','戌酉':'해 — 미묘한 질투·건강 이상'
-  }
+    '子未':'시기·질투·배신·숨은 건강 문제.',
+    '丑午':'오해·방해·음해.',
+    '寅巳':'경쟁자의 방해.',
+    '卯辰':'가까운 이의 방해·심리 고통.',
+    '申亥':'속으로 앓는 갈등.',
+    '酉戌':'미묘한 질투·건강 이상.',
+  },
 };
 
-function findRel(a, b) {
-  const key = a + b;
+/* ── 버튼 UI 생성 ── */
+let selected = [];
+
+function buildButtons() {
+  const wrap = document.getElementById('jijiButtons');
+  JIJI.forEach((j, i) => {
+    const btn = document.createElement('button');
+    btn.id = 'jbtn_' + j;
+    btn.textContent = j + ' (' + JIJI_KO[i] + ')';
+    btn.style.cssText = `
+      font-family:'Noto Serif KR',serif; font-size:1rem; font-weight:700;
+      padding:8px 14px; border-radius:6px; border:2px solid var(--border2);
+      background:#fff; color:var(--ink); cursor:pointer; transition:all .15s;
+    `;
+    btn.onclick = () => toggleJiji(j, btn);
+    wrap.appendChild(btn);
+  });
+}
+
+function toggleJiji(j, btn) {
+  const idx = selected.indexOf(j);
+  if (idx >= 0) {
+    selected.splice(idx, 1);
+    btn.style.background = '#fff';
+    btn.style.borderColor = 'var(--border2)';
+    btn.style.color = 'var(--ink)';
+  } else {
+    if (selected.length >= 3) return;
+    selected.push(j);
+    btn.style.background = 'var(--crimson)';
+    btn.style.borderColor = 'var(--crimson)';
+    btn.style.color = '#fff';
+  }
+  document.getElementById('selectedDisplay').textContent = selected.length ? selected.join(' · ') : '—';
+}
+
+function clearSel() {
+  selected = [];
+  JIJI.forEach(j => {
+    const btn = document.getElementById('jbtn_' + j);
+    if (btn) {
+      btn.style.background = '#fff';
+      btn.style.borderColor = 'var(--border2)';
+      btn.style.color = 'var(--ink)';
+    }
+  });
+  document.getElementById('selectedDisplay').textContent = '—';
+  const box = document.getElementById('relResult');
+  box.style.display = 'none';
+  box.innerHTML = '';
+}
+
+/* ── 관계 확인 메인 로직 ── */
+function checkRel() {
+  const box = document.getElementById('relResult');
+  if (selected.length < 1) {
+    box.innerHTML = '<div class="rr-item">지지를 1개 이상 선택해주세요.</div>';
+    box.style.display = 'block';
+    return;
+  }
+
   const results = [];
 
-  if (a === b) {
-    const selfHyeong = ['辰','午','酉','亥'];
-    if (selfHyeong.includes(a)) results.push({type:'자형', cls:'found', desc:`${a}${b} 자형 — 스스로 만든 꼬임. 반복되는 실수·집착·내면 갈등.`});
-    else results.push({type:'없음', cls:'', desc:`${a}와 ${b}는 같은 글자입니다. 자형 관계가 아닙니다.`});
-    return results;
+  /* ── 1개 선택: 중첩(자형) ── */
+  if (selected.length === 1) {
+    const a = selected[0];
+    if (REL.jaHyeong.includes(a)) {
+      results.push({label:'자형(自刑)', color:'#fdecea', border:'rgba(139,26,26,.3)',
+        desc:`${a}${a} 자형 — 같은 글자 두 개 중첩 시 발생. 스스로 만든 꼬임. 반복되는 실수·집착·내면 갈등.`});
+    } else {
+      results.push({label:'중첩(重疊)', color:'var(--paper2)', border:'var(--border2)',
+        desc:`${a}${a} 중첩 — 해당 오행(${OHAENG[a]}) 기운이 과도해짐. 좋은 경우 세력 강화, 나쁜 경우 집착·과유불급 문제.`});
+    }
+    render(box, results);
+    return;
   }
 
-  let found = false;
+  const chars = [...selected];
 
-  // 육합
-  for (const pair of RELATIONS.hap6) {
-    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
-      const res = RELATIONS.hapResult[key] || RELATIONS.hapResult[b+a] || '변화 오행 확인 필요';
-      results.push({type:'육합(六合)', cls:'found-hap', desc:`${a}${b} 육합 → ${res}`});
-      found = true;
+  /* ── 3개 선택 ── */
+  if (chars.length === 3) {
+    const set3 = new Set(chars);
+
+    /* 방합 */
+    for (const bh of REL.banghap) {
+      if (bh.chars.every(c => set3.has(c)) && set3.size === 3) {
+        results.push({label:'방합(方合) ✦', color:'#dff0e8', border:'rgba(26,92,58,.3)',
+          desc:`${bh.chars.join('')} 방합 → ${bh.ohaeng} — ${bh.desc}`});
+      }
     }
-  }
-  // 충
-  for (const pair of RELATIONS.chung) {
-    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
-      const res = RELATIONS.chungDesc[key] || RELATIONS.chungDesc[b+a] || '';
-      results.push({type:'충(沖)', cls:'found-chung', desc:`${a}${b} ${res}`});
-      found = true;
+    /* 삼합 */
+    for (const sh of REL.samhap) {
+      if (sh.chars.every(c => set3.has(c)) && set3.size === 3) {
+        results.push({label:'삼합(三合) ✦', color:'#dff0e8', border:'rgba(26,92,58,.3)',
+          desc:`${sh.chars.join('')} 삼합 → ${sh.ohaeng} — ${sh.desc}`});
+      }
     }
-  }
-  // 자묘형
-  for (const pair of RELATIONS.hyeong2) {
-    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
-      const res = RELATIONS.hyeongDesc[key] || RELATIONS.hyeongDesc[b+a] || '';
-      results.push({type:'형(刑)', cls:'found', desc:`${a}${b} ${res}`});
-      found = true;
+    /* 삼형 */
+    for (const hf of REL.hyeong) {
+      if (hf.chars.length === 3 && hf.chars.every(c => set3.has(c))) {
+        results.push({label:'삼형(三刑) ⚠', color:'#fce8d5', border:'rgba(122,56,0,.3)',
+          desc:`${hf.chars.join('')} ${hf.name}(${hf.type}) — ${hf.desc}`});
+      }
     }
-  }
-  // 파
-  for (const pair of RELATIONS.pa) {
-    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
-      const res = RELATIONS.paDesc[key] || RELATIONS.paDesc[b+a] || '';
-      results.push({type:'파(破)', cls:'found', desc:`${a}${b} ${res}`});
-      found = true;
-    }
-  }
-  // 해
-  for (const pair of RELATIONS.hae) {
-    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
-      const res = RELATIONS.haeDesc[key] || RELATIONS.haeDesc[b+a] || '';
-      results.push({type:'해(害)', cls:'found', desc:`${a}${b} ${res}`});
-      found = true;
+    /* 쌍별 관계도 체크 */
+    const pairs = [[chars[0],chars[1]],[chars[0],chars[2]],[chars[1],chars[2]]];
+    for (const [a,b] of pairs) {
+      results.push(...getPairRels(a, b));
     }
   }
 
-  if (!found) results.push({type:'관계 없음', cls:'', desc:`${a}와 ${b} 사이에는 특별한 합·충·형·파·해 관계가 없습니다. 단, 세 글자 이상 조합(삼합·방합·삼형)은 별도 확인 필요.`});
+  /* ── 2개 선택 ── */
+  if (chars.length === 2) {
+    const [a, b] = chars;
+
+    /* 같은 글자 중첩 */
+    if (a === b) {
+      if (REL.jaHyeong.includes(a)) {
+        results.push({label:'자형(自刑)', color:'#fdecea', border:'rgba(139,26,26,.3)',
+          desc:`${a}${b} 자형 — 스스로 만든 꼬임. 반복되는 실수·집착·내면 갈등.`});
+      } else {
+        results.push({label:'중첩(重疊)', color:'var(--paper2)', border:'var(--border2)',
+          desc:`${a}${b} 중첩 — ${OHAENG[a]} 오행 과다. 좋은 경우 세력 강화, 나쁜 경우 집착·과유불급.`});
+      }
+      render(box, results);
+      return;
+    }
+
+    results.push(...getPairRels(a, b));
+  }
+
+  if (results.length === 0) {
+    results.push({label:'관계 없음', color:'var(--paper2)', border:'var(--border)',
+      desc:`${chars.join('·')} 사이에는 해당하는 합·충·형·파·해·생·극 관계가 없습니다. 세 글자 이상 조합(방합·삼합·삼형)은 3개 선택으로 확인하세요.`});
+  }
+
+  render(box, results);
+}
+
+/* ── 2글자 쌍 관계 ── */
+function getPairRels(a, b) {
+  const results = [];
+  const key  = a + b;
+  const rkey = b + a;
+
+  /* 육합 */
+  for (const pair of REL.hap6) {
+    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+      const desc = REL.hap6Desc[key.slice(0,2)] || REL.hap6Desc[rkey.slice(0,2)] || REL.hap6Desc[pair[0]+pair[1]] || '';
+      results.push({label:'육합(六合)', color:'#dff0e8', border:'rgba(26,92,58,.3)',
+        desc:`${a}${b} 육합 → ${desc}`});
+    }
+  }
+  /* 반합 */
+  for (const bh of REL.banhap) {
+    if (bh.chars.length === 2) {
+      const s = new Set([a,b]);
+      if (bh.chars.every(c => s.has(c))) {
+        results.push({label:'반합(半合)', color:'#e8f5e8', border:'rgba(26,92,58,.2)',
+          desc:`${a}${b} ${bh.ohaeng} — ${bh.desc}`});
+      }
+    }
+  }
+  /* 충 */
+  for (const pair of REL.chung) {
+    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+      const k = [pair[0],pair[1]].sort().join('');
+      const dk = Object.keys(REL.chungDesc).find(kk => {
+        const sk = [kk[0],kk[1]].sort().join(''); return sk===k;
+      });
+      results.push({label:'충(沖) ⚡', color:'#fce8d5', border:'rgba(122,56,0,.3)',
+        desc:`${a}${b} ${dk ? REL.chungDesc[dk] : ''}`});
+    }
+  }
+  /* 형(2글자: 자묘형) */
+  for (const hf of REL.hyeong) {
+    if (hf.chars.length === 2) {
+      const s = new Set([a,b]);
+      if (hf.chars.every(c => s.has(c))) {
+        results.push({label:'형(刑) ⚠', color:'#fce8d5', border:'rgba(122,56,0,.3)',
+          desc:`${a}${b} ${hf.name}(${hf.type}) — ${hf.desc}`});
+      }
+    }
+  }
+  /* 형(삼형) 2글자 부분 힌트 */
+  for (const hf of REL.hyeong) {
+    if (hf.chars.length === 3) {
+      const s = new Set([a,b]);
+      const matches = hf.chars.filter(c => s.has(c));
+      if (matches.length === 2) {
+        const missing = hf.chars.find(c => !s.has(c));
+        results.push({label:'삼형 부분(刑) △', color:'#fff5e0', border:'rgba(150,114,10,.3)',
+          desc:`${a}${b}는 ${hf.name}의 부분 조합 — 나머지 ${missing}이(가) 들어오면 삼형(${hf.chars.join('')}) 완성.`});
+      }
+    }
+  }
+  /* 파 */
+  for (const pair of REL.pa) {
+    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+      const dk = Object.keys(REL.paDesc).find(k => new Set(k.split('')).size===2 && k.includes(a) && k.includes(b));
+      results.push({label:'파(破)', color:'var(--paper3)', border:'var(--border2)',
+        desc:`${a}${b} 파 — ${dk ? REL.paDesc[dk] : ''}`});
+    }
+  }
+  /* 해 */
+  for (const pair of REL.hae) {
+    if ((pair[0]===a&&pair[1]===b)||(pair[0]===b&&pair[1]===a)) {
+      const dk = Object.keys(REL.haeDesc).find(k => k.includes(a) && k.includes(b));
+      results.push({label:'해(害)', color:'#fdecea', border:'rgba(139,26,26,.2)',
+        desc:`${a}${b} 해 — ${dk ? REL.haeDesc[dk] : ''}`});
+    }
+  }
+  /* 상생·상극 */
+  const oa = OHAENG[a], ob = OHAENG[b];
+  if (oa && ob && oa !== ob) {
+    if (SAENG_MAP[oa] === ob) {
+      results.push({label:'생(生) ↑', color:'#deeaf0', border:'rgba(42,80,104,.25)',
+        desc:`${a}(${oa}) → ${b}(${ob}) 상생 — ${a}이(가) ${b}를 생해줌. 도움·성장·순조로운 소통.`});
+    } else if (SAENG_MAP[ob] === oa) {
+      results.push({label:'생(生) ↑', color:'#deeaf0', border:'rgba(42,80,104,.25)',
+        desc:`${b}(${ob}) → ${a}(${oa}) 상생 — ${b}이(가) ${a}를 생해줌. 도움·성장·순조로운 소통.`});
+    }
+    if (GEUK_MAP[oa] === ob) {
+      results.push({label:'극(剋) ↓', color:'#fdecea', border:'rgba(139,26,26,.2)',
+        desc:`${a}(${oa}) → ${b}(${ob}) 상극 — ${a}이(가) ${b}를 극함. 갈등·억제·조정·통제.`});
+    } else if (GEUK_MAP[ob] === oa) {
+      results.push({label:'극(剋) ↓', color:'#fdecea', border:'rgba(139,26,26,.2)',
+        desc:`${b}(${ob}) → ${a}(${oa}) 상극 — ${b}이(가) ${a}를 극함. 갈등·억제·조정·통제.`});
+    }
+  }
 
   return results;
 }
 
-function checkRel() {
-  const a = document.getElementById('jj1').value;
-  const b = document.getElementById('jj2').value;
-  const box = document.getElementById('relResult');
-  const rels = findRel(a, b);
-
-  let html = '<div class="rel-result">';
-  for (const r of rels) {
-    html += `<div class="rr-item ${r.cls}">
-      <strong>${r.type}</strong><br>
-      <span style="font-size:13px;color:var(--ink2);">${r.desc}</span>
-    </div>`;
+/* ── 결과 렌더링 ── */
+function render(box, results) {
+  let html = '<div style="display:flex;flex-direction:column;gap:10px;">';
+  for (const r of results) {
+    html += `
+      <div style="background:${r.color};border:1px solid ${r.border};border-radius:8px;padding:.8rem 1.1rem;">
+        <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--ink3);margin-bottom:.35rem;">${r.label}</div>
+        <div style="font-size:13.5px;color:var(--ink2);line-height:1.75;">${r.desc}</div>
+      </div>`;
   }
   html += '</div>';
-
   box.innerHTML = html;
   box.style.display = 'block';
 }
+
+/* ── 초기화 ── */
+document.addEventListener('DOMContentLoaded', buildButtons);
 </script>
 </body>
 </html>
