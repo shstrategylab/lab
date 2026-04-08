@@ -12,10 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 
-<!-- 카카오 SDK -->
-<script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-  integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2vxfAAD0eZxzCKakxg55G4"
-  crossorigin="anonymous"></script>
+
 
 <style>
   :root {
@@ -167,8 +164,7 @@
   .btn-share{display:flex;align-items:center;justify-content:center;gap:8px;border-radius:100px;padding:14px 16px;font-size:14px;font-weight:700;font-family:var(--sans);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;border:none;white-space:nowrap}
   .btn-image{background:var(--accent);color:var(--bg)}
   .btn-image:hover{opacity:.85} .btn-image:active{transform:scale(.97)}
-  .btn-kakao{background:#FEE500;color:#3C1E1E}
-  .btn-kakao:hover{opacity:.9} .btn-kakao:active{transform:scale(.97)}
+
   .btn-url{background:var(--surface);color:var(--tp);border:1px solid var(--border-s) !important}
   .btn-url:hover{background:var(--surface2)}
   .btn-restart{width:100%;display:flex;align-items:center;justify-content:center;gap:8px;background:transparent;color:var(--tm);border:1px solid var(--border);border-radius:100px;padding:12px 20px;font-size:13px;font-weight:500;font-family:var(--sans);cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent;margin-top:10px}
@@ -304,12 +300,8 @@
     <div class="share-section">
       <div class="share-title">결과 공유하기</div>
       <div class="share-grid">
-        <button class="btn-share btn-image"  onclick="shareImage()">🖼 이미지 저장</button>
-        <button class="btn-share btn-kakao"  onclick="shareKakao()">
-          <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5C4.86 1.5 1.5 4.14 1.5 7.41c0 2.07 1.32 3.9 3.33 4.98l-.84 3.12 3.66-2.4c.42.06.87.09 1.35.09 4.14 0 7.5-2.64 7.5-5.91S13.14 1.5 9 1.5z" fill="#3C1E1E"/></svg>
-          카카오톡 공유
-        </button>
-        <button class="btn-share btn-url"    onclick="shareURL()" style="grid-column:1/-1">🔗 링크 복사</button>
+        <button class="btn-share btn-image" onclick="shareImage()">🖼 이미지 저장</button>
+        <button class="btn-share btn-url"   onclick="shareURL()">🔗 링크 복사</button>
       </div>
       <button class="btn-restart" onclick="restart()">↺ 다시 진단하기</button>
     </div>
@@ -392,10 +384,7 @@ window.addEventListener('DOMContentLoaded', () => {
     setTimeout(showResult, 800);
   }
 
-  /* 카카오 SDK 초기화 — 실제 서비스 시 본인 앱키로 교체 */
-  if (window.Kakao && !Kakao.isInitialized()) {
-    try { Kakao.init('YOUR_KAKAO_JS_APP_KEY'); } catch(e) {}
-  }
+  /* 카카오 SDK 초기화 제거 */
 });
 
 /* ═══════════════ NAVIGATION ═══════════════ */
@@ -518,46 +507,6 @@ function shareURL() {
   }
 }
 
-/* ═══════════════ SHARE — 카카오톡 ═══════════════ */
-function shareKakao() {
-  const { total, lv } = currentResult;
-  const str = answers.map(a=>a===-1?0:a).join('');
-  const url = window.location.origin+window.location.pathname+'?r='+str;
-
-  /* 카카오 SDK가 앱키로 초기화된 경우 */
-  if (window.Kakao && Kakao.isInitialized()) {
-    Kakao.Share.sendDefault({
-      objectType: 'feed',
-      content: {
-        title: `자기객관화 진단 결과: ${total}/10 — ${lv.label}`,
-        description: lv.desc,
-        imageUrl: 'https://your-domain.com/og-image.png', /* 실제 서비스 시 OG 이미지 URL */
-        link: { mobileWebUrl: url, webUrl: url }
-      },
-      buttons: [{
-        title: '내 결과 보기',
-        link: { mobileWebUrl: url, webUrl: url }
-      }]
-    });
-    return;
-  }
-
-  /* SDK 미초기화 시 — 모바일은 네이티브 공유 시트, PC는 카카오톡 공유 URL scheme */
-  const text = `[자기객관화 진단]\n내 결과: ${total}/10 — ${lv.label}\n\n${lv.desc}\n\n진단해보기 → ${url}`;
-
-  if (navigator.share) {
-    /* 모바일: OS 네이티브 공유 시트 (카카오톡 포함) */
-    navigator.share({ title:'자기객관화 진단 결과', text, url }).catch(()=>{});
-  } else {
-    /* PC: 카카오톡 오픈채팅/채널 공유 페이지로 이동 */
-    const kakaoUrl = 'https://sharer.kakao.com/talk/friends/picker/link'
-      + '?app_key=YOUR_KAKAO_JS_APP_KEY'
-      + '&validation_action=default'
-      + '&validation_params='+encodeURIComponent(JSON.stringify({ url }));
-    window.open(kakaoUrl, '_blank', 'width=500,height=600');
-    showToast('카카오톡 공유 창이 열립니다');
-  }
-}
 
 /* ═══════════════ SHARE — IMAGE (Canvas) ═══════════════ */
 function shareImage() {
