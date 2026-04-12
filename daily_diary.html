@@ -6,254 +6,263 @@
 <title>오늘 하루 돌아보기</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --brown: #6B4F35;
-    --brown-light: #9A7050;
-    --brown-pale: #FDF8F2;
-    --brown-bg: #F5EDE0;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
     font-family: 'Noto Serif KR', Georgia, serif;
     background: linear-gradient(170deg, #FDF8F2 0%, #F5EDE0 100%);
     min-height: 100vh;
-    padding-bottom: 100px;
+    padding-bottom: 120px;
   }
   ::-webkit-scrollbar { display: none; }
 
-  /* Header */
+  /* ── 헤더 ── */
   #header {
     background: linear-gradient(135deg, #6B4F35 0%, #9A7050 100%);
-    padding: 32px 20px 24px;
+    padding: 28px 20px 0;
     text-align: center;
-    position: sticky; top: 0; z-index: 10;
+    position: sticky; top: 0; z-index: 20;
     box-shadow: 0 4px 20px rgba(107,79,53,0.25);
   }
-  #header .date-label { color: rgba(255,255,255,0.65); font-size: 12px; letter-spacing: 3px; margin-bottom: 6px; }
-  #header h1 { color: #fff; font-size: 20px; font-weight: 700; letter-spacing: 1px; }
-  #header .subtitle { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 5px; font-style: italic; }
-  .progress-wrap { margin-top: 16px; display: flex; align-items: center; gap: 10px; }
-  .progress-bar { flex: 1; background: rgba(255,255,255,0.2); border-radius: 20px; height: 7px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, #FFD580, #FFF3C0); border-radius: 20px; width: 0%; transition: width 0.4s ease; }
-  .progress-text { color: rgba(255,255,255,0.9); font-size: 12px; white-space: nowrap; }
+  .date-label { color: rgba(255,255,255,0.85); font-size: 12px; letter-spacing: 2px; margin-bottom: 4px; }
+  .header-title { color: #fff; font-size: 20px; font-weight: 700; }
+  .header-sub { color: rgba(255,255,255,0.82); font-size: 12px; margin-top: 3px; font-style: italic; }
 
-  /* Category divider */
-  .cat-divider {
-    display: flex; align-items: center; gap: 10px;
-    padding: 24px 20px 10px;
+  /* 탭 바 */
+  .tab-bar {
+    display: flex; margin-top: 16px;
+    overflow-x: auto; gap: 2px;
   }
-  .cat-divider .cat-emoji { font-size: 18px; }
-  .cat-divider .cat-name { font-weight: 700; font-size: 14px; letter-spacing: 1px; }
-  .cat-divider .cat-line { flex: 1; height: 1px; }
-  .cat-divider .cat-count { font-size: 12px; }
-
-  /* Item card */
-  .item-card {
-    margin: 0 16px 10px;
-    border-radius: 16px;
-    background: #fff;
-    border: 1.5px solid #EDE8E0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-    overflow: hidden;
-    transition: all 0.3s ease;
-  }
-  .item-card.is-next { border-width: 2px; box-shadow: 0 4px 20px rgba(107,79,53,0.18); }
-  .item-card.answered-yes { background: var(--item-bg); border-color: var(--item-border); }
-  .item-card.answered-no { background: #F8F8F8; border-color: #EDE8E0; }
-
-  .item-body { padding: 16px 16px 12px; }
-  .item-q { font-size: 15px; color: #3A3028; line-height: 1.6; }
-  .item-card.answered-no .item-q { color: #BBB; }
-  .item-card.is-next .item-q { font-weight: 600; }
-  .item-hint { font-size: 11px; color: #C0B8AF; margin-top: 5px; font-style: italic; }
-  .item-card.answered-yes .item-hint { color: var(--item-color); }
-
-  .item-btns { display: flex; border-top: 1px solid #F0EBE3; }
-  .btn-yes, .btn-no {
-    flex: 1; padding: 13px 0;
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex: 1; min-width: 72px;
+    padding: 10px 4px 12px;
     border: none; background: transparent;
-    font-size: 14px; font-family: 'Noto Serif KR', Georgia, serif;
+    color: rgba(255,255,255,0.75);
+    font-size: 12px; font-family: inherit;
     cursor: pointer; transition: all 0.2s;
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    border-radius: 12px 12px 0 0;
+    position: relative;
   }
-  .btn-yes { border-right: 1px solid #F0EBE3; color: #888; border-radius: 0 0 0 16px; }
-  .btn-no { color: #AAA; border-radius: 0 0 16px 0; }
-  .item-card.answered-yes .btn-yes { color: #fff; font-weight: 700; }
-  .item-card.answered-no .btn-no { background: #E8E2DA; color: #888; font-weight: 600; }
-
-  /* Result card */
-  #result-card {
-    margin: 8px 16px 0;
-    background: linear-gradient(135deg, #6B4F35, #9A7050);
-    border-radius: 20px;
-    padding: 24px 20px;
-    text-align: center;
-    box-shadow: 0 8px 32px rgba(107,79,53,0.3);
+  .tab-btn .tab-emoji { font-size: 18px; }
+  .tab-btn .tab-badge {
+    position: absolute; top: 6px; right: 8px;
+    background: #FFD580; color: #6B4F35;
+    font-size: 10px; font-weight: 700;
+    border-radius: 8px; padding: 1px 5px;
     display: none;
   }
-  #result-card .res-emoji { font-size: 40px; }
-  #result-card .res-pct { color: #FFE9B8; font-size: 28px; font-weight: 700; margin-top: 8px; }
-  #result-card .res-msg { color: rgba(255,255,255,0.9); font-size: 15px; margin-top: 6px; line-height: 1.6; }
-  #result-card .res-sub { color: rgba(255,255,255,0.6); font-size: 12px; margin-top: 4px; }
+  .tab-btn.active {
+    background: #FDF8F2;
+    color: var(--tab-color, #6B4F35);
+    font-weight: 700;
+  }
+  .tab-btn.active .tab-badge,
+  .tab-btn.has-answer .tab-badge { display: block; }
 
-  /* Share button */
-  #share-btn-wrap { padding: 16px 16px 0; }
-  #share-btn {
-    width: 100%; padding: 17px;
+  /* ── 본문 ── */
+  #body-wrap { padding: 16px 16px 0; }
+
+  /* 탭 헤더 카드 */
+  .tab-header-card {
+    border-radius: 16px; padding: 16px 18px;
+    margin-bottom: 12px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .th-emoji { font-size: 26px; }
+  .th-title { font-size: 18px; font-weight: 700; }
+  .th-sub { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  .th-progress { margin-left: auto; text-align: right; }
+  .th-pct { font-size: 20px; font-weight: 700; }
+  .th-cnt { font-size: 12px; opacity: 0.8; }
+
+  /* 진행 바 */
+  .tab-prog-bar {
+    height: 5px; border-radius: 10px; margin-bottom: 14px;
+    background: #EDE8E0; overflow: hidden;
+  }
+  .tab-prog-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
+
+  /* 아이템 카드 */
+  .item-card {
+    border-radius: 16px; background: #fff;
+    border: 1.5px solid #EDE8E0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    overflow: hidden; margin-bottom: 10px;
+    transition: all 0.25s ease;
+  }
+  .item-card.is-next {
+    border: 2px solid var(--cat-color);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.10);
+  }
+  .item-body { padding: 16px 16px 12px; }
+  .item-q { font-size: 16px; color: #2A2018; line-height: 1.65; font-weight: 600; transition: color 0.2s; }
+  .item-hint { font-size: 13px; color: #8A7F72; margin-top: 6px; font-style: italic; }
+
+  /* 선택 상태 */
+  .item-card.ans-yes .item-q  { color: var(--cat-color); font-weight: 700; }
+  .item-card.ans-yes .item-hint { color: var(--cat-color); opacity: 0.8; }
+  .item-card.ans-no  .item-q  { color: #7A7068; }
+  .item-card.ans-na  .item-q  { color: #9A9088; }
+
+  /* 3버튼 */
+  .item-btns { display: flex; border-top: 1px solid #EDE8E0; }
+  .ans-btn {
+    flex: 1; padding: 13px 4px;
+    border: none; background: transparent;
+    font-size: 13px; font-family: inherit;
+    cursor: pointer; transition: all 0.2s;
+    color: #7A7068; line-height: 1.4; text-align: center; font-weight: 500;
+  }
+  .ans-btn:not(:last-child) { border-right: 1px solid #EDE8E0; }
+  .ans-btn:first-child { border-radius: 0 0 0 16px; }
+  .ans-btn:last-child  { border-radius: 0 0 16px 0; }
+
+  /* 결과 카드 */
+  .result-card {
+    border-radius: 20px; padding: 24px 20px;
+    text-align: center; margin-bottom: 14px;
+    background: linear-gradient(135deg, #6B4F35, #9A7050);
+    box-shadow: 0 8px 32px rgba(107,79,53,0.28);
+  }
+  .r-emoji { font-size: 38px; }
+  .r-pct { color: #FFE9B8; font-size: 28px; font-weight: 700; margin-top: 6px; }
+  .r-msg { color: rgba(255,255,255,0.88); font-size: 14px; margin-top: 6px; line-height: 1.6; }
+  .r-sub { color: rgba(255,255,255,0.55); font-size: 12px; margin-top: 4px; }
+  .cat-scores { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin-top: 14px; }
+  .cat-score-tag {
+    background: rgba(255,255,255,0.15); border-radius: 20px;
+    padding: 5px 12px; font-size: 12px; color: #fff;
+  }
+
+  /* 공유 버튼 */
+  .share-btn {
+    width: 100%; padding: 16px;
     background: linear-gradient(135deg, #B09070, #C8A882);
     color: #fff; border: none; border-radius: 16px;
-    font-size: 16px; font-weight: 700;
-    font-family: 'Noto Serif KR', Georgia, serif;
-    cursor: pointer;
-    box-shadow: 0 4px 16px rgba(107,79,53,0.35);
-    letter-spacing: 0.5px;
-    transition: background 0.3s;
+    font-size: 15px; font-weight: 700; font-family: inherit;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(107,79,53,0.3);
+    transition: background 0.3s; margin-bottom: 4px;
   }
-  #share-btn.all-done { background: linear-gradient(135deg, #6B4F35, #9A7050); }
+  .share-btn.full { background: linear-gradient(135deg, #6B4F35, #9A7050); }
 
-  /* Modal overlay */
+  /* 모달 */
   .modal-overlay {
     display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.55); z-index: 100;
-    align-items: flex-end;
+    background: rgba(0,0,0,0.5); z-index: 100; align-items: flex-end;
   }
   .modal-overlay.open { display: flex; }
   .modal-box {
     background: #FDF8F2; border-radius: 24px 24px 0 0;
-    padding: 28px 20px 44px; width: 100%;
-    max-height: 85vh; overflow-y: auto;
+    padding: 28px 20px 48px; width: 100%;
+    max-height: 88vh; overflow-y: auto;
   }
-  .modal-title { text-align: center; margin-bottom: 24px; }
-  .modal-title h2 { font-size: 20px; font-weight: 700; color: #4A3020; }
-  .modal-title p { font-size: 13px; color: #AAA; margin-top: 6px; }
-
+  .modal-title { text-align: center; margin-bottom: 22px; }
+  .modal-title h2 { font-size: 19px; font-weight: 700; color: #4A3020; }
+  .modal-title p { font-size: 13px; color: #AAA; margin-top: 5px; }
   .share-option {
-    background: #fff; border: 1.5px solid #D4C4B0;
-    border-radius: 16px; padding: 20px;
-    margin-bottom: 12px; cursor: pointer;
+    background: #fff; border: 1.5px solid #D4C4B0; border-radius: 16px;
+    padding: 18px; margin-bottom: 10px; cursor: pointer;
     display: flex; gap: 14px; align-items: flex-start;
-    transition: border-color 0.2s;
   }
-  .share-option:active { border-color: var(--brown); }
-  .share-option .opt-icon { font-size: 32px; flex-shrink: 0; }
-  .share-option h3 { font-weight: 700; font-size: 16px; color: #4A3020; margin-bottom: 4px; }
-  .share-option p { font-size: 13px; color: #888; line-height: 1.6; }
-
+  .share-option .opt-icon { font-size: 30px; flex-shrink: 0; }
+  .share-option h3 { font-weight: 700; font-size: 15px; color: #4A3020; margin-bottom: 3px; }
+  .share-option p { font-size: 12px; color: #888; line-height: 1.6; }
   .share-preview-card {
-    border-radius: 16px; padding: 20px;
-    margin-bottom: 16px; color: #fff;
+    border-radius: 14px; padding: 18px; margin-bottom: 14px; color: #fff;
   }
-  .share-preview-card.result-type { background: linear-gradient(135deg, #6B4F35, #9A7050); }
-  .share-preview-card.invite-type { background: linear-gradient(135deg, #3A6050, #5A8070); }
-  .preview-big-emoji { font-size: 28px; margin-bottom: 4px; }
-  .preview-pct { font-size: 22px; font-weight: 700; }
-  .preview-sub { font-size: 13px; opacity: 0.8; margin-top: 4px; }
-  .preview-tags { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 6px; }
-  .preview-tag { background: rgba(255,255,255,0.15); border-radius: 20px; padding: 5px 12px; font-size: 12px; }
-  .preview-quote { margin-top: 14px; font-size: 13px; opacity: 0.9; font-style: italic; line-height: 1.6; }
-
+  .spc-result { background: linear-gradient(135deg, #6B4F35, #9A7050); }
+  .spc-invite { background: linear-gradient(135deg, #3A6050, #5A8070); }
   .text-preview {
-    background: #fff; border-radius: 12px; padding: 14px 16px;
+    background: #fff; border-radius: 12px; padding: 13px 15px;
     font-size: 12px; color: #666; line-height: 1.8;
     white-space: pre-wrap; border: 1px solid #EDE8E0;
-    margin-bottom: 16px; max-height: 180px; overflow-y: auto;
+    margin-bottom: 14px; max-height: 170px; overflow-y: auto;
   }
-
   .btn-copy {
-    width: 100%; padding: 16px;
+    width: 100%; padding: 15px;
     background: linear-gradient(135deg, #6B4F35, #9A7050);
-    color: #fff; border: none; border-radius: 14px;
-    font-size: 15px; font-weight: 700;
-    font-family: 'Noto Serif KR', Georgia, serif;
-    cursor: pointer; margin-bottom: 10px;
-    box-shadow: 0 4px 14px rgba(107,79,53,0.3);
+    color: #fff; border: none; border-radius: 13px;
+    font-size: 15px; font-weight: 700; font-family: inherit;
+    cursor: pointer; margin-bottom: 9px;
   }
   .btn-close {
-    width: 100%; padding: 14px;
+    width: 100%; padding: 13px;
     background: transparent; color: #AAA;
-    border: 1px solid #DDD; border-radius: 14px;
-    font-size: 14px;
-    font-family: 'Noto Serif KR', Georgia, serif;
-    cursor: pointer;
+    border: 1px solid #DDD; border-radius: 13px;
+    font-size: 13px; font-family: inherit; cursor: pointer;
   }
   .btn-back {
     background: none; border: none; color: #AAA;
-    font-size: 14px; cursor: pointer;
-    font-family: 'Noto Serif KR', Georgia, serif;
-    margin-bottom: 12px; padding: 0 0 4px;
+    font-size: 13px; font-family: inherit; cursor: pointer;
+    padding: 0 0 12px; display: block;
   }
-  .share-detail-title { font-size: 16px; font-weight: 700; color: #4A3020; margin-bottom: 16px; }
-
-  /* Toast */
   #toast {
-    display: none; position: fixed; bottom: 90px; left: 50%;
+    display: none; position: fixed; bottom: 88px; left: 50%;
     transform: translateX(-50%);
     background: #3A2A1A; color: #fff;
-    padding: 13px 22px; border-radius: 24px;
-    font-size: 13px; z-index: 200; white-space: nowrap;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    padding: 12px 20px; border-radius: 22px;
+    font-size: 13px; z-index: 300; white-space: nowrap;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.22);
+  }
+
+  /* 경각심 팝업 */
+  #nudge-popup {
+    display: none; position: fixed; bottom: 0; left: 0; right: 0;
+    z-index: 200; padding: 0 16px 32px;
+    animation: slideUp 0.3s ease;
+  }
+  @keyframes slideUp {
+    from { transform: translateY(40px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+  }
+  .nudge-card {
+    background: #2C1F12;
+    border-radius: 20px;
+    padding: 20px 20px 16px;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.25);
+  }
+  .nudge-icon { font-size: 28px; margin-bottom: 8px; }
+  .nudge-title { color: #FFD580; font-size: 15px; font-weight: 700; line-height: 1.5; margin-bottom: 6px; }
+  .nudge-body  { color: rgba(255,255,255,0.82); font-size: 13px; line-height: 1.7; }
+  .nudge-close {
+    margin-top: 14px; width: 100%; padding: 11px;
+    background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.7);
+    border: none; border-radius: 12px;
+    font-size: 13px; font-family: inherit; cursor: pointer;
   }
 </style>
 </head>
 <body>
 
-<!-- Header -->
 <div id="header">
   <div class="date-label" id="date-label"></div>
-  <h1>오늘 하루 돌아보기</h1>
-  <div class="subtitle">빈손으로 왔다 빈손으로 간다. 그게 인생이다.</div>
-  <div class="progress-wrap">
-    <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
-    <div class="progress-text" id="prog-text">0 / 35</div>
-  </div>
+  <div class="header-title">오늘 하루 돌아보기</div>
+  <div class="header-sub">빈손으로 왔다 빈손으로 간다. 그게 인생이다.</div>
+  <div class="tab-bar" id="tab-bar"></div>
 </div>
 
-<!-- Items injected by JS -->
-<div id="items-wrap"></div>
+<div id="body-wrap"></div>
 
-<!-- Result card -->
-<div id="result-card">
-  <div class="res-emoji" id="res-emoji"></div>
-  <div class="res-pct" id="res-pct"></div>
-  <div class="res-msg" id="res-msg"></div>
-  <div class="res-sub" id="res-sub"></div>
-</div>
-
-<!-- Share button -->
-<div id="share-btn-wrap">
-  <button id="share-btn" onclick="openShare()">📤 지금까지 결과 공유하기</button>
-</div>
-
-<!-- Share Modal -->
 <div class="modal-overlay" id="share-modal" onclick="closeShare()">
   <div class="modal-box" onclick="event.stopPropagation()">
-    <!-- Step 1: choose type -->
     <div id="share-step1">
-      <div class="modal-title">
-        <h2>공유하기</h2>
-        <p>어떤 내용을 공유할까요?</p>
-      </div>
+      <div class="modal-title"><h2>공유하기</h2><p>어떤 내용을 공유할까요?</p></div>
       <div class="share-option" onclick="showShareDetail('result')">
         <div class="opt-icon">📊</div>
-        <div>
-          <h3>내 진단 결과 공유</h3>
-          <p>오늘 내가 실천한 것들을 공유해요.<br>친구들이 보고 "나도 해봐야겠다" 싶게 만들어요.</p>
-        </div>
+        <div><h3>내 진단 결과 공유</h3><p>오늘 실천한 것들을 공유해요.<br>친구들이 "나도 해봐야겠다" 싶게 만들어요.</p></div>
       </div>
       <div class="share-option" onclick="showShareDetail('invite')">
         <div class="opt-icon">🌿</div>
-        <div>
-          <h3>앱 자체 공유 (초대)</h3>
-          <p>이 자가진단 앱을 친구에게 소개해요.<br>같이 하루를 돌아보자고 권해봐요.</p>
-        </div>
+        <div><h3>앱 초대하기</h3><p>이 자가진단 앱을 친구에게 소개해요.<br>같이 하루를 돌아보자고 권해봐요.</p></div>
       </div>
       <button class="btn-close" onclick="closeShare()">닫기</button>
     </div>
-    <!-- Step 2: detail -->
     <div id="share-step2" style="display:none">
-      <button class="btn-back" onclick="backToStep1()">← 뒤로</button>
-      <div class="share-detail-title" id="share-detail-title"></div>
-      <div class="share-preview-card" id="share-preview-card"></div>
-      <div class="text-preview" id="share-text-preview"></div>
+      <button class="btn-back" onclick="backStep()">← 뒤로</button>
+      <div id="share-detail-title" style="font-size:16px;font-weight:700;color:#4A3020;margin-bottom:14px"></div>
+      <div id="share-preview-card" class="share-preview-card"></div>
+      <div id="share-text-preview" class="text-preview"></div>
       <button class="btn-copy" onclick="copyShareText()">📋 텍스트 복사하기</button>
       <button class="btn-close" onclick="closeShare()">닫기</button>
     </div>
@@ -262,77 +271,76 @@
 
 <div id="toast"></div>
 
+<div id="nudge-popup">
+  <div class="nudge-card">
+    <div class="nudge-icon" id="nudge-icon"></div>
+    <div class="nudge-title" id="nudge-title"></div>
+    <div class="nudge-body"  id="nudge-body"></div>
+    <button class="nudge-close" onclick="closeNudge()">알겠어요, 내일은 해볼게요 👊</button>
+  </div>
+</div>
+
 <script>
 const allItems = [
-  // 인생철학
-  { id:"l1",  cat:"인생철학", emoji:"🌿", q:"오늘 집이나 재산에 지나친 욕심을 부리지 않았나요?",         hint:"나 죽으면 빈집이다",                           yes:"욕심 안 부렸다",    no:"욕심 부렸다" },
-  { id:"l2",  cat:"인생철학", emoji:"🌿", q:"돈 모으는 것보다 소중한 사람을 더 챙겼나요?",               hint:"돈만 모으면 자식 싸움만 붙인다",               yes:"사람을 챙겼다",     no:"챙기지 못했다" },
-  { id:"l3",  cat:"인생철학", emoji:"🌿", q:"오늘 명예나 평판에 집착하지 않았나요?",                     hint:"묘비명 아무도 안 읽는다",                     yes:"집착 안 했다",      no:"집착했다" },
-  { id:"l4",  cat:"인생철학", emoji:"🌿", q:"체면보다 진심으로 사람을 대했나요?",                        hint:"내 장례식에 몇 명 안 온다",                   yes:"진심으로 대했다",   no:"체면 차렸다" },
-  { id:"l5",  cat:"인생철학", emoji:"🌿", q:"남의 눈치보다 내 마음에 솔직했나요?",                       hint:"죽으면 다 잊힌다",                             yes:"솔직했다",          no:"눈치 봤다" },
-  { id:"l6",  cat:"인생철학", emoji:"🌿", q:"누군가를 미워하는 마음을 내려놓았나요?",                     hint:"원수도 죽으면 흙으로 돌아간다",               yes:"내려놓았다",        no:"아직 미웠다" },
-  { id:"l7",  cat:"인생철학", emoji:"🌿", q:"명품·물질에 집착하지 않았나요?",                            hint:"화장터 불길 속에선 다 재더미다",               yes:"집착 안 했다",      no:"집착했다" },
-  { id:"l8",  cat:"인생철학", emoji:"🌿", q:"남과 비교하는 마음 없이 하루를 보냈나요?",                   hint:"관 뚜껑 덮으면 다 똑같다",                   yes:"비교 안 했다",      no:"비교했다" },
-  { id:"l9",  cat:"인생철학", emoji:"🌿", q:"지식이나 경험을 자랑하려 하지 않았나요?",                    hint:"치매 오면 내 이름도 잊는다",                  yes:"자랑 안 했다",      no:"자랑했다" },
-  { id:"l10", cat:"인생철학", emoji:"🌿", q:"결과에 집착하지 않고 지금 이 순간을 즐겼나요?",              hint:"우린 잠시 소풍 온 거다",                      yes:"즐겼다",            no:"즐기지 못했다" },
-  // 건강식습관
-  { id:"h1",  cat:"건강식습관", emoji:"🥗", q:"현미밥을 천천히 꼭꼭 씹어서 먹었나요?",                   hint:"침과 함께 소화 안 되면 장에서 썩는다",         yes:"꼭꼭 씹어 먹었다",  no:"빨리 먹었다" },
-  { id:"h2",  cat:"건강식습관", emoji:"🥗", q:"저녁 7시 이후 고기나 기름진 음식을 자제했나요?",           hint:"소화 못 하면 면역력 떨어지고 병으로 이어진다", yes:"자제했다",          no:"먹었다" },
-  { id:"h3",  cat:"건강식습관", emoji:"🥗", q:"된장·청국장 등 발효식품을 챙겨 먹었나요?",                 hint:"유익균과 영양 흡수까지 동시에 챙긴다",         yes:"챙겨 먹었다",       no:"못 먹었다" },
-  { id:"h4",  cat:"건강식습관", emoji:"🥗", q:"배가 고플 때만 먹고 과식하지 않았나요?",                   hint:"배 안 고픈데 먹으면 과식이다",                 yes:"적당히 먹었다",     no:"과식했다" },
-  { id:"h5",  cat:"건강식습관", emoji:"🥗", q:"탄수화물·단백질·지방 균형을 신경 썼나요?",                 hint:"균형 깨지면 몸이 무너진다",                    yes:"균형 맞췄다",       no:"신경 못 썼다" },
-  { id:"h6",  cat:"건강식습관", emoji:"🥗", q:"가공식품이나 발암 위험 음식을 피했나요?",                   hint:"몸이 제대로 못 막으면 병 확률 올라간다",       yes:"피했다",            no:"먹었다" },
-  { id:"h7",  cat:"건강식습관", emoji:"🥗", q:"오늘 장 건강 신호(방귀·변비·피부)에 귀 기울였나요?",       hint:"장 건강 무너지면 바로 신호 온다",              yes:"귀 기울였다",       no:"그냥 지나쳤다" },
-  { id:"h8",  cat:"건강식습관", emoji:"🥗", q:"배를 따뜻하게 유지하고 체온 관리를 했나요?",               hint:"유산균보다 중요한 건 따뜻한 배다",             yes:"따뜻하게 했다",     no:"못 챙겼다" },
-  { id:"h9",  cat:"건강식습관", emoji:"🥗", q:"오늘 걷기 운동을 했나요?",                                hint:"피가 돌아야 몸도 살아난다",                    yes:"걸었다",            no:"안 걸었다" },
-  // 아침루틴
-  { id:"m1",  cat:"아침루틴", emoji:"☀️", q:"일어나자마자 따뜻한 물 한 컵을 마셨나요?",                  hint:"혈액 순환을 돕는 최고의 보약",                 yes:"마셨다",            no:"안 마셨다" },
-  { id:"m1b", cat:"아침루틴", emoji:"☀️", q:"직접 갈아 만든 녹즙을 마셨나요?",                           hint:"독소 제거 & 활력 충전",                        yes:"마셨다",            no:"안 마셨다" },
-  { id:"m2",  cat:"아침루틴", emoji:"☀️", q:"아침에 삶은 달걀 2개를 챙겨 먹었나요?",                     hint:"근육과 기력을 유지해주는 필수 단백질",         yes:"먹었다",            no:"못 먹었다" },
-  { id:"m2b", cat:"아침루틴", emoji:"☀️", q:"단백질 파우더를 넣은 우유나 콩물을 마셨나요?",               hint:"근육·뼈 보호에 핵심",                          yes:"마셨다",            no:"안 마셨다" },
-  { id:"m3",  cat:"아침루틴", emoji:"☀️", q:"견과류 한 줌을 아침에 챙겨 먹었나요?",                       hint:"뇌 컨디션 업 & 치매 예방",                     yes:"먹었다",            no:"안 먹었다" },
-  { id:"m3b", cat:"아침루틴", emoji:"☀️", q:"올리브유로 볶은 토마토를 먹었나요?",                         hint:"항산화 & 피부 관리",                           yes:"먹었다",            no:"못 먹었다" },
-  { id:"m4",  cat:"아침루틴", emoji:"☀️", q:"고구마·감자 등 자연식품으로 에너지를 채웠나요?",             hint:"든든한 에너지, 소화 돕는 식이섬유 풍부",       yes:"채웠다",            no:"못 채웠다" },
-  { id:"m4b", cat:"아침루틴", emoji:"☀️", q:"후식으로 사과를 먹었나요?",                                 hint:"소화 & 피부 케어, 마지막 필수 코스",           yes:"먹었다",            no:"안 먹었다" },
-  { id:"m5",  cat:"아침루틴", emoji:"☀️", q:"아침에 핸드폰보다 몸을 먼저 깨우는 루틴이 있었나요?",        hint:"하루의 시작이 하루를 만든다",                  yes:"루틴 지켰다",       no:"핸드폰 먼저 봤다" },
-  // 마인드셋
-  { id:"ms1", cat:"마인드셋", emoji:"💡", q:"착하다는 말에 안주하지 않고 실력을 키우려 했나요?",          hint:"세상은 착한 사람보다 준비된 사람을 기다린다", yes:"실력 키웠다",       no:"안주했다" },
-  { id:"ms2", cat:"마인드셋", emoji:"💡", q:"경제적 책임감을 갖고 행동했나요?",                          hint:"돈이 없으면 지킬 것도 없다",                  yes:"책임감 있게 행동했다", no:"흐지부지했다" },
-  { id:"ms3", cat:"마인드셋", emoji:"💡", q:"남의 인생을 부러워하지 않고 내 삶에 집중했나요?",            hint:"비교는 감정을 갉아먹고 자기 삶을 흔든다",     yes:"내 삶에 집중했다",  no:"부러워했다" },
-  { id:"ms4", cat:"마인드셋", emoji:"💡", q:"감정대로 행동하지 않고 한 번 참은 순간이 있었나요?",         hint:"때로 참는 게 이기는 것이다",                  yes:"참았다",            no:"감정대로 했다" },
-  { id:"ms5", cat:"마인드셋", emoji:"💡", q:"하고 싶은 일보다 지금 할 수 있는 일을 먼저 했나요?",         hint:"현실을 딛고 나서야 꿈도 꿀 수 있다",          yes:"할 수 있는 일 먼저 했다", no:"미루었다" },
-  { id:"ms6", cat:"마인드셋", emoji:"💡", q:"'왜 해야 하지?' 하는 순간에도 끝까지 해냈나요?",            hint:"그 일을 해낸 사람이 결국 성공한다",           yes:"끝까지 해냈다",     no:"포기했다" },
-  { id:"ms7", cat:"마인드셋", emoji:"💡", q:"변하는 상황 속에서도 내 중심을 지켰나요?",                  hint:"사람도 변한다, 상황도 변한다",                yes:"중심을 지켰다",     no:"흔들렸다" },
+  { id:"l1",  cat:"인생철학",  q:"오늘 집이나 재산에 지나친 욕심을 부리지 않았나요?",         hint:"나 죽으면 빈집이다",                           yes:"욕심 안 부렸다",          no:"욕심 부렸다",          na:"생각 안 해봤다" },
+  { id:"l2",  cat:"인생철학",  q:"돈 모으는 것보다 소중한 사람을 더 챙겼나요?",               hint:"돈만 모으면 자식 싸움만 붙인다",               yes:"사람을 챙겼다",            no:"챙기지 못했다",        na:"생각 안 해봤다" },
+  { id:"l3",  cat:"인생철학",  q:"오늘 명예나 평판에 집착하지 않았나요?",                     hint:"묘비명 아무도 안 읽는다",                     yes:"집착 안 했다",             no:"집착했다",             na:"생각 안 해봤다" },
+  { id:"l4",  cat:"인생철학",  q:"체면보다 진심으로 사람을 대했나요?",                        hint:"내 장례식에 몇 명 안 온다",                   yes:"진심으로 대했다",          no:"체면 차렸다",          na:"생각 안 해봤다" },
+  { id:"l5",  cat:"인생철학",  q:"남의 눈치보다 내 마음에 솔직했나요?",                       hint:"죽으면 다 잊힌다",                             yes:"솔직했다",                 no:"눈치 봤다",            na:"생각 안 해봤다" },
+  { id:"l6",  cat:"인생철학",  q:"누군가를 미워하는 마음을 내려놓았나요?",                     hint:"원수도 죽으면 흙으로 돌아간다",               yes:"내려놓았다",               no:"아직 미웠다",          na:"해당 없다" },
+  { id:"l7",  cat:"인생철학",  q:"명품·물질에 집착하지 않았나요?",                            hint:"화장터 불길 속에선 다 재더미다",               yes:"집착 안 했다",             no:"집착했다",             na:"생각 안 해봤다" },
+  { id:"l8",  cat:"인생철학",  q:"남과 비교하는 마음 없이 하루를 보냈나요?",                   hint:"관 뚜껑 덮으면 다 똑같다",                   yes:"비교 안 했다",             no:"비교했다",             na:"생각 안 해봤다" },
+  { id:"l9",  cat:"인생철학",  q:"지식이나 경험을 자랑하려 하지 않았나요?",                    hint:"치매 오면 내 이름도 잊는다",                  yes:"자랑 안 했다",             no:"자랑했다",             na:"생각 안 해봤다" },
+  { id:"l10", cat:"인생철학",  q:"결과에 집착하지 않고 지금 이 순간을 즐겼나요?",              hint:"우린 잠시 소풍 온 거다",                      yes:"즐겼다",                   no:"즐기지 못했다",        na:"생각 안 해봤다" },
+  { id:"h1",  cat:"건강식습관", q:"현미밥을 천천히 꼭꼭 씹어서 먹었나요?",                    hint:"침과 함께 소화 안 되면 장에서 썩는다",         yes:"꼭꼭 씹었다",              no:"빨리 먹었다",          na:"현미밥 안 먹었다" },
+  { id:"h2",  cat:"건강식습관", q:"저녁 7시 이후 고기나 기름진 음식을 자제했나요?",            hint:"소화 못 하면 면역력 떨어지고 병으로 이어진다", yes:"자제했다",                 no:"먹었다",               na:"저녁을 안 먹었다" },
+  { id:"h3",  cat:"건강식습관", q:"된장·청국장 등 발효식품을 챙겨 먹었나요?",                  hint:"유익균과 영양 흡수까지 동시에 챙긴다",         yes:"챙겨 먹었다",              no:"못 먹었다",            na:"기회가 없었다" },
+  { id:"h4",  cat:"건강식습관", q:"배가 고플 때만 먹고 과식하지 않았나요?",                    hint:"배 안 고픈데 먹으면 과식이다",                 yes:"적당히 먹었다",            no:"과식했다",             na:"신경 못 썼다" },
+  { id:"h5",  cat:"건강식습관", q:"탄수화물·단백질·지방 균형을 신경 썼나요?",                  hint:"균형 깨지면 몸이 무너진다",                    yes:"균형 맞췄다",              no:"신경 못 썼다",         na:"잘 모르겠다" },
+  { id:"h6",  cat:"건강식습관", q:"가공식품이나 발암 위험 음식을 피했나요?",                    hint:"몸이 제대로 못 막으면 병 확률 올라간다",       yes:"피했다",                   no:"먹었다",               na:"뭐가 해당인지 모른다" },
+  { id:"h7",  cat:"건강식습관", q:"오늘 장 건강 신호(방귀·변비·피부)에 귀 기울였나요?",        hint:"장 건강 무너지면 바로 신호 온다",              yes:"귀 기울였다",              no:"그냥 지나쳤다",        na:"별 신호 없었다" },
+  { id:"h8",  cat:"건강식습관", q:"배를 따뜻하게 유지하고 체온 관리를 했나요?",                hint:"유산균보다 중요한 건 따뜻한 배다",             yes:"따뜻하게 했다",            no:"못 챙겼다",            na:"신경 못 썼다" },
+  { id:"h9",  cat:"건강식습관", q:"오늘 걷기 운동을 했나요?",                                 hint:"피가 돌아야 몸도 살아난다",                    yes:"걸었다",                   no:"안 걸었다",            na:"몸이 안 좋았다" },
+  { id:"m1",  cat:"아침루틴",  q:"일어나자마자 따뜻한 물 한 컵을 마셨나요?",                  hint:"혈액 순환을 돕는 최고의 보약",                 yes:"마셨다",                   no:"안 마셨다",            na:"몰랐다" },
+  { id:"m1b", cat:"아침루틴",  q:"직접 갈아 만든 녹즙을 마셨나요?",                           hint:"독소 제거 & 활력 충전",                        yes:"마셨다",                   no:"안 마셨다",            na:"준비가 안 됐다" },
+  { id:"m2",  cat:"아침루틴",  q:"아침에 삶은 달걀 2개를 챙겨 먹었나요?",                     hint:"근육과 기력을 유지해주는 필수 단백질",         yes:"먹었다",                   no:"못 먹었다",            na:"아침을 안 먹었다" },
+  { id:"m2b", cat:"아침루틴",  q:"단백질 파우더를 넣은 우유나 콩물을 마셨나요?",               hint:"근육·뼈 보호에 핵심",                          yes:"마셨다",                   no:"안 마셨다",            na:"준비가 안 됐다" },
+  { id:"m3",  cat:"아침루틴",  q:"견과류 한 줌을 아침에 챙겨 먹었나요?",                       hint:"뇌 컨디션 업 & 치매 예방",                     yes:"먹었다",                   no:"안 먹었다",            na:"집에 없었다" },
+  { id:"m3b", cat:"아침루틴",  q:"올리브유로 볶은 토마토를 먹었나요?",                         hint:"항산화 & 피부 관리",                           yes:"먹었다",                   no:"못 먹었다",            na:"준비가 안 됐다" },
+  { id:"m4",  cat:"아침루틴",  q:"고구마·감자 등 자연식품으로 에너지를 채웠나요?",             hint:"든든한 에너지, 소화 돕는 식이섬유 풍부",       yes:"채웠다",                   no:"못 채웠다",            na:"아침을 안 먹었다" },
+  { id:"m4b", cat:"아침루틴",  q:"후식으로 사과를 먹었나요?",                                 hint:"소화 & 피부 케어, 마지막 필수 코스",           yes:"먹었다",                   no:"안 먹었다",            na:"집에 없었다" },
+  { id:"m5",  cat:"아침루틴",  q:"아침에 핸드폰보다 몸을 먼저 깨우는 루틴이 있었나요?",        hint:"하루의 시작이 하루를 만든다",                  yes:"루틴 지켰다",              no:"핸드폰 먼저 봤다",     na:"루틴이 없다" },
+  { id:"ms1", cat:"마인드셋",  q:"착하다는 말에 안주하지 않고 실력을 키우려 했나요?",          hint:"세상은 착한 사람보다 준비된 사람을 기다린다", yes:"실력 키웠다",              no:"안주했다",             na:"생각 안 해봤다" },
+  { id:"ms2", cat:"마인드셋",  q:"경제적 책임감을 갖고 행동했나요?",                          hint:"돈이 없으면 지킬 것도 없다",                  yes:"책임감 있게 행동했다",     no:"흐지부지했다",         na:"생각 안 해봤다" },
+  { id:"ms3", cat:"마인드셋",  q:"남의 인생을 부러워하지 않고 내 삶에 집중했나요?",            hint:"비교는 감정을 갉아먹고 자기 삶을 흔든다",     yes:"내 삶에 집중했다",         no:"부러워했다",           na:"생각 안 해봤다" },
+  { id:"ms4", cat:"마인드셋",  q:"감정대로 행동하지 않고 한 번 참은 순간이 있었나요?",         hint:"때로 참는 게 이기는 것이다",                  yes:"참았다",                   no:"감정대로 했다",        na:"참을 일이 없었다" },
+  { id:"ms5", cat:"마인드셋",  q:"하고 싶은 일보다 지금 할 수 있는 일을 먼저 했나요?",         hint:"현실을 딛고 나서야 꿈도 꿀 수 있다",          yes:"할 수 있는 일 먼저 했다",  no:"미루었다",             na:"생각 안 해봤다" },
+  { id:"ms6", cat:"마인드셋",  q:"'왜 해야 하지?' 하는 순간에도 끝까지 해냈나요?",            hint:"그 일을 해낸 사람이 결국 성공한다",           yes:"끝까지 해냈다",            no:"포기했다",             na:"그런 순간이 없었다" },
+  { id:"ms7", cat:"마인드셋",  q:"변하는 상황 속에서도 내 중심을 지켰나요?",                  hint:"사람도 변한다, 상황도 변한다",                yes:"중심을 지켰다",            no:"흔들렸다",             na:"생각 안 해봤다" },
 ];
 
 const catConfig = {
-  "인생철학":  { color:"#7A6248", bg:"#F5EFE6", border:"#C8B49850", light:"#FBF7F2" },
-  "건강식습관":{ color:"#4A7A5A", bg:"#EAF5EC", border:"#7ABF8A50", light:"#F4FAF5" },
-  "아침루틴":  { color:"#C08040", bg:"#FBF0E2", border:"#E0A06050", light:"#FEF8F0" },
-  "마인드셋":  { color:"#3A6080", bg:"#E8F0F8", border:"#6090B850", light:"#F2F6FB" },
+  "인생철학":  { emoji:"🌿", color:"#7A6248", bg:"#F5EFE6", fill:"#9A7A58", desc:"죽고 나면 소용없는 것들" },
+  "건강식습관":{ emoji:"🥗", color:"#4A7A5A", bg:"#EAF5EC", fill:"#5A9A6A", desc:"병 부르는 식습관 피하기" },
+  "아침루틴":  { emoji:"☀️", color:"#C08040", bg:"#FBF0E2", fill:"#E09050", desc:"94세 동안 끝판왕의 아침" },
+  "마인드셋":  { emoji:"💡", color:"#3A6080", bg:"#E8F0F8", fill:"#4A78A0", desc:"현실 인생 조언 7가지" },
 };
+const cats = ["인생철학","건강식습관","아침루틴","마인드셋"];
 
-const cats = [...new Set(allItems.map(i => i.cat))];
+const todayKey = "diary3_" + new Date().toISOString().split("T")[0];
 let answers = {};
-let currentShareType = null;
+let activeTab = "인생철학";
+let shareType = null;
 
-const todayKey = "answers_" + new Date().toISOString().split("T")[0];
 try { const s = localStorage.getItem(todayKey); if(s) answers = JSON.parse(s); } catch{}
-
-function saveAnswers() {
-  try { localStorage.setItem(todayKey, JSON.stringify(answers)); } catch {}
-}
+function save() { try { localStorage.setItem(todayKey, JSON.stringify(answers)); } catch{} }
 
 function getDateLabel() {
   const d = new Date();
-  const days = ["일","월","화","수","목","금","토"];
-  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]}요일)`;
+  return `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${"일월화수목금토"[d.getDay()]}요일)`;
 }
-
-function getResultEmoji(pct) {
-  if(pct>=80) return "🌟"; if(pct>=60) return "😊"; if(pct>=40) return "🙂"; if(pct>=20) return "😐"; return "💪";
-}
-function getResultMsg(pct) {
+function getEmoji(pct) { return pct>=80?"🌟":pct>=60?"😊":pct>=40?"🙂":pct>=20?"😐":"💪"; }
+function getMsg(pct) {
   if(pct>=80) return "오늘 정말 잘 살았네요. 스스로를 칭찬해주세요!";
   if(pct>=60) return "꽤 잘 하고 있어요. 조금만 더 신경 써봐요.";
   if(pct>=40) return "절반은 실천했네요. 내일은 조금 더 해봐요.";
@@ -340,98 +348,122 @@ function getResultMsg(pct) {
   return "지금 이 앱을 쓴 것만으로도 이미 한 걸음 내딛은 거예요 💪";
 }
 
-document.getElementById("date-label").textContent = getDateLabel();
-
-function render() {
-  const wrap = document.getElementById("items-wrap");
-  const answered = Object.keys(answers).length;
-  const yesCount = Object.values(answers).filter(Boolean).length;
-  const totalPct = Math.round((yesCount / allItems.length) * 100);
-  const firstUnanswered = allItems.find(i => answers[i.id] === undefined);
-
-  // Progress
-  document.getElementById("prog-fill").style.width = ((answered / allItems.length)*100) + "%";
-  document.getElementById("prog-text").textContent = answered + " / " + allItems.length;
-
-  // Share button
-  const btn = document.getElementById("share-btn");
-  if(answered === allItems.length) {
-    btn.textContent = "📤 오늘의 진단 공유하기";
-    btn.classList.add("all-done");
-  } else {
-    btn.textContent = `📤 지금까지 결과 공유하기 (${answered}/${allItems.length})`;
-    btn.classList.remove("all-done");
-  }
-
-  // Result card
-  const rc = document.getElementById("result-card");
-  if(answered === allItems.length) {
-    rc.style.display = "block";
-    document.getElementById("res-emoji").textContent = getResultEmoji(totalPct);
-    document.getElementById("res-pct").textContent = totalPct + "%";
-    document.getElementById("res-msg").textContent = getResultMsg(totalPct);
-    document.getElementById("res-sub").textContent = allItems.length + "개 중 " + yesCount + "개 실천";
-  } else {
-    rc.style.display = "none";
-  }
-
-  // Build items HTML
-  let html = "";
-  cats.forEach(cat => {
+function renderTabs() {
+  document.getElementById("date-label").textContent = getDateLabel();
+  document.getElementById("tab-bar").innerHTML = cats.map(cat => {
     const cfg = catConfig[cat];
     const items = allItems.filter(i => i.cat === cat);
-    const doneCount = items.filter(i => answers[i.id] === true).length;
-    const answeredCount = items.filter(i => answers[i.id] !== undefined).length;
+    const yesCount = items.filter(i => answers[i.id] === "yes").length;
+    const hasAny = items.some(i => answers[i.id] !== undefined);
+    const isActive = cat === activeTab;
+    return `<button class="tab-btn${isActive?" active":""}${hasAny?" has-answer":""}"
+      style="--tab-color:${cfg.color}" onclick="switchTab('${cat}')">
+      <span class="tab-emoji">${cfg.emoji}</span>
+      <span>${cat}</span>
+      <span class="tab-badge">${yesCount}</span>
+    </button>`;
+  }).join("");
+}
 
-    html += `<div class="cat-divider">
-      <span class="cat-emoji">${items[0].emoji}</span>
-      <span class="cat-name" style="color:${cfg.color}">${cat}</span>
-      <div class="cat-line" style="background:${cfg.color}30"></div>
-      <span class="cat-count" style="color:${cfg.color}">${doneCount} / ${items.length}</span>
+function renderBody() {
+  const cat = activeTab;
+  const cfg = catConfig[cat];
+  const items = allItems.filter(i => i.cat === cat);
+  const yesCount = items.filter(i => answers[i.id] === "yes").length;
+  const answeredCount = items.filter(i => answers[i.id] !== undefined).length;
+  const pct = items.length > 0 ? Math.round(yesCount / items.length * 100) : 0;
+
+  const totalAnswered = allItems.filter(i => answers[i.id] !== undefined).length;
+  const totalYes = allItems.filter(i => answers[i.id] === "yes").length;
+  const totalPct = Math.round(totalYes / allItems.length * 100);
+
+  const firstUnanswered = items.find(i => answers[i.id] === undefined);
+
+  const itemsHtml = items.map(item => {
+    const ans = answers[item.id];
+    let cls = "item-card";
+    if(!ans && firstUnanswered?.id === item.id) cls += " is-next";
+    if(ans === "yes") cls += " ans-yes";
+    if(ans === "no")  cls += " ans-no";
+    if(ans === "na")  cls += " ans-na";
+
+    const yesSt = ans==="yes" ? `background:${cfg.color};color:#fff;font-weight:700;` : "";
+    const noSt  = ans==="no"  ? `background:#EDEAE5;color:#777;font-weight:600;` : "";
+    const naSt  = ans==="na"  ? `background:#F0EDE8;color:#999;font-weight:600;` : "";
+
+    return `<div class="${cls}" style="--cat-color:${cfg.color}" id="card-${item.id}">
+      <div class="item-body">
+        <div class="item-q">${item.q}</div>
+        <div class="item-hint">💬 ${item.hint}</div>
+      </div>
+      <div class="item-btns">
+        <button class="ans-btn" style="${yesSt}" onclick="doAnswer('${item.id}','yes')">${ans==="yes"?"✅ ":""}${item.yes}</button>
+        <button class="ans-btn" style="${noSt}"  onclick="doAnswer('${item.id}','no')">${ans==="no"?"😅 ":""}${item.no}</button>
+        <button class="ans-btn" style="${naSt}"  onclick="doAnswer('${item.id}','na')">${ans==="na"?"— ":""}${item.na}</button>
+      </div>
     </div>`;
+  }).join("");
 
-    items.forEach(item => {
-      const ans = answers[item.id];
-      const isNext = firstUnanswered?.id === item.id;
-      let cardClass = "item-card";
-      if(isNext) cardClass += " is-next";
-      if(ans === true) cardClass += " answered-yes";
-      if(ans === false) cardClass += " answered-no";
+  let resultHtml = "";
+  if(totalAnswered === allItems.length) {
+    const catTagsHtml = cats.map(c => {
+      const ci = allItems.filter(i => i.cat === c);
+      const cy = ci.filter(i => answers[i.id] === "yes").length;
+      return `<span class="cat-score-tag">${catConfig[c].emoji} ${c} ${cy}/${ci.length}</span>`;
+    }).join("");
+    resultHtml = `<div class="result-card">
+      <div class="r-emoji">${getEmoji(totalPct)}</div>
+      <div class="r-pct">${totalPct}%</div>
+      <div class="r-msg">${getMsg(totalPct)}</div>
+      <div class="r-sub">전체 ${allItems.length}개 중 ${totalYes}개 실천</div>
+      <div class="cat-scores">${catTagsHtml}</div>
+    </div>`;
+  }
 
-      const cardStyle = `--item-color:${cfg.color}; --item-bg:${cfg.bg}; --item-border:${cfg.border};`
-        + (isNext ? ` border-color:${cfg.color};` : "")
-        + (ans === true ? ` background:${cfg.bg};` : "");
+  const allDone = totalAnswered === allItems.length;
 
-      const yesBtnStyle = ans === true ? `background:${cfg.color}; color:#fff; font-weight:700;` : "";
-      const noBtnStyle = ans === false ? `background:#E8E2DA; color:#888; font-weight:600;` : "";
+  document.getElementById("body-wrap").innerHTML = `
+    <div class="tab-header-card" style="background:${cfg.bg};color:${cfg.color}">
+      <span class="th-emoji">${cfg.emoji}</span>
+      <div>
+        <div class="th-title">${cat}</div>
+        <div class="th-sub">${cfg.desc}</div>
+      </div>
+      <div class="th-progress">
+        <div class="th-pct">${yesCount}<span style="font-size:13px;font-weight:400"> ✅</span></div>
+        <div class="th-cnt">${answeredCount}/${items.length} 답변</div>
+      </div>
+    </div>
+    <div class="tab-prog-bar">
+      <div class="tab-prog-fill" style="width:${pct}%;background:${cfg.fill}"></div>
+    </div>
+    ${itemsHtml}
+    ${resultHtml}
+    <button class="share-btn${allDone?" full":""}" onclick="openShare()">
+      ${allDone?"📤 오늘의 진단 공유하기":`📤 지금까지 결과 공유하기 (${totalAnswered}/${allItems.length})`}
+    </button>`;
+}
 
-      html += `<div class="${cardClass}" style="${cardStyle}" id="card-${item.id}">
-        <div class="item-body">
-          <div class="item-q" style="${ans===false?'color:#BBB':''}">${item.q}</div>
-          <div class="item-hint" style="color:${ans===true?cfg.color:'#C0B8AF'}">${item.hint}</div>
-        </div>
-        <div class="item-btns">
-          <button class="btn-yes" style="${yesBtnStyle}" onclick="doAnswer('${item.id}', true)">
-            ${ans===true ? "✅ " + item.yes : item.yes}
-          </button>
-          <button class="btn-no" style="${noBtnStyle}" onclick="doAnswer('${item.id}', false)">
-            ${ans===false ? "😅 " + item.no : item.no}
-          </button>
-        </div>
-      </div>`;
-    });
-  });
+function render() { renderTabs(); renderBody(); }
 
-  wrap.innerHTML = html;
+function switchTab(cat) {
+  activeTab = cat;
+  render();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
 function doAnswer(id, val) {
   answers[id] = val;
-  saveAnswers();
+  save();
   render();
-  // scroll to next unanswered
+  // 경각심 메시지
+  if(val === "no" || val === "na") {
+    const item = allItems.find(i => i.id === id);
+    if(item) showNudge(item, val);
+  }
   setTimeout(() => {
-    const next = allItems.find(i => answers[i.id] === undefined);
+    const items = allItems.filter(i => i.cat === activeTab);
+    const next = items.find(i => answers[i.id] === undefined);
     if(next) {
       const el = document.getElementById("card-" + next.id);
       if(el) el.scrollIntoView({ behavior:"smooth", block:"center" });
@@ -439,112 +471,158 @@ function doAnswer(id, val) {
   }, 150);
 }
 
+// ── 경각심 메시지 데이터 ──────────────────────────────
+const nudgeMessages = {
+  l1_no:  { icon:"🏠", title:"재산이 남은들 뭐가 달라질까요?", body:"죽고 나면 집도 차도 다 두고 가야 합니다.\n오늘 잠깐 멈추고, 정말 소중한 게 뭔지 생각해보는 건 어떨까요?" },
+  l2_no:  { icon:"💸", title:"돈은 쌓여도 관계는 쌓이지 않아요", body:"열심히 모은 돈, 결국 자식들 싸움의 씨앗이 될 수도 있습니다.\n오늘 소중한 사람 한 명에게 연락해보는 건 어때요?" },
+  l3_no:  { icon:"🏆", title:"명예는 묘비에도 안 적혀요", body:"묘비명 읽는 사람 아무도 없습니다.\n살아있는 지금, 진짜 가치 있는 일에 시간을 쓰세요." },
+  l4_no:  { icon:"🎭", title:"체면 차리느라 진심을 잃고 있진 않나요?", body:"내 장례식에 몇 명이나 올까요?\n체면으로 쌓은 관계는 위기 때 아무도 안 옵니다." },
+  l5_no:  { icon:"👀", title:"남의 시선은 나를 기억조차 못 해요", body:"내가 죽으면 남들은 다 잊습니다. 딱 3일이면요.\n오늘만큼은 남 눈치 말고 내 마음대로 살아보세요." },
+  l6_no:  { icon:"😤", title:"미움을 품고 사는 건 독약을 마시는 것과 같아요", body:"원수도 죽으면 흙으로 돌아갑니다.\n그 미운 감정, 결국 당신 몸과 마음만 갉아먹어요." },
+  l7_no:  { icon:"👜", title:"명품은 화장터에서 다 재가 됩니다", body:"그 비싼 가방도, 시계도, 불길 속에서는 다 재더미예요.\n오래 남는 건 물건이 아니라 사람과의 기억입니다." },
+  l8_no:  { icon:"⚖️", title:"비교는 평생 끝나지 않는 레이스예요", body:"관 뚜껑 덮으면 부자도 가난한 자도 다 똑같습니다.\n지금 내 삶에 집중하는 게 훨씬 현명한 선택이에요." },
+  l9_no:  { icon:"🧠", title:"치매가 오면 내 이름도 잊습니다", body:"자랑할 그 지식, 몇 년 후엔 기억조차 못 할 수 있어요.\n겸손하게, 배우는 자세로 사는 게 더 오래 빛납니다." },
+  l10_no: { icon:"⏳", title:"지금 이 순간은 다시 오지 않아요", body:"우린 잠시 소풍 온 거예요. 너무 집착하면 소풍을 망칩니다.\n오늘 하루, 딱 한 가지만 즐기는 시간을 만들어보세요." },
+  l1_na:  { icon:"💭", title:"한 번도 생각 안 해봤다고요?", body:"사는 게 바빠서 그럴 수 있어요.\n하지만 죽고 나서 소용없는 걸 위해 오늘을 다 쓰고 있지는 않은지, 잠깐만 생각해보세요." },
+  l5_na:  { icon:"💭", title:"남 눈치 없이 산 적이 언제였나요?", body:"생각해본 적 없다면, 어쩌면 너무 남을 의식하며 살고 있는 건 아닐까요?\n오늘 딱 한 가지, 나를 위한 선택을 해보세요." },
+  h1_no:  { icon:"🍚", title:"빨리 먹는 습관, 장을 망가뜨립니다", body:"침과 함께 씹지 않은 음식은 장에서 썩어요.\n10번만 더 씹어도 소화력이 달라집니다. 내일부터라도 시작해보세요." },
+  h2_no:  { icon:"🥩", title:"늦은 밤 고기는 몸속에서 독이 됩니다", body:"저녁 7시 이후 단백질은 소화가 안 되고 면역력을 떨어뜨려요.\n오래 살고 싶다면 야식부터 끊어야 합니다." },
+  h3_no:  { icon:"🫙", title:"유익균이 사라지면 몸이 무너져요", body:"된장·청국장 한 숟가락이 값비싼 유산균보다 낫습니다.\n내일 된장찌개 한 그릇, 챙겨보는 건 어떨까요?" },
+  h4_no:  { icon:"🍽️", title:"배 안 고픈데 먹는 건 과식이에요", body:"과식은 소화기관을 혹사시키고 만성 질환으로 이어집니다.\n'배가 고파야 먹는다' — 이 원칙 하나만 지켜도 몸이 달라져요." },
+  h5_no:  { icon:"⚠️", title:"영양 불균형은 서서히 몸을 망가뜨려요", body:"탄수화물만, 또는 단백질만 먹는 건 몸의 균형을 깨뜨립니다.\n오래 건강하게 살고 싶다면 균형이 전부예요." },
+  h6_no:  { icon:"☠️", title:"발암물질 음식, 오늘 또 드셨나요?", body:"가공식품, 탄 고기, 방부제 음식들.\n면역력이 약해지면 몸이 못 막아서 병 확률이 올라갑니다.\n오래 살 생각이 있으시다면, 오늘부터 하나씩 줄여보세요." },
+  h7_no:  { icon:"🪱", title:"장이 보내는 신호를 무시하면 안 돼요", body:"방귀 냄새가 심하거나, 변비·설사가 반복된다면 장이 SOS를 보내는 거예요.\n피부 가려움도 장 건강 신호입니다. 지금 내 몸에 귀 기울여보세요." },
+  h8_no:  { icon:"🌡️", title:"차가운 배는 만병의 근원이에요", body:"체온이 1도 떨어지면 면역력이 30% 떨어진다는 말, 아시나요?\n따뜻한 배, 따뜻한 음료 — 작은 습관이 건강을 지킵니다." },
+  h9_no:  { icon:"🚶", title:"오늘 하루 몸을 전혀 안 움직이셨군요", body:"걷기는 최고의 혈액순환 운동입니다.\n엘리베이터 대신 계단, 10분만 걸어도 몸이 달라져요.\n내일은 딱 10분만 걸어보세요." },
+  h6_na:  { icon:"🤷", title:"뭐가 발암물질인지 모른다고요?", body:"햄, 소시지, 탄 음식, 방부제 많은 과자류가 대표적이에요.\n모르면 더 위험합니다. 오늘 한 번 검색해보시는 걸 추천드려요." },
+  h9_na:  { icon:"😷", title:"몸이 안 좋으면 더욱 천천히라도 움직여야 해요", body:"아프다고 누워만 있으면 회복이 더 느려질 수 있어요.\n5분 산책이라도, 몸을 조금씩 깨워주세요." },
+  m1_no:  { icon:"💧", title:"아침 물 한 잔, 이렇게 쉬운 보약이 없어요", body:"잠자는 동안 몸은 수분을 잃습니다.\n일어나자마자 미지근한 물 한 컵 — 혈액 순환에 최고의 시작이에요.\n내일 아침, 꼭 해보세요." },
+  m1b_no: { icon:"🥬", title:"녹즙 한 잔이 몸을 깨워요", body:"직접 갈아 만든 녹즙은 독소를 제거하고 활력을 충전해줍니다.\n어렵게 생각 마세요. 시금치 한 줌에 물만 넣어도 됩니다." },
+  m2_no:  { icon:"🥚", title:"달걀 2개가 하루 근육을 지켜줘요", body:"나이 들수록 근육이 줄어듭니다. 그걸 막는 가장 쉬운 방법이 달걀이에요.\n삶은 달걀 2개, 500원도 안 해요. 내일 아침에 챙겨보세요." },
+  m5_no:  { icon:"📱", title:"아침에 핸드폰부터 보면 하루가 망가져요", body:"일어나자마자 SNS와 뉴스를 보면 뇌가 즉시 스트레스 상태로 전환됩니다.\n5분만이라도 몸 먼저 깨우는 루틴을 만들어보세요." },
+  m1b_na: { icon:"🌱", title:"준비가 안 됐다고요? 오늘 장 보세요", body:"녹즙 재료는 마트에서 2,000원이면 됩니다.\n'준비가 안 됐다'는 말은 사실 '아직 습관이 없다'는 뜻이에요. 오늘 시작해봐요." },
+  m5_na:  { icon:"📋", title:"루틴이 없다면, 지금 만들어보세요", body:"아침 루틴은 거창할 필요 없어요.\n물 한 잔 → 스트레칭 30초 → 창문 열기.\n이것만으로도 하루가 달라집니다." },
+  ms1_no: { icon:"📚", title:"착하다는 말만으론 세상이 기다려주지 않아요", body:"세상은 착한 사람보다 준비된 사람을 원합니다.\n오늘 단 1%라도 실력을 키우는 데 시간을 써보세요." },
+  ms2_no: { icon:"💰", title:"경제력 없이 지킬 수 있는 건 없어요", body:"돈이 전부는 아니지만, 없으면 내 사람을 지킬 수 없습니다.\n오늘 지출 하나라도 돌아보는 건 어떨까요?" },
+  ms3_no: { icon:"👥", title:"남의 인생 부러워하는 시간에 내 인생이 가요", body:"비교는 감정을 갉아먹고 자기 삶을 흔듭니다.\nSNS 속 남들의 하이라이트와 내 일상을 비교하지 마세요." },
+  ms4_no: { icon:"🌋", title:"감정대로 살면 반드시 후회할 순간이 옵니다", body:"참는 것이 지는 게 아니에요.\n때로 침묵이, 때로 한 박자 늦은 반응이 관계를 살립니다." },
+  ms5_no: { icon:"⏰", title:"하고 싶은 일은 할 수 있는 일이 쌓여야 가능해요", body:"꿈만 꾸고 오늘을 미루면 꿈은 점점 멀어집니다.\n지금 당장 할 수 있는 작은 일부터 시작해보세요." },
+  ms6_no: { icon:"🏳️", title:"포기하는 순간 그 일은 영원히 남의 몫이 됩니다", body:"'왜 해야 하지?' 생각이 드는 순간을 버텨낸 사람이 결국 성공합니다.\n조금만 더, 딱 오늘 하루만 더 버텨보세요." },
+  ms7_no: { icon:"🌊", title:"흔들리는 건 자연스러워요, 돌아오는 게 중요해요", body:"사람도 변하고 상황도 변합니다.\n그래서 더욱 내 중심, 내 가치관을 붙잡고 있어야 해요." },
+};
+
+const defaultNudge = {
+  "인생철학":  { no: { icon:"🌿", title:"삶의 본질을 한 번쯤 생각해보세요", body:"바쁜 일상 속에서 놓치고 있는 것들이 있을 수 있어요.\n죽고 나면 소용없는 것들을 위해 오늘을 다 쓰고 있진 않은지 돌아보세요." }, na: { icon:"💭", title:"생각해본 적 없다면, 지금이 기회예요", body:"인생철학이라고 거창하게 생각하지 마세요.\n'나는 어떻게 살고 싶은가?' — 이 질문 하나면 충분해요." } },
+  "건강식습관":{ no: { icon:"🥗", title:"건강은 잃고 나서야 그 소중함을 알아요", body:"사는 날까지는 건강하게 살아야 하지 않을까요?\n오늘 못 한 건 내일 꼭 챙겨보세요. 몸은 거짓말을 안 합니다." }, na: { icon:"🤔", title:"건강에 관심이 없으신가요?", body:"오래 살 생각이 없으신 건 아니겠죠?\n사는 날까지만큼은 건강하게 살아야 하지 않을까요.\n작은 습관 하나가 10년 후를 바꿉니다." } },
+  "아침루틴":  { no: { icon:"☀️", title:"아침을 어떻게 시작하느냐가 하루를 결정해요", body:"대충 시작한 아침은 대충 흘러가는 하루가 됩니다.\n내일 아침, 딱 한 가지만 바꿔보세요." }, na: { icon:"😴", title:"준비가 안 된 게 아니라 습관이 없는 거예요", body:"모든 습관은 '처음 한 번'에서 시작됩니다.\n내일 아침, 딱 하나만 — 물 한 잔부터 시작해보세요." } },
+  "마인드셋":  { no: { icon:"💡", title:"마인드가 바뀌어야 삶이 바뀝니다", body:"생각의 방향이 행동을 만들고, 행동이 인생을 만들어요.\n오늘 못 한 건 내일 다시 시도해보세요." }, na: { icon:"🪞", title:"한 번도 생각 안 해봤다면 지금 시작해요", body:"인생은 생각하는 대로 흘러갑니다.\n'나는 어떻게 살고 싶은가?' — 오늘 잠들기 전 5분만 생각해보세요." } },
+};
+
+let nudgeTimer = null;
+function showNudge(item, val) {
+  const key = `${item.id}_${val}`;
+  const msg = nudgeMessages[key] || defaultNudge[item.cat]?.[val];
+  if(!msg) return;
+  if(Math.random() > 0.6) return; // 60% 확률로만 표시
+  document.getElementById("nudge-icon").textContent = msg.icon;
+  document.getElementById("nudge-title").textContent = msg.title;
+  document.getElementById("nudge-body").textContent = msg.body;
+  document.getElementById("nudge-popup").style.display = "block";
+  if(nudgeTimer) clearTimeout(nudgeTimer);
+  nudgeTimer = setTimeout(closeNudge, 7000);
+}
+function closeNudge() {
+  document.getElementById("nudge-popup").style.display = "none";
+  if(nudgeTimer) clearTimeout(nudgeTimer);
+}
+
 function openShare() {
   document.getElementById("share-modal").classList.add("open");
   document.getElementById("share-step1").style.display = "block";
   document.getElementById("share-step2").style.display = "none";
 }
-function closeShare() {
-  document.getElementById("share-modal").classList.remove("open");
-  currentShareType = null;
-}
-function backToStep1() {
+function closeShare() { document.getElementById("share-modal").classList.remove("open"); shareType = null; }
+function backStep() {
   document.getElementById("share-step1").style.display = "block";
   document.getElementById("share-step2").style.display = "none";
-  currentShareType = null;
 }
 
 function showShareDetail(type) {
-  currentShareType = type;
+  shareType = type;
   document.getElementById("share-step1").style.display = "none";
   document.getElementById("share-step2").style.display = "block";
-
-  const answered = Object.keys(answers).length;
-  const yesCount = Object.values(answers).filter(Boolean).length;
-  const totalPct = Math.round((yesCount / allItems.length) * 100);
+  const totalYes = allItems.filter(i => answers[i.id] === "yes").length;
+  const totalPct = Math.round(totalYes / allItems.length * 100);
 
   if(type === "result") {
     document.getElementById("share-detail-title").textContent = "📊 내 진단 결과";
-
-    // Build preview card
-    let tagsHtml = cats.map(cat => {
-      const items = allItems.filter(i => i.cat === cat);
-      const yes = items.filter(i => answers[i.id] === true).length;
-      const done = items.filter(i => answers[i.id] !== undefined).length;
-      return `<span class="preview-tag">${catConfig[cat] ? allItems.find(i=>i.cat===cat).emoji : ""} ${cat} ${yes}/${done}</span>`;
+    const catTagsHtml = cats.map(c => {
+      const ci = allItems.filter(i => i.cat === c);
+      const cy = ci.filter(i => answers[i.id] === "yes").length;
+      const cd = ci.filter(i => answers[i.id] !== undefined).length;
+      return `<span style="background:rgba(255,255,255,0.18);border-radius:20px;padding:5px 11px;font-size:12px">${catConfig[c].emoji} ${c} ${cy}/${cd}</span>`;
     }).join("");
-
-    document.getElementById("share-preview-card").className = "share-preview-card result-type";
+    document.getElementById("share-preview-card").className = "share-preview-card spc-result";
     document.getElementById("share-preview-card").innerHTML = `
-      <div class="preview-big-emoji">${getResultEmoji(totalPct)}</div>
-      <div class="preview-pct">${totalPct}% 실천</div>
-      <div class="preview-sub">${allItems.length}개 항목 중 ${yesCount}개 · ${getDateLabel()}</div>
-      <div class="preview-tags">${tagsHtml}</div>
-      <div class="preview-quote">"${getResultMsg(totalPct)}"</div>
-    `;
-    document.getElementById("share-text-preview").textContent = generateResultText();
+      <div style="font-size:30px">${getEmoji(totalPct)}</div>
+      <div style="font-size:22px;font-weight:700;margin-top:4px">${totalPct}% 실천</div>
+      <div style="font-size:12px;opacity:0.75;margin-top:3px">${allItems.length}개 항목 중 ${totalYes}개 · ${getDateLabel()}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:12px">${catTagsHtml}</div>
+      <div style="margin-top:12px;font-size:13px;opacity:0.88;font-style:italic;line-height:1.6">"${getMsg(totalPct)}"</div>`;
+    document.getElementById("share-text-preview").textContent = genResultText();
   } else {
     document.getElementById("share-detail-title").textContent = "🌿 앱 초대 메시지";
-    document.getElementById("share-preview-card").className = "share-preview-card invite-type";
+    document.getElementById("share-preview-card").className = "share-preview-card spc-invite";
     document.getElementById("share-preview-card").innerHTML = `
-      <div style="font-size:22px; font-weight:700; margin-bottom:8px">오늘 하루 얼마나 잘 살았나요? 🌿</div>
-      <div style="font-size:13px; opacity:0.85; line-height:1.8">
+      <div style="font-size:20px;font-weight:700;margin-bottom:8px">오늘 하루 얼마나 잘 살았나요? 🌿</div>
+      <div style="font-size:13px;opacity:0.85;line-height:1.8">
         ${allItems.length}가지 질문에 솔직하게 답해보세요.<br>
-        했다 / 못 했다, 딱 2가지만 골라요.<br>
-        매일 저녁 2분이면 충분해요.
+        했다 / 못 했다 / 해당없다 — 딱 3가지만.<br>
+        매일 저녁 2~3분이면 충분해요.
       </div>
-      <div style="margin-top:12px; font-size:13px; opacity:0.7">나는 오늘 ${totalPct}% 실천했어요 ${getResultEmoji(totalPct)}</div>
-    `;
-    document.getElementById("share-text-preview").textContent = generateInviteText();
+      <div style="margin-top:10px;font-size:13px;opacity:0.7">나는 오늘 ${totalPct}% 실천했어요 ${getEmoji(totalPct)}</div>`;
+    document.getElementById("share-text-preview").textContent = genInviteText();
   }
 }
 
-function generateResultText() {
-  const yesCount = Object.values(answers).filter(Boolean).length;
-  const totalPct = Math.round((yesCount / allItems.length) * 100);
-  const lines = [
-    `${getResultEmoji(totalPct)} 오늘 하루 나의 자가진단 결과`,
-    `📅 ${getDateLabel()}`,
-    ``,
-    `전체 ${allItems.length}개 항목 중 ${yesCount}개 실천 ✅`,
-    `실천률 ${totalPct}%`,
-    ``
-  ];
-  cats.forEach(cat => {
-    const items = allItems.filter(i => i.cat === cat);
-    const yes = items.filter(i => answers[i.id] === true).length;
-    const done = items.filter(i => answers[i.id] !== undefined).length;
-    lines.push(`${allItems.find(i=>i.cat===cat).emoji} ${cat}: ${yes}/${done} 실천`);
+function genResultText() {
+  const totalYes = allItems.filter(i => answers[i.id] === "yes").length;
+  const totalPct = Math.round(totalYes / allItems.length * 100);
+  const lines = [`${getEmoji(totalPct)} 오늘 하루 나의 자가진단 결과`,`📅 ${getDateLabel()}`,``,
+    `전체 ${allItems.length}개 항목 중 ${totalYes}개 실천 ✅`,`실천률 ${totalPct}%`,``];
+  cats.forEach(c => {
+    const ci = allItems.filter(i => i.cat === c);
+    const cy = ci.filter(i => answers[i.id] === "yes").length;
+    const cd = ci.filter(i => answers[i.id] !== undefined).length;
+    lines.push(`${catConfig[c].emoji} ${c}: ${cy}/${cd} 실천`);
   });
-  lines.push(``, `"${getResultMsg(totalPct)}"`, ``, `나도 오늘 하루를 돌아봤어요.`, `잠깐 멈추고 스스로를 체크해보는 건 어때요? 🌿`, `#오늘의실천 #하루돌아보기 #자기성찰 #성장일기`);
+  lines.push(``,`"${getMsg(totalPct)}"`,``,`나도 오늘 하루를 돌아봤어요.`,
+    `잠깐 멈추고 스스로를 체크해보는 건 어때요? 🌿`,`#오늘의실천 #하루돌아보기 #자기성찰 #성장일기`);
   return lines.join("\n");
 }
 
-function generateInviteText() {
-  const yesCount = Object.values(answers).filter(Boolean).length;
-  const totalPct = Math.round((yesCount / allItems.length) * 100);
-  return [
-    `🌿 오늘 하루 얼마나 잘 살았나요?`,``,
+function genInviteText() {
+  const totalYes = allItems.filter(i => answers[i.id] === "yes").length;
+  const totalPct = Math.round(totalYes / allItems.length * 100);
+  return [`🌿 오늘 하루 얼마나 잘 살았나요?`,``,
     `죽고 나면 소용없는 것들, 병 부르는 식습관,`,
     `94세 건강 전문가의 아침 루틴, 현실 인생 조언...`,``,
-    `${allItems.length}가지 질문에 '했다/못 했다'로 솔직하게 답해보세요.`,
-    `매일 저녁 2분이면 충분해요.`,``,
-    `나는 오늘 ${totalPct}% 실천했어요 ${getResultEmoji(totalPct)}`,``,
-    `#하루돌아보기 #자기성찰 #오늘도성장`
-  ].join("\n");
+    `${allItems.length}가지 질문에 솔직하게 답해보세요.`,
+    `했다 / 못 했다 / 해당없다 — 딱 3가지만.`,`매일 저녁 2~3분이면 충분해요.`,``,
+    `나는 오늘 ${totalPct}% 실천했어요 ${getEmoji(totalPct)}`,``,
+    `#하루돌아보기 #자기성찰 #오늘도성장`].join("\n");
 }
 
 function copyShareText() {
-  const text = currentShareType === "result" ? generateResultText() : generateInviteText();
-  navigator.clipboard?.writeText(text).then(() => {
-    showToast("복사됐어요! SNS에 붙여넣기 해보세요 ✨");
-  }).catch(() => showToast("텍스트를 직접 선택해서 복사해보세요"));
+  const text = shareType === "result" ? genResultText() : genInviteText();
+  navigator.clipboard?.writeText(text)
+    .then(() => showToast("복사됐어요! SNS에 붙여넣기 해보세요 ✨"))
+    .catch(() => showToast("텍스트를 직접 선택해서 복사해보세요"));
 }
 
 function showToast(msg) {
   const t = document.getElementById("toast");
-  t.textContent = msg;
-  t.style.display = "block";
+  t.textContent = msg; t.style.display = "block";
   setTimeout(() => { t.style.display = "none"; }, 3000);
 }
 
