@@ -403,6 +403,7 @@ footer {
   .five-grid { grid-template-columns: repeat(3, 1fr); }
   .two-col { grid-template-columns: 1fr; }
   .pr-grid { grid-template-columns: 1fr; }
+  .pr-grid[style*="1fr 1fr 1fr"] { grid-template-columns: 1fr !important; }
   .hero { padding: 2.5rem 1.2rem 2rem; }
   .page { padding: 0 1.2rem 4rem; }
   .top-nav { padding: 0 1rem; }
@@ -421,6 +422,8 @@ footer {
     <a href="#jaesung"  class="nav-link">재성</a>
     <a href="#gwansung" class="nav-link">관성</a>
     <a href="#insung"   class="nav-link">인성</a>
+    <a href="#hanja"    class="nav-link">한자 풀이</a>
+    <a href="#why"      class="nav-link">음양 해석 차이</a>
     <a href="#ref"      class="nav-link">한눈에 보기</a>
   </div>
 </nav>
@@ -788,11 +791,297 @@ footer {
 </section>
 
 <!-- ══════════════════════════════════
-     8. 한눈에 보기
+     8. 한자 풀이
+══════════════════════════════════ -->
+<section class="section" id="hanja">
+  <div class="sec-head">
+    <div class="sec-num">8</div>
+    <div class="sec-titles">
+      <div class="sec-title">십성 한자 풀이 — 이름에 담긴 원리</div>
+      <div class="sec-sub">음양의 조화에 따라 달라지는 열 개의 이름</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    십성의 이름은 단순한 명칭이 아닙니다. 각 한자 속에 <strong>오행의 관계와 음양의 결합 방식</strong>이 그대로 담겨 있습니다.
+    이름을 뜻풀이하면 왜 그런 성질이 나오는지 자연스럽게 이해됩니다.
+  </p>
+
+  <!-- 비겁 -->
+  <div class="detail-sec">
+    <div class="ds-head">
+      <div class="ds-dot" style="background:var(--bigep)"></div>
+      <div class="ds-title" style="color:var(--bigep)">비겁 比劫 — 오행이 나와 같음</div>
+      <div class="ds-sub">나와 동등한 세력</div>
+    </div>
+    <div class="two-col">
+      <div class="col-card" style="background:var(--bigep-bg);border-color:var(--bigep-border)">
+        <div class="col-card-label" style="color:var(--bigep)">음양 같음 — 비견 比肩</div>
+        <div class="col-card-name" style="color:var(--bigep)">견줄 비(比) + 어깨 견(肩)</div>
+        <div class="col-card-desc">
+          <strong>"어깨를 나란히 한다."</strong><br>
+          나와 오행도, 음양도 모두 같습니다. 완전히 동등한 존재로 마찰 없이 나란히 서는 동료·형제의 기운입니다. 경쟁하기보다 함께하는 자립의 에너지입니다.
+        </div>
+      </div>
+      <div class="col-card" style="border-color:var(--bigep-border)">
+        <div class="col-card-label" style="color:var(--bigep)">음양 다름 — 겁재 劫財</div>
+        <div class="col-card-name" style="color:var(--bigep)">겁탈할 겁(劫) + 재물 재(財)</div>
+        <div class="col-card-desc">
+          <strong>"재물을 빼앗는다."</strong><br>
+          오행은 같지만 음양이 달라 이질적인 긴장감이 생깁니다. 나와 닮았지만 조금 다른 존재가 재물과 에너지를 두고 경쟁하는 강한 승부욕의 기운입니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 식상 -->
+  <div class="detail-sec">
+    <div class="ds-head">
+      <div class="ds-dot" style="background:var(--siksang)"></div>
+      <div class="ds-title" style="color:var(--siksang)">식상 食傷 — 내가 생(生)하는 오행</div>
+      <div class="ds-sub">표현력 · 기술 · 활동력</div>
+    </div>
+    <div class="two-col">
+      <div class="col-card" style="background:var(--siksang-bg);border-color:var(--siksang-border)">
+        <div class="col-card-label" style="color:var(--siksang)">음양 같음 — 식신 食神</div>
+        <div class="col-card-name" style="color:var(--siksang)">밥 식(食) + 신령 신(神)</div>
+        <div class="col-card-desc">
+          <strong>"먹을 복의 신."</strong><br>
+          음양이 같아 내 에너지가 순방향으로 매끄럽게 흘러나갑니다. 베푸는 마음, 꾸준한 몰입, 안정적인 재능 표현을 상징합니다. 식복(食福)이라 불릴 만큼 결과가 풍성합니다.
+        </div>
+      </div>
+      <div class="col-card" style="border-color:var(--siksang-border)">
+        <div class="col-card-label" style="color:var(--siksang)">음양 다름 — 상관 傷官</div>
+        <div class="col-card-name" style="color:var(--siksang)">다칠 상(傷) + 벼슬 관(官)</div>
+        <div class="col-card-desc">
+          <strong>"정관(바른 규칙)을 상하게 한다."</strong><br>
+          음양이 달라 에너지가 나갈 때 이질적인 마찰이 생깁니다. 기존 틀을 부수는 파격, 자존심 강한 언변과 창의성으로 발현됩니다. 직장보다 자기 사업에서 빛납니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 재성 -->
+  <div class="detail-sec">
+    <div class="ds-head">
+      <div class="ds-dot" style="background:var(--jaesung)"></div>
+      <div class="ds-title" style="color:var(--jaesung)">재성 財星 — 내가 극(剋)하는 오행</div>
+      <div class="ds-sub">재물 · 결과물 · 현실 감각</div>
+    </div>
+    <div class="two-col">
+      <div class="col-card" style="background:var(--jaesung-bg);border-color:var(--jaesung-border)">
+        <div class="col-card-label" style="color:var(--jaesung)">음양 같음 — 편재 偏財</div>
+        <div class="col-card-name" style="color:var(--jaesung)">치우칠 편(偏) + 재물 재(財)</div>
+        <div class="col-card-desc">
+          <strong>"치우친 재물."</strong><br>
+          음양이 같아 극하는 힘이 직선적으로 충돌합니다. 균형 없이 강하게 다루는 재물이라 불규칙하고 크며, 투기·사업·일확천금의 성격을 띱니다.
+        </div>
+      </div>
+      <div class="col-card" style="border-color:var(--jaesung-border)">
+        <div class="col-card-label" style="color:var(--jaesung)">음양 다름 — 정재 正財</div>
+        <div class="col-card-name" style="color:var(--jaesung)">바를 정(正) + 재물 재(財)</div>
+        <div class="col-card-desc">
+          <strong>"바른 재물."</strong><br>
+          음양이 달라 서로 끌어당기는 조화가 생겨 극하는 작용이 부드럽고 균형 잡힙니다. 규칙적인 월급·저축·고정 자산처럼 꾸준하고 안정적인 재물을 뜻합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 관성 -->
+  <div class="detail-sec">
+    <div class="ds-head">
+      <div class="ds-dot" style="background:var(--gwansung)"></div>
+      <div class="ds-title" style="color:var(--gwansung)">관성 官星 — 나를 극(剋)하는 오행</div>
+      <div class="ds-sub">규율 · 직업 · 명예</div>
+    </div>
+    <div class="two-col">
+      <div class="col-card" style="background:var(--gwansung-bg);border-color:var(--gwansung-border)">
+        <div class="col-card-label" style="color:var(--gwansung)">음양 같음 — 편관 偏官</div>
+        <div class="col-card-name" style="color:var(--gwansung)">치우칠 편(偏) + 벼슬 관(官)</div>
+        <div class="col-card-desc">
+          <strong>"치우친 관직."</strong><br>
+          음양이 같아 나를 극하는 힘이 제어 없이 직격으로 들어옵니다. 칠살(七殺)이라고도 불리며, 강한 압박·책임감·카리스마로 나타납니다. 혹독하지만 극복 시 큰 권위가 됩니다.
+        </div>
+      </div>
+      <div class="col-card" style="border-color:var(--gwansung-border)">
+        <div class="col-card-label" style="color:var(--gwansung)">음양 다름 — 정관 正官</div>
+        <div class="col-card-name" style="color:var(--gwansung)">바를 정(正) + 벼슬 관(官)</div>
+        <div class="col-card-desc">
+          <strong>"바른 관직."</strong><br>
+          음양이 달라 음양의 상호 견제로 조율된 힘이 들어옵니다. 합리적인 규율·명예로운 직장·도덕적 책임감을 상징하며, 사회 시스템 안에서 안정적으로 성장하는 기운입니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 인성 -->
+  <div class="detail-sec">
+    <div class="ds-head">
+      <div class="ds-dot" style="background:var(--insung)"></div>
+      <div class="ds-title" style="color:var(--insung)">인성 印星 — 나를 생(生)하는 오행</div>
+      <div class="ds-sub">학문 · 어머니 · 문서</div>
+    </div>
+    <div class="two-col">
+      <div class="col-card" style="background:var(--insung-bg);border-color:var(--insung-border)">
+        <div class="col-card-label" style="color:var(--insung)">음양 같음 — 편인 偏印</div>
+        <div class="col-card-name" style="color:var(--insung)">치우칠 편(偏) + 도장 인(印)</div>
+        <div class="col-card-desc">
+          <strong>"치우친 도장."</strong><br>
+          음양이 같아 나를 생해주는 힘이 직선적이고 강합니다. 조건부로 돕는 계모의 기운으로, 독특한 철학·신비주의·특수 기술·의심 등 편향된 지적 에너지로 나타납니다.
+        </div>
+      </div>
+      <div class="col-card" style="border-color:var(--insung-border)">
+        <div class="col-card-label" style="color:var(--insung)">음양 다름 — 정인 正印</div>
+        <div class="col-card-name" style="color:var(--insung)">바를 정(正) + 도장 인(印)</div>
+        <div class="col-card-desc">
+          <strong>"바른 도장."</strong><br>
+          음양이 달라 나를 생해주는 작용이 조화롭고 부드럽습니다. 친어머니의 조건 없는 사랑처럼, 보편적 학문·자비심·정당한 문서운·수용력으로 나타납니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:2rem">
+    <strong>핵심 암기:</strong>
+    음양이 같으면 <strong>편(偏) — 치우치고 강렬하게</strong>, 음양이 다르면 <strong>정(正) — 바르고 안정적으로</strong>.
+    단, 비겁·식상에서는 음양 같음이 "동류(부드러움)"으로, 재성·관성·인성에서는 "직선 충돌(강렬함)"로 다르게 발현됩니다.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     9. 음양 해석 차이
+══════════════════════════════════ -->
+<section class="section" id="why">
+  <div class="sec-head">
+    <div class="sec-num">9</div>
+    <div class="sec-titles">
+      <div class="sec-title">왜 비겁·식상과 재성·관성·인성의 음양 해석이 다른가</div>
+      <div class="sec-sub">같은 음양 원리가 관계 구조에 따라 다르게 발현되는 이유</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    "음양이 같으면 편(偏), 다르면 정(正)"이라는 원칙이 있는데, 비겁과 식상에서는 음양이 같을 때
+    오히려 <strong>안정적·협력적</strong>으로 읽힙니다. 반면 재성·관성·인성은 음양이 다를 때 <strong>바르고 안정적(正)</strong>이 됩니다.
+    이 겉보기 불일치는 각 십성의 <strong>관계 구조</strong>가 다르기 때문입니다.
+  </p>
+
+  <div class="tbl-wrap" style="margin:1.6rem 0">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>십성</th>
+          <th>음양 같음</th>
+          <th>음양 다름</th>
+          <th>작동 원리</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill" style="background:var(--bigep-bg);color:var(--bigep)">비겁</span></td>
+          <td><strong style="color:var(--bigep)">비견</strong> — 동등·협력</td>
+          <td><strong style="color:var(--bigep)">겁재</strong> — 경쟁·탈취</td>
+          <td style="font-size:12px;color:var(--ink-light)">동류성의 문제 (생극 없음)</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--siksang-bg);color:var(--siksang)">식상</span></td>
+          <td><strong style="color:var(--siksang)">식신</strong> — 안정·순수</td>
+          <td><strong style="color:var(--siksang)">상관</strong> — 파격·창의</td>
+          <td style="font-size:12px;color:var(--ink-light)">발산 방향의 문제 (내→외 생)</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--jaesung-bg);color:var(--jaesung)">재성</span></td>
+          <td><strong style="color:var(--jaesung)">편재</strong> — 불규칙·투기</td>
+          <td><strong style="color:var(--jaesung)">정재</strong> — 안정·고정</td>
+          <td style="font-size:12px;color:var(--ink-light)">작용 강도의 문제 (내→극)</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--gwansung-bg);color:var(--gwansung)">관성</span></td>
+          <td><strong style="color:var(--gwansung)">편관</strong> — 강압·카리스마</td>
+          <td><strong style="color:var(--gwansung)">정관</strong> — 합리·규율</td>
+          <td style="font-size:12px;color:var(--ink-light)">작용 강도의 문제 (극→내)</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--insung-bg);color:var(--insung)">인성</span></td>
+          <td><strong style="color:var(--insung)">편인</strong> — 편협·특수</td>
+          <td><strong style="color:var(--insung)">정인</strong> — 정통·안정</td>
+          <td style="font-size:12px;color:var(--ink-light)">작용 강도의 문제 (생→내)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 이유 1 -->
+  <div class="pr-grid" style="margin-top:2rem">
+    <div class="pr-card" style="border-color:var(--bigep-border)">
+      <div class="pr-icon" style="color:var(--bigep)">① 비겁 — "동류성"의 문제</div>
+      <div class="pr-title">생극이 없는 유일한 범주</div>
+      <div class="pr-desc">
+        비겁은 나와 오행이 <em>동일</em>한 존재입니다. 생(生)도 극(剋)도 없이 오직 <strong>"얼마나 나와 같은가"</strong>만 작동합니다.
+        음양까지 같으면(비견) 완전히 동류 → 동료. 음양이 다르면(겁재) 조금 이질적 → 긴장·경쟁.
+        여기서 "같음 = 안정"이 아니라 <strong>"완전히 같음 = 동류, 조금 다름 = 긴장"</strong>의 논리입니다.
+      </div>
+    </div>
+    <div class="pr-card" style="border-color:var(--siksang-border)">
+      <div class="pr-icon" style="color:var(--siksang)">② 식상 — "발산 방향"의 문제</div>
+      <div class="pr-title">내 에너지가 나가는 방식</div>
+      <div class="pr-desc">
+        식상은 내가 생(生)하는, 즉 나의 에너지가 밖으로 흘러가는 방향입니다.
+        음양이 같으면(식신) 에너지가 순방향으로 <strong>매끄럽게 흘러나감</strong> → 자연스러운 표현, 안정.
+        음양이 다르면(상관) 에너지가 나갈 때 <strong>이질적 마찰</strong>이 생김 → 파격, 기존 틀 해체.
+        비겁과 유사하게 "같음 = 부드러움, 다름 = 마찰"의 논리가 작동합니다.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:1rem;border-left-color:#1b2a4a">
+    <strong>여기서 역전이 일어납니다 →</strong>
+    재성·관성·인성은 모두 일간과 <strong>생극(生剋) 작용</strong>이 실제로 발생합니다.
+    음양이 같고 다름이 단순한 "유사성"이 아니라 <strong>"작용 힘의 강도와 균형"</strong>을 결정하게 됩니다.
+  </div>
+
+  <div class="pr-grid" style="margin-top:1rem;grid-template-columns:1fr 1fr 1fr">
+    <div class="pr-card" style="border-color:var(--jaesung-border)">
+      <div class="pr-icon" style="color:var(--jaesung)">③ 재성</div>
+      <div class="pr-title">내가 극하는 강도</div>
+      <div class="pr-desc">
+        음양이 같으면(편재) 극하는 힘이 <strong>직선 충돌</strong> → 강렬하고 불규칙.
+        음양이 다르면(정재) 음양의 조화로 <strong>작용이 조율</strong>됨 → 안정적이고 규칙적.
+      </div>
+    </div>
+    <div class="pr-card" style="border-color:var(--gwansung-border)">
+      <div class="pr-icon" style="color:var(--gwansung)">④ 관성</div>
+      <div class="pr-title">나를 극하는 강도</div>
+      <div class="pr-desc">
+        음양이 같으면(편관) 극하는 힘이 <strong>제어 없이 직격</strong> → 칠살, 강한 압박.
+        음양이 다르면(정관) 음양의 상호 견제로 <strong>조율된 힘</strong> → 합리적 규율.
+      </div>
+    </div>
+    <div class="pr-card" style="border-color:var(--insung-border)">
+      <div class="pr-icon" style="color:var(--insung)">⑤ 인성</div>
+      <div class="pr-title">나를 생하는 강도</div>
+      <div class="pr-desc">
+        음양이 같으면(편인) 생하는 힘이 <strong>편향되게 집중</strong> → 특수 기술, 의심.
+        음양이 다르면(정인) 음양의 조화로 <strong>고르게 수용</strong> → 보편 학문, 모성애.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:1.6rem;background:#1b2a4a;border-left-color:#6e9fdf;color:rgba(255,255,255,0.85)">
+    <strong style="color:#fff">한 문장 결론:</strong>
+    비겁·식상은 <strong style="color:#a8c8f0">"나와 얼마나 닮았는가(동류성)"</strong>의 문제이고,
+    재성·관성·인성은 <strong style="color:#a8c8f0">"생극 작용이 얼마나 조화로운가(작용의 질)"</strong>의 문제입니다.
+    같은 음양 원리가 <em>관계 구조(동류 vs. 생극)</em>에 따라 다르게 발현되는 것이지, 원리 자체가 달라지는 것은 아닙니다.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     10. 한눈에 보기
 ══════════════════════════════════ -->
 <section class="section" id="ref">
   <div class="sec-head">
-    <div class="sec-num">8</div>
+    <div class="sec-num">10</div>
     <div class="sec-titles">
       <div class="sec-title">한눈에 보기 — 십신 전체 정리</div>
       <div class="sec-sub">생극 관계와 음양에 따라 결정되는 열 개의 이름</div>
