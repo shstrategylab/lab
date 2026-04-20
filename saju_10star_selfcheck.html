@@ -20,10 +20,10 @@ body::before{content:'';position:fixed;inset:0;background:url("data:image/svg+xm
 .wrap{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:44px 20px 100px;}
 
 header{text-align:center;margin-bottom:52px;}
-.eyebrow{font-family:'Noto Sans KR',sans-serif;font-size:10px;font-weight:500;letter-spacing:8px;color:var(--gold);margin-bottom:14px;}
-h1{font-size:clamp(1.8rem,5vw,2.6rem);font-weight:900;color:var(--ink);line-height:1.25;margin-bottom:10px;}
+.eyebrow{font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;letter-spacing:6px;color:var(--gold);margin-bottom:14px;}
+h1{font-size:clamp(2rem,5vw,2.8rem);font-weight:900;color:var(--ink);line-height:1.25;margin-bottom:10px;}
 h1 em{color:var(--gold3);font-style:normal;}
-.subtitle{font-family:'Noto Sans KR',sans-serif;font-size:0.82rem;color:var(--gray);line-height:1.9;}
+.subtitle{font-family:'Noto Sans KR',sans-serif;font-size:0.92rem;color:var(--gray);line-height:1.9;}
 .rule{display:flex;align-items:center;gap:16px;margin:22px auto;max-width:240px;}
 .rule::before,.rule::after{content:'';flex:1;height:1px;background:var(--border2);}
 .rule span{color:var(--gold);font-size:1.1rem;}
@@ -32,17 +32,17 @@ h1 em{color:var(--gold3);font-style:normal;}
 .card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold2),transparent);}
 .card-hd{display:flex;align-items:flex-start;gap:14px;margin-bottom:26px;}
 .card-ico{width:34px;height:34px;border:1.5px solid var(--border2);background:var(--goldbg);display:flex;align-items:center;justify-content:center;color:var(--gold3);font-size:0.95rem;flex-shrink:0;margin-top:2px;}
-.card-hd h2{font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:3px;}
-.card-hd p{font-family:'Noto Sans KR',sans-serif;font-size:0.75rem;color:var(--gray);line-height:1.6;}
+.card-hd h2{font-size:1.1rem;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.card-hd p{font-family:'Noto Sans KR',sans-serif;font-size:0.85rem;color:var(--gray);line-height:1.6;}
 
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 .fi{display:flex;flex-direction:column;gap:7px;}
 .fi.full{grid-column:1/-1;}
-label{font-family:'Noto Sans KR',sans-serif;font-size:0.73rem;font-weight:700;color:var(--gold3);letter-spacing:.5px;}
-input,select{background:var(--surface2);border:1px solid var(--border);border-radius:2px;color:var(--ink);font-family:'Noto Serif KR',serif;font-size:0.9rem;padding:10px 13px;outline:none;transition:border-color .2s;width:100%;}
+label{font-family:'Noto Sans KR',sans-serif;font-size:0.83rem;font-weight:700;color:var(--gold3);letter-spacing:.5px;}
+input,select{background:var(--surface2);border:1px solid var(--border);border-radius:2px;color:var(--ink);font-family:'Noto Serif KR',serif;font-size:1rem;padding:10px 13px;outline:none;transition:border-color .2s;width:100%;}
 input:focus,select:focus{border-color:var(--gold2);}
 .rg{display:flex;gap:8px;}
-.rl{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:1px solid var(--border);cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:0.8rem;color:var(--gray);transition:all .2s;background:var(--surface2);}
+.rl{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border:1px solid var(--border);cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:0.9rem;color:var(--gray);transition:all .2s;background:var(--surface2);}
 .rl input{display:none;}
 .rl:has(input:checked){border-color:var(--gold2);color:var(--gold3);background:var(--goldbg);}
 
@@ -55,69 +55,69 @@ input:focus,select:focus{border-color:var(--gold2);}
 
 .pillars{display:flex;flex-direction:row;gap:2px;margin-bottom:24px;}
 .pillar{flex:1;background:var(--surface2);border:1px solid var(--border);padding:18px 8px;text-align:center;position:relative;}
-.pl-label{font-family:'Noto Sans KR',sans-serif;font-size:0.65rem;color:var(--gray);letter-spacing:2px;margin-bottom:14px;}
+.pl-label{font-family:'Noto Sans KR',sans-serif;font-size:0.75rem;color:var(--gray);letter-spacing:2px;margin-bottom:14px;}
 .pl-stem{font-size:2rem;font-weight:800;line-height:1;}
-.pl-sname{font-family:'Noto Sans KR',sans-serif;font-size:.65rem;color:var(--gray);margin-bottom:10px;}
+.pl-sname{font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--gray);margin-bottom:10px;}
 .pl-branch{font-size:2rem;font-weight:800;line-height:1;}
-.pl-bname{font-family:'Noto Sans KR',sans-serif;font-size:.65rem;color:var(--gray);}
-.pl-tenstem{font-family:'Noto Sans KR',sans-serif;font-size:.68rem;font-weight:700;color:var(--gold3);margin-bottom:6px;min-height:1.2em;}
-.pl-tenbranch{font-family:'Noto Sans KR',sans-serif;font-size:.68rem;font-weight:700;color:var(--gold3);margin-top:6px;min-height:1.2em;}
+.pl-bname{font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--gray);}
+.pl-tenstem{font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;color:var(--gold3);margin-bottom:6px;min-height:1.2em;}
+.pl-tenbranch{font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;color:var(--gold3);margin-top:6px;min-height:1.2em;}
 .pillar.day{border-color:var(--gold2);background:var(--goldbg);}
 .pillar.day::before{content:'일간(나)';position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold2);color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:9px;padding:2px 9px;white-space:nowrap;font-weight:700;}
 .cl-wood{color:var(--wood)}.cl-fire{color:var(--fire)}.cl-earth{color:var(--earth)}.cl-metal{color:var(--metal)}.cl-water{color:var(--water)}
 
 .oh-bars{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
 .oh-row{display:grid;grid-template-columns:80px 1fr 36px;align-items:center;gap:10px;}
-.oh-name{font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--ink);}
+.oh-name{font-family:'Noto Sans KR',sans-serif;font-size:.85rem;color:var(--ink);}
 .oh-track{height:7px;background:var(--border);border-radius:0;overflow:hidden;}
 .oh-fill{height:100%;border-radius:0;transition:width 1s cubic-bezier(.4,0,.2,1);}
-.oh-pct{font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:var(--gray);text-align:right;}
+.oh-pct{font-family:'Noto Sans KR',sans-serif;font-size:.8rem;color:var(--gray);text-align:right;}
 
-.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--gold2);background:var(--goldbg);font-family:'Noto Sans KR',sans-serif;font-size:.78rem;color:var(--gold3);margin-bottom:14px;}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border:1px solid var(--gold2);background:var(--goldbg);font-family:'Noto Sans KR',sans-serif;font-size:.85rem;color:var(--gold3);margin-bottom:14px;}
 
-.tenstar-intro{font-family:'Noto Sans KR',sans-serif;font-size:.82rem;color:var(--gray);line-height:1.9;margin-bottom:24px;padding:14px;background:var(--surface2);border-left:3px solid var(--gold2);}
+.tenstar-intro{font-family:'Noto Sans KR',sans-serif;font-size:.88rem;color:var(--gray);line-height:1.9;margin-bottom:24px;padding:14px;background:var(--surface2);border-left:3px solid var(--gold2);}
 
 .star-section{margin-bottom:32px;}
 .star-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
-.star-badge{padding:4px 12px;font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:1px;color:#fff;}
-.star-name-full{font-size:.95rem;font-weight:700;}
-.star-count-badge{margin-left:auto;font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--gray);border:1px solid var(--border);padding:2px 8px;}
+.star-badge{padding:4px 12px;font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:1px;color:#fff;}
+.star-name-full{font-size:1.0rem;font-weight:700;}
+.star-count-badge{margin-left:auto;font-family:'Noto Sans KR',sans-serif;font-size:.8rem;color:var(--gray);border:1px solid var(--border);padding:2px 8px;}
 
 .check-items{display:flex;flex-direction:column;gap:10px;}
 .ci{display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--surface2);border:1px solid var(--border);transition:background .2s;}
 .ci.checked{background:#f0faf4;border-color:#9ecfb0;}
 .ci.unchecked{background:#fdf5f5;border-color:#e8b4b4;}
 .ci-cb{display:flex;flex-direction:column;gap:6px;flex-shrink:0;margin-top:1px;}
-.ci-btn{width:38px;height:26px;border:1px solid var(--border);background:#fff;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;font-weight:700;transition:all .15s;color:var(--gray);}
+.ci-btn{width:38px;height:26px;border:1px solid var(--border);background:#fff;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;transition:all .15s;color:var(--gray);}
 .ci-btn.yes{background:#2a5e3a;color:#fff;border-color:#2a5e3a;}
 .ci-btn.no{background:#8b2e2e;color:#fff;border-color:#8b2e2e;}
-.ci-text{font-family:'Noto Sans KR',sans-serif;font-size:.83rem;line-height:1.75;color:var(--ink);}
-.ci-sub{font-size:.72rem;color:var(--gray);margin-top:3px;}
+.ci-text{font-family:'Noto Sans KR',sans-serif;font-size:.92rem;line-height:1.8;color:var(--ink);}
+.ci-sub{font-size:.8rem;color:var(--gray);margin-top:3px;}
 
 .strength-bar-wrap{margin-top:14px;}
-.sb-label{font-family:'Noto Sans KR',sans-serif;font-size:.73rem;color:var(--gray);margin-bottom:5px;display:flex;justify-content:space-between;}
+.sb-label{font-family:'Noto Sans KR',sans-serif;font-size:.82rem;color:var(--gray);margin-bottom:5px;display:flex;justify-content:space-between;}
 .sb-track{height:8px;background:var(--border);border-radius:0;overflow:hidden;}
 .sb-fill{height:100%;transition:width .8s ease;}
-.star-summary{margin-top:12px;padding:12px;border:1px solid var(--border);background:var(--goldbg);font-family:'Noto Sans KR',sans-serif;font-size:.8rem;line-height:1.85;color:var(--ink);}
+.star-summary{margin-top:12px;padding:12px;border:1px solid var(--border);background:var(--goldbg);font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.9;color:var(--ink);}
 .star-summary strong{color:var(--gold3);}
 
-.stream-text{font-family:'Noto Sans KR',sans-serif;font-size:.84rem;line-height:2.1;color:var(--ink);white-space:pre-wrap;}
+.stream-text{font-family:'Noto Sans KR',sans-serif;font-size:.92rem;line-height:2.1;color:var(--ink);white-space:pre-wrap;}
 .stream-text strong,.stream-text b{color:var(--gold3);font-weight:700;}
 .cur{display:inline-block;width:2px;height:1em;background:var(--gold2);animation:blink .8s infinite;vertical-align:text-bottom;margin-left:1px;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-.loading{text-align:center;padding:28px;color:var(--gray);font-family:'Noto Sans KR',sans-serif;font-size:.84rem;}
+.loading{text-align:center;padding:28px;color:var(--gray);font-family:'Noto Sans KR',sans-serif;font-size:.92rem;}
 .spin{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--gold2);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px;}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.sec-div{text-align:center;margin:8px 0 20px;font-family:'Noto Sans KR',sans-serif;font-size:.7rem;letter-spacing:4px;color:var(--gold);opacity:.7;}
+.sec-div{text-align:center;margin:8px 0 20px;font-family:'Noto Sans KR',sans-serif;font-size:.78rem;letter-spacing:4px;color:var(--gold);opacity:.7;}
 
 .overall-score{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:16px 0;}
 .os-item{text-align:center;padding:12px 6px;border:1px solid var(--border);background:var(--surface2);}
-.os-sname{font-size:.75rem;font-weight:700;margin-bottom:6px;}
-.os-pct{font-family:'Noto Sans KR',sans-serif;font-size:1.2rem;font-weight:700;}
-.os-label{font-family:'Noto Sans KR',sans-serif;font-size:.65rem;color:var(--gray);margin-top:3px;}
+.os-sname{font-size:.82rem;font-weight:700;margin-bottom:6px;}
+.os-pct{font-family:'Noto Sans KR',sans-serif;font-size:1.25rem;font-weight:700;}
+.os-label{font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--gray);margin-top:3px;}
 
-.notice{text-align:center;padding:20px;font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--gray);border:1px dashed var(--border);margin-top:24px;line-height:1.9;}
+.notice{text-align:center;padding:20px;font-family:'Noto Sans KR',sans-serif;font-size:.83rem;color:var(--gray);border:1px dashed var(--border);margin-top:24px;line-height:1.9;}
 
 @media(max-width:560px){
   .fg{grid-template-columns:1fr;}
@@ -722,70 +722,70 @@ function runAI(){
 
   <!-- 섹션 1: 일간 기질 -->
   <div style="padding:20px;background:var(--goldbg);border:1px solid var(--border2);">
-    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:10px;">【 일간 ${dm.name}의 핵심 기질 】</div>
-    <p style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;line-height:1.9;color:var(--ink);">${dm.core}</p>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:10px;">【 일간 ${dm.name}의 핵심 기질 】</div>
+    <p style="font-family:'Noto Sans KR',sans-serif;font-size:.92rem;line-height:1.9;color:var(--ink);">${dm.core}</p>
   </div>
 
   <!-- 섹션 2: 오행 불균형 -->
   <div style="padding:20px;background:var(--surface2);border:1px solid var(--border);">
-    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:12px;">【 오행 불균형과 심리 패턴 】</div>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:12px;">【 오행 불균형과 심리 패턴 】</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
       <div style="padding:12px;background:#fff8f8;border-left:3px solid var(--fire);">
-        <div style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;color:var(--fire);margin-bottom:6px;">▲ 과잉 — ${dominantOh.name}</div>
-        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;line-height:1.8;color:var(--ink);">${dominantOh.excess}</p>
+        <div style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;color:var(--fire);margin-bottom:6px;">▲ 과잉 — ${dominantOh.name}</div>
+        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.8;color:var(--ink);">${dominantOh.excess}</p>
       </div>
       <div style="padding:12px;background:#f5f8ff;border-left:3px solid var(--water);">
-        <div style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;color:var(--water);margin-bottom:6px;">▽ 부족 — ${lackOh.name}</div>
-        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;line-height:1.8;color:var(--ink);">${lackOh.lack}</p>
+        <div style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;color:var(--water);margin-bottom:6px;">▽ 부족 — ${lackOh.name}</div>
+        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.8;color:var(--ink);">${lackOh.lack}</p>
       </div>
     </div>
   </div>
 
   <!-- 섹션 3: 심리 지형도 -->
   <div style="padding:20px;background:var(--surface2);border:1px solid var(--border);">
-    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:14px;">【 십성 체크로 드러난 나의 심리 지형도 】</div>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:14px;">【 십성 체크로 드러난 나의 심리 지형도 】</div>
     ${strong.length>0?`
     <div style="margin-bottom:12px;">
-      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;color:var(--green);margin-bottom:8px;">✦ 뚜렷한 핵심 기질 (사주 + 자기인식 일치)</div>
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;color:var(--green);margin-bottom:8px;">✦ 뚜렷한 핵심 기질 (사주 + 자기인식 일치)</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        ${strong.map(s=>`<span style="padding:5px 12px;background:#fff;border:1.5px solid ${s.color};color:${s.color};font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;">${s.star} ${s.pct}%</span>`).join('')}
+        ${strong.map(s=>`<span style="padding:5px 12px;background:#fff;border:1.5px solid ${s.color};color:${s.color};font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;">${s.star} ${s.pct}%</span>`).join('')}
       </div>
-      <p style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;line-height:1.8;color:var(--gray);margin-top:8px;">이 기질들은 사주에도 있고 본인도 강하게 인식하는 뚜렷한 성향입니다. 자연스러운 강점으로 활용하되, 과잉 시 주의 사항도 함께 살펴보세요.</p>
+      <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.8;color:var(--gray);margin-top:8px;">이 기질들은 사주에도 있고 본인도 강하게 인식하는 뚜렷한 성향입니다. 자연스러운 강점으로 활용하되, 과잉 시 주의 사항도 함께 살펴보세요.</p>
     </div>`:``}
     ${suppressed.length>0?`
     <div style="margin-bottom:12px;">
-      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;color:var(--earth);margin-bottom:8px;">◎ 잠재된 기질 (사주에는 있지만 자기인식 낮음)</div>
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;color:var(--earth);margin-bottom:8px;">◎ 잠재된 기질 (사주에는 있지만 자기인식 낮음)</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        ${suppressed.map(s=>`<span style="padding:5px 12px;background:#fff;border:1.5px solid ${s.color};color:${s.color};font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;">${s.star} ${s.pct}%</span>`).join('')}
+        ${suppressed.map(s=>`<span style="padding:5px 12px;background:#fff;border:1.5px solid ${s.color};color:${s.color};font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;">${s.star} ${s.pct}%</span>`).join('')}
       </div>
-      <p style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;line-height:1.8;color:var(--gray);margin-top:8px;">사주에는 존재하지만 본인이 인식하지 못하거나 억압하고 있는 기질입니다. 무의식 중에 작동하고 있을 가능성이 높습니다.</p>
+      <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.8;color:var(--gray);margin-top:8px;">사주에는 존재하지만 본인이 인식하지 못하거나 억압하고 있는 기질입니다. 무의식 중에 작동하고 있을 가능성이 높습니다.</p>
     </div>`:``}
     ${developed.length>0?`
     <div>
-      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;color:var(--blue);margin-bottom:8px;">★ 후천적으로 발달한 기질 (사주에 없지만 자기인식 높음)</div>
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;color:var(--blue);margin-bottom:8px;">★ 후천적으로 발달한 기질 (사주에 없지만 자기인식 높음)</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;">
-        ${developed.map(s=>`<span style="padding:5px 12px;background:#fff;border:1.5px solid ${s.color};color:${s.color};font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;">${s.star} ${s.pct}%</span>`).join('')}
+        ${developed.map(s=>`<span style="padding:5px 12px;background:#fff;border:1.5px solid ${s.color};color:${s.color};font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;">${s.star} ${s.pct}%</span>`).join('')}
       </div>
-      <p style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;line-height:1.8;color:var(--gray);margin-top:8px;">타고나지 않았지만 경험과 노력으로 발달시킨 기질입니다. 의식적인 성장의 증거이며, 유지하려면 꾸준한 실천이 필요합니다.</p>
+      <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.8;color:var(--gray);margin-top:8px;">타고나지 않았지만 경험과 노력으로 발달시킨 기질입니다. 의식적인 성장의 증거이며, 유지하려면 꾸준한 실천이 필요합니다.</p>
     </div>`:``}
-    ${strong.length===0&&suppressed.length===0&&developed.length===0?`<p style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;color:var(--gray);">더 많은 문항에 응답하면 심리 지형도가 더 명확하게 나타납니다.</p>`:``}
+    ${strong.length===0&&suppressed.length===0&&developed.length===0?`<p style="font-family:'Noto Sans KR',sans-serif;font-size:.9rem;color:var(--gray);">더 많은 문항에 응답하면 심리 지형도가 더 명확하게 나타납니다.</p>`:``}
   </div>
 
   <!-- 섹션 4: 핵심 포인트 3가지 -->
   <div style="padding:20px;background:var(--goldbg);border:1px solid var(--border2);">
-    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:14px;">【 자기객관화 핵심 포인트 3가지 】</div>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:14px;">【 자기객관화 핵심 포인트 3가지 】</div>
     <div style="display:flex;flex-direction:column;gap:12px;">
       <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;flex-shrink:0;">강점</div>
-        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.83rem;line-height:1.85;color:var(--ink);">${topStars.length>0?`<strong>${topStars.map(s=>s.star).join('·')} 기질</strong>이 강합니다. ${topStars.map(s=>STAR_DATA[s.star].label+' 특성인 '+STAR_DATA[s.star].desc.split('—')[1]?.trim()).join(', ')} 분야에서 자연스럽게 두각을 나타낼 수 있습니다.`:'다양한 기질이 균형 있게 분포되어 있습니다. 상황에 따라 유연하게 대처하는 것이 강점입니다.'}</p>
+        <div style="width:32px;height:32px;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;flex-shrink:0;">강점</div>
+        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.9rem;line-height:1.85;color:var(--ink);">${topStars.length>0?`<strong>${topStars.map(s=>s.star).join('·')} 기질</strong>이 강합니다. ${topStars.map(s=>STAR_DATA[s.star].label+' 특성인 '+STAR_DATA[s.star].desc.split('—')[1]?.trim()).join(', ')} 분야에서 자연스럽게 두각을 나타낼 수 있습니다.`:'다양한 기질이 균형 있게 분포되어 있습니다. 상황에 따라 유연하게 대처하는 것이 강점입니다.'}</p>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;flex-shrink:0;">함정</div>
-        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.83rem;line-height:1.85;color:var(--ink);">${dm.trap}</p>
+        <div style="width:32px;height:32px;background:var(--fire);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;flex-shrink:0;">함정</div>
+        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.9rem;line-height:1.85;color:var(--ink);">${dm.trap}</p>
       </div>
       <div style="display:flex;gap:12px;align-items:flex-start;">
-        <div style="width:28px;height:28px;background:var(--water);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;flex-shrink:0;">처방</div>
-        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.83rem;line-height:1.85;color:var(--ink);">${dm.balance} 또한 <strong>${lackOh.name} 기운</strong>을 보완하기 위해 — ${lackOh.lack.split('.')[0]}에 주의하며 의식적으로 균형을 맞춰보세요.</p>
+        <div style="width:32px;height:32px;background:var(--water);color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;flex-shrink:0;">처방</div>
+        <p style="font-family:'Noto Sans KR',sans-serif;font-size:.9rem;line-height:1.85;color:var(--ink);">${dm.balance} 또한 <strong>${lackOh.name} 기운</strong>을 보완하기 위해 — ${lackOh.lack.split('.')[0]}에 주의하며 의식적으로 균형을 맞춰보세요.</p>
       </div>
     </div>
   </div>
