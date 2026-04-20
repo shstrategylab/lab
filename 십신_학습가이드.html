@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>십신(十神) 완전 학습 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1916;
+  --ink-mid: #3d3b35;
+  --ink-light: #6b6860;
+  --ink-faint: #9e9c97;
+  --paper: #f9f7f3;
+  --paper-warm: #f3f0ea;
+  --paper-deep: #ede9e0;
+  --line: #dedad2;
+  --line-soft: #eae7e0;
+
+  --bigep: #534AB7;
+  --bigep-bg: #EEEDFE;
+  --bigep-border: #AFA9EC;
+  --siksang: #C4431E;
+  --siksang-bg: #FAECE7;
+  --siksang-border: #F0997B;
+  --jaesung: #9B6010;
+  --jaesung-bg: #FAEEDA;
+  --jaesung-border: #EF9F27;
+  --gwansung: #1558A0;
+  --gwansung-bg: #E6F1FB;
+  --gwansung-border: #85B7EB;
+  --insung: #0D7055;
+  --insung-bg: #E1F5EE;
+  --insung-border: #5DCAA5;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.8;
+}
+
+/* ── NAV ── */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(249,247,243,0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+  padding: 0 2rem;
+}
+
+.nav-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav-inner::-webkit-scrollbar { display: none; }
+
+.nav-link {
+  font-size: 12px;
+  color: var(--ink-faint);
+  text-decoration: none;
+  padding: 14px 14px;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-weight: 400;
+}
+.nav-link:hover { color: var(--ink-mid); }
+.nav-link.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 500; }
+
+/* ── HERO ── */
+.hero {
+  border-bottom: 1px solid var(--line);
+  padding: 4rem 2rem 3rem;
+  background: var(--paper);
+}
+.hero-inner {
+  max-width: 860px;
+  margin: 0 auto;
+}
+.hero-tag {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--ink-faint);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.hero h1 {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 1rem;
+  color: var(--ink);
+}
+.hero-desc {
+  font-size: 15px;
+  color: var(--ink-light);
+  max-width: 560px;
+  line-height: 1.9;
+}
+.hero-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 2rem;
+}
+.hero-chip {
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  color: var(--ink-light);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.hero-chip:hover { background: var(--paper-deep); color: var(--ink); }
+.hero-chip span {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* ── LAYOUT ── */
+.page { max-width: 860px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+/* ── SECTION ── */
+.section {
+  padding: 4rem 0 0;
+  border-top: 1px solid var(--line-soft);
+  margin-top: 4rem;
+}
+.section:first-child { border-top: none; margin-top: 0; padding-top: 4rem; }
+
+.sec-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.2rem;
+  margin-bottom: 2rem;
+}
+.sec-num {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-faint);
+  padding-top: 4px;
+  min-width: 20px;
+}
+.sec-titles {}
+.sec-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 4px;
+}
+.sec-sub {
+  font-size: 13px;
+  color: var(--ink-faint);
+}
+
+.prose {
+  font-size: 14.5px;
+  color: var(--ink-mid);
+  line-height: 1.9;
+  margin-bottom: 1.2rem;
+}
+.prose strong { color: var(--ink); font-weight: 500; }
+.prose em { font-style: normal; color: var(--ink-light); }
+
+.callout {
+  border-left: 3px solid var(--line);
+  padding: 1rem 1.2rem;
+  margin: 1.2rem 0;
+  background: var(--paper-warm);
+  border-radius: 0 6px 6px 0;
+  font-size: 13.5px;
+  color: var(--ink-mid);
+  line-height: 1.8;
+}
+.callout strong { color: var(--ink); font-weight: 500; }
+
+.tip-box {
+  background: var(--paper-deep);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+  font-size: 13px;
+  color: var(--ink-light);
+  line-height: 1.8;
+}
+.tip-box strong { color: var(--ink-mid); font-weight: 500; }
+
+/* ── SIPSHIN 5-card ── */
+.five-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 1.6rem 0;
+}
+.five-card {
+  border-radius: 8px;
+  padding: 1rem .7rem;
+  text-align: center;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  text-decoration: none;
+  display: block;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.five-card:hover { transform: translateY(-2px); box-shadow: 0 4px 16px rgba(0,0,0,0.07); }
+.five-card .cn { font-family: 'Noto Serif KR', serif; font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+.five-card .kr { font-size: 12px; font-weight: 500; margin-bottom: 2px; }
+.five-card .kw { font-size: 11px; opacity: 0.7; }
+
+/* ── TWO COLUMNS ── */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 1.4rem 0; }
+.col-card {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 1rem 1.1rem;
+  background: var(--paper);
+}
+.col-card-label { font-size: 10px; font-weight: 500; opacity: 0.55; letter-spacing: 0.06em; margin-bottom: 5px; }
+.col-card-name { font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 600; margin-bottom: 6px; }
+.col-card-desc { font-size: 12.5px; line-height: 1.7; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 1rem 0 .4rem; }
+.tag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  color: var(--ink-light);
+}
+
+/* ── TABLE ── */
+.tbl-wrap {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+  margin: 1.4rem 0;
+}
+.tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.tbl thead th {
+  background: var(--paper-deep);
+  padding: 9px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-light);
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.tbl tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  vertical-align: top;
+  line-height: 1.6;
+}
+.tbl tbody tr:last-child td { border-bottom: none; }
+.tbl tbody tr:hover td { background: var(--paper-warm); }
+
+.pill {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* ── CYCLE FLOW ── */
+.cycle-flow {
+  margin: 1.6rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cycle-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: .85rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: all 0.15s;
+  background: var(--paper);
+}
+.cycle-item:hover { border-color: var(--line); background: var(--paper-warm); }
+.cycle-item.open { border-color: currentColor; }
+.ci-num {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600;
+  flex-shrink: 0;
+}
+.ci-body { flex: 1; }
+.ci-title { font-size: 13.5px; font-weight: 500; margin-bottom: 1px; }
+.ci-sub { font-size: 12px; color: var(--ink-faint); }
+.ci-arrow { font-size: 11px; color: var(--ink-faint); transition: transform 0.2s; }
+.cycle-item.open .ci-arrow { transform: rotate(90deg); }
+.ci-detail {
+  display: none;
+  margin: 0 1rem 1rem calc(26px + 12px + 12px);
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--ink-mid);
+  border-top: 1px solid var(--line-soft);
+  padding-top: 10px;
+}
+.cycle-item.open .ci-detail { display: block; }
+
+/* ── PRINCIPLE GRID ── */
+.pr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 1.4rem 0; }
+.pr-card {
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  padding: 1rem 1.1rem;
+  background: var(--paper);
+}
+.pr-icon { font-size: 13px; font-weight: 600; margin-bottom: .5rem; }
+.pr-title { font-size: 13.5px; font-weight: 500; margin-bottom: .4rem; color: var(--ink); }
+.pr-desc { font-size: 12.5px; line-height: 1.7; color: var(--ink-light); }
+
+/* ── DETAIL SECTION HEADER ── */
+.detail-sec {
+  margin-top: 2.8rem;
+}
+.ds-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 1rem;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.ds-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ds-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-weight: 600;
+}
+.ds-sub { font-size: 13px; color: var(--ink-faint); margin-left: auto; }
+
+/* ── QUOTE BAR ── */
+.q-bar {
+  border-left: 3px solid currentColor;
+  padding: .8rem 1rem;
+  margin: 1rem 0;
+  border-radius: 0 6px 6px 0;
+  font-size: 13.5px;
+  line-height: 1.8;
+}
+
+/* ── FOOTER ── */
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 4rem;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  font-size: 12px;
+  color: var(--ink-faint);
+  line-height: 1.8;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 640px) {
+  .five-grid { grid-template-columns: repeat(3, 1fr); }
+  .two-col { grid-template-columns: 1fr; }
+  .pr-grid { grid-template-columns: 1fr; }
+  .hero { padding: 2.5rem 1.2rem 2rem; }
+  .page { padding: 0 1.2rem 4rem; }
+  .top-nav { padding: 0 1rem; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a href="#intro"    class="nav-link">개요</a>
+    <a href="#cycle"    class="nav-link">순환의 흐름</a>
+    <a href="#bigep"    class="nav-link">비겁</a>
+    <a href="#siksang"  class="nav-link">식상</a>
+    <a href="#jaesung"  class="nav-link">재성</a>
+    <a href="#gwansung" class="nav-link">관성</a>
+    <a href="#insung"   class="nav-link">인성</a>
+    <a href="#ref"      class="nav-link">한눈에 보기</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">사주명리학 · 십신(十神) 학습 가이드</div>
+    <h1>십신(十神) — 나와 세상의<br>관계를 읽는 열 개의 이름</h1>
+    <p class="hero-desc">
+      오행(목·화·토·금·수)이 원료라면, 십신은 그 원료들이 나(일간)와 만나 만들어내는
+      사회적 관계와 역할의 이름입니다. 비겁·식상·재성·관성·인성의 순환 원리를 이해하면
+      사주를 스스로 읽는 눈이 열립니다.
+    </p>
+    <div class="hero-chips">
+      <a href="#bigep"    class="hero-chip"><span style="background:var(--bigep)"></span>비겁 — 나·뿌리</a>
+      <a href="#siksang"  class="hero-chip"><span style="background:var(--siksang)"></span>식상 — 표현·재능</a>
+      <a href="#jaesung"  class="hero-chip"><span style="background:var(--jaesung)"></span>재성 — 결과·재물</a>
+      <a href="#gwansung" class="hero-chip"><span style="background:var(--gwansung)"></span>관성 — 규칙·명예</a>
+      <a href="#insung"   class="hero-chip"><span style="background:var(--insung)"></span>인성 — 지혜·수용</a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- ══════════════════════════════════
+     1. 개요
+══════════════════════════════════ -->
+<section class="section" id="intro">
+  <div class="sec-head">
+    <div class="sec-num">1</div>
+    <div class="sec-titles">
+      <div class="sec-title">십신이란 무엇인가</div>
+      <div class="sec-sub">두 가지 기준으로 만들어지는 열 개의 에너지 이름</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    십신(十神)은 사주의 주인공인 <strong>일간(日干, 나)</strong>과 나머지 일곱 글자가 맺는
+    오행의 관계에 이름을 붙인 것입니다. 같은 木이라도 내 일간이 金이면 재성(돈)이 되고,
+    내 일간이 水이면 식상(재능·표현)이 됩니다.
+    이처럼 십신은 글자 자체의 의미가 아니라 <strong>"나와의 관계"</strong>로 결정됩니다.
+  </p>
+
+  <div class="pr-grid">
+    <div class="pr-card">
+      <div class="pr-icon" style="color:var(--bigep)">생극 관계</div>
+      <div class="pr-title">첫 번째 기준 — 생극</div>
+      <div class="pr-desc">내가 도와주는가(생), 나를 도와주는가(생), 내가 이기는가(극), 나를 이기는가(극), 아니면 같은 오행인가 — 이 다섯 가지가 다섯 범주를 만듭니다.</div>
+    </div>
+    <div class="pr-card">
+      <div class="pr-icon" style="color:var(--insung)">음양 관계</div>
+      <div class="pr-title">두 번째 기준 — 음양</div>
+      <div class="pr-desc">같은 생극 관계라도 음양(+/−)이 <strong>같으면 편(偏)</strong> — 역동적이고 비범합니다. 음양이 <strong>다르면 정(正)</strong> — 안정적이고 보편적입니다.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>5가지 생극 관계 × 2가지 음양 = 10개</strong> — 그래서 십신(十神)입니다.<br>
+    십신은 단순히 외우는 이름이 아니라, <strong>"내가 이 세상과 어떻게 상호작용하는가"</strong>를 보여주는 에너지의 지도입니다.
+  </div>
+
+  <p class="prose" style="margin-top:1.6rem;margin-bottom:.8rem">다섯 범주를 클릭해 상세 내용으로 이동할 수 있습니다.</p>
+
+  <div class="five-grid">
+    <a href="#bigep"    class="five-card" style="background:var(--bigep-bg);border-color:var(--bigep-border)">
+      <div class="cn" style="color:var(--bigep)">比</div>
+      <div class="kr" style="color:var(--bigep)">비겁</div>
+      <div class="kw" style="color:var(--bigep)">나·뿌리</div>
+    </a>
+    <a href="#siksang"  class="five-card" style="background:var(--siksang-bg);border-color:var(--siksang-border)">
+      <div class="cn" style="color:var(--siksang)">食</div>
+      <div class="kr" style="color:var(--siksang)">식상</div>
+      <div class="kw" style="color:var(--siksang)">표현·재능</div>
+    </a>
+    <a href="#jaesung"  class="five-card" style="background:var(--jaesung-bg);border-color:var(--jaesung-border)">
+      <div class="cn" style="color:var(--jaesung)">財</div>
+      <div class="kr" style="color:var(--jaesung)">재성</div>
+      <div class="kw" style="color:var(--jaesung)">결과·재물</div>
+    </a>
+    <a href="#gwansung" class="five-card" style="background:var(--gwansung-bg);border-color:var(--gwansung-border)">
+      <div class="cn" style="color:var(--gwansung)">官</div>
+      <div class="kr" style="color:var(--gwansung)">관성</div>
+      <div class="kw" style="color:var(--gwansung)">규칙·명예</div>
+    </a>
+    <a href="#insung"   class="five-card" style="background:var(--insung-bg);border-color:var(--insung-border)">
+      <div class="cn" style="color:var(--insung)">印</div>
+      <div class="kr" style="color:var(--insung)">인성</div>
+      <div class="kw" style="color:var(--insung)">지혜·수용</div>
+    </a>
+  </div>
+
+  <div class="tip-box">
+    <strong>핵심 암기법:</strong> 오행 상생의 흐름 그대로 —
+    비겁(나) → 식상(내가 표현) → 재성(내가 다스림) → 관성(나를 다스림) → 인성(나를 도움) → 다시 비겁.
+    이 순환 고리만 기억하면 나머지는 논리로 도출됩니다.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     2. 순환의 흐름
+══════════════════════════════════ -->
+<section class="section" id="cycle">
+  <div class="sec-head">
+    <div class="sec-num">2</div>
+    <div class="sec-titles">
+      <div class="sec-title">순환의 흐름</div>
+      <div class="sec-sub">십신이 계절처럼 이어지는 에너지 순환 구조</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    오행이 목→화→토→금→수로 서로를 돕듯, 십신도 "나"를 중심으로 에너지가 순환합니다.
+    이 순환을 이해하면 사주에서 어느 흐름이 막혔는지, 어디서 에너지가 새는지 눈에 보이기 시작합니다.
+    단계를 클릭해 각 흐름의 의미를 확인해보세요.
+  </p>
+
+  <div class="cycle-flow" id="cycle-list"></div>
+</section>
+
+<!-- ══════════════════════════════════
+     3~7. 십신 상세
+══════════════════════════════════ -->
+
+<!-- 비겁 -->
+<section class="section" id="bigep">
+  <div class="sec-head">
+    <div class="sec-num">3</div>
+    <div class="sec-titles">
+      <div class="sec-title">비겁 — 나 자신, 나의 뿌리</div>
+      <div class="sec-sub">나(일간)와 같은 오행 · 봄(木)의 에너지</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    비겁(比劫)은 나와 <strong>같은 오행</strong>을 가진 글자들입니다. 나무 곁에 나무가 더 있는 형상으로,
+    주체성과 독립심을 뜻합니다. 비겁이 적절하면 추진력이 좋지만, 너무 많으면 고집이 세고
+    재물을 경쟁자와 나누어야 하는 상황이 자주 발생합니다.
+  </p>
+
+  <div class="q-bar" style="color:var(--bigep);background:var(--bigep-bg)">
+    나와 같은 기운입니다. 주체성과 독립심을 뜻합니다. 비겁이 적절하면 추진력이 좋지만,
+    너무 많으면 고집이 세고 재물을 나누어 가져야 하는 경쟁 상황이 자주 발생합니다.
+  </div>
+
+  <div class="two-col">
+    <div class="col-card" style="background:var(--bigep-bg);border-color:var(--bigep-border)">
+      <div class="col-card-label" style="color:var(--bigep)">음양 같음 (+/+)</div>
+      <div class="col-card-name" style="color:var(--bigep)">비견 比肩</div>
+      <div class="col-card-desc">"어깨를 나란히 한다." 편안한 친구·형제. 독립심과 자존심. 순수한 자립 에너지로 나를 지지해주는 힘.</div>
+    </div>
+    <div class="col-card" style="border-color:var(--bigep-border)">
+      <div class="col-card-label" style="color:var(--bigep)">음양 다름 (+/−)</div>
+      <div class="col-card-name" style="color:var(--bigep)">겁재 劫財</div>
+      <div class="col-card-desc">"재물을 겁탈한다." 강력한 라이벌·경쟁자. 비견보다 훨씬 강한 경쟁심. 내 것을 빼앗기기도, 쟁취하기도.</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag">오행: 木 목</span>
+    <span class="tag">계절: 봄</span>
+    <span class="tag">키워드: 주체·독립·경쟁</span>
+    <span class="tag">신강 요소</span>
+  </div>
+
+  <div class="tip-box">
+    <strong>해석 포인트:</strong> 비겁이 많은 사주는 나 자신의 의지가 강하고 자립심이 뛰어납니다.
+    단, 재성(돈·결과)을 비겁이 극하는 구조이므로, 비겁 과다일 때는 재물이 흩어지기 쉽습니다.
+    식상 운이 들어와 내 에너지를 표현으로 전환해줄 때 비로소 결실이 맺힙니다.
+  </div>
+</section>
+
+<!-- 식상 -->
+<section class="section" id="siksang">
+  <div class="sec-head">
+    <div class="sec-num">4</div>
+    <div class="sec-titles">
+      <div class="sec-title">식상 — 표현과 재능</div>
+      <div class="sec-sub">내가 생(生)해주는 오행 · 여름(火)의 에너지</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    식상(食傷)은 내가 <strong>생(生)하는</strong> 오행입니다. 불(火)처럼 번져나가는 발산의 기운으로,
+    나의 재능을 세상에 드러내는 통로입니다. 먹을 복(식복)이기도 하며 창의적인 아이디어나
+    기술력을 의미합니다. 여성에게는 정성을 다해 키우는 자식을 뜻하기도 합니다.
+  </p>
+
+  <div class="q-bar" style="color:var(--siksang);background:var(--siksang-bg)">
+    나의 재능을 세상에 드러내는 통로입니다. 먹을 복(식복)이기도 하며, 창의적인 아이디어나
+    기술력을 의미합니다. 여성에게는 정성을 다해 키우는 자식을 뜻하기도 합니다.
+  </div>
+
+  <div class="two-col">
+    <div class="col-card" style="background:var(--siksang-bg);border-color:var(--siksang-border)">
+      <div class="col-card-label" style="color:var(--siksang)">음양 같음 (+/+)</div>
+      <div class="col-card-name" style="color:var(--siksang)">식신 食神</div>
+      <div class="col-card-desc">"먹을 복의 신." 꾸준한 연구와 몰입. 자기가 좋아하는 일에 깊이 파고드는 장인 정신. 결과가 안정적.</div>
+    </div>
+    <div class="col-card" style="border-color:var(--siksang-border)">
+      <div class="col-card-label" style="color:var(--siksang)">음양 다름 (+/−)</div>
+      <div class="col-card-name" style="color:var(--siksang)">상관 傷官</div>
+      <div class="col-card-desc">"관을 상하게 한다." 기발한 순발력과 천재성. 기존 틀을 깨뜨리는 비판 정신. 자기만의 새로운 길을 개척.</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag">오행: 火 화</span>
+    <span class="tag">계절: 여름</span>
+    <span class="tag">상생: 식신생재(食神生財)</span>
+    <span class="tag">키워드: 재능·표현·창의</span>
+  </div>
+
+  <div class="tip-box">
+    <strong>식신 vs 상관:</strong> 식신은 <em>꾸준함과 몰입</em>의 재능, 상관은 <em>반짝이는 천재성과 언변</em>의 재능입니다.
+    식신은 "식신생재(食神生財)" — 꾸준한 노력이 자연스럽게 재물로 이어지는 가장 긍정적인 흐름을 만들어냅니다.
+    상관은 관성(명예·직장)을 상하게 하므로, 관성이 필요한 직장 생활보다 자기 사업이나 프리랜서 활동에서 빛납니다.
+  </div>
+</section>
+
+<!-- 재성 -->
+<section class="section" id="jaesung">
+  <div class="sec-head">
+    <div class="sec-num">5</div>
+    <div class="sec-titles">
+      <div class="sec-title">재성 — 결과와 재물</div>
+      <div class="sec-sub">내가 극(剋)하는 오행 · 늦여름(土)의 에너지</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    재성(財星)은 내가 <strong>극(剋)하여 이기는</strong> 오행입니다. 흙(土)처럼 내가 밟고 다스리는 터전으로,
+    돈·결과물·현실 감각을 상징합니다. 남성에게는 아내나 여자친구를 의미하며,
+    매우 현실적이고 실용적인 마인드를 나타냅니다.
+  </p>
+
+  <div class="q-bar" style="color:var(--jaesung);background:var(--jaesung-bg)">
+    내가 통제할 수 있는 모든 것을 말합니다. 돈, 결과물, 현실 감각입니다.
+    남성에게는 아내나 여자친구를 의미하며, 매우 현실적이고 실용적인 마인드를 상징합니다.
+  </div>
+
+  <div class="two-col">
+    <div class="col-card" style="background:var(--jaesung-bg);border-color:var(--jaesung-border)">
+      <div class="col-card-label" style="color:var(--jaesung)">음양 같음 (+/+)</div>
+      <div class="col-card-name" style="color:var(--jaesung)">편재 偏財</div>
+      <div class="col-card-desc">"치우친 재물." 불규칙하고 큰 재물. 사업가적 수완. 크게 벌고 크게 쓰는 통 큰 마인드. 리스크를 즐김.</div>
+    </div>
+    <div class="col-card" style="border-color:var(--jaesung-border)">
+      <div class="col-card-label" style="color:var(--jaesung)">음양 다름 (+/−)</div>
+      <div class="col-card-name" style="color:var(--jaesung)">정재 正財</div>
+      <div class="col-card-desc">"바른 재물." 고정적인 월급·성실함. 자석처럼 착 달라붙는 재물. 꼼꼼한 관리 능력과 알뜰함.</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag">오행: 土 토</span>
+    <span class="tag">계절: 늦여름</span>
+    <span class="tag">상생: 재생관(財生官)</span>
+    <span class="tag">키워드: 돈·현실·결과</span>
+  </div>
+
+  <div class="tip-box">
+    <strong>편재 vs 정재:</strong> 편재는 <em>사업·투자·불규칙 수입</em>의 재물, 정재는 <em>월급·저축·안정적 수입</em>의 재물입니다.
+    재성은 내가 극하는 오행이므로, 신약(身弱) 사주에서 재성이 많으면 "재다신약(財多身弱)"이 되어
+    오히려 돈 관리가 힘들어질 수 있습니다.
+  </div>
+</section>
+
+<!-- 관성 -->
+<section class="section" id="gwansung">
+  <div class="sec-head">
+    <div class="sec-num">6</div>
+    <div class="sec-titles">
+      <div class="sec-title">관성 — 규칙과 명예</div>
+      <div class="sec-sub">나를 극(剋)하는 오행 · 가을(金)의 에너지</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    관성(官星)은 나를 <strong>극(剋)하여 통제하는</strong> 오행입니다. 쇠(金)가 나무를 베어 기물을 만들듯
+    나를 규격화하는 힘으로, 사회적 규칙·직장·명예·법도를 상징합니다.
+    나를 억제하는 힘이기에 스트레스가 될 수도 있지만,
+    나를 번듯한 사회인으로 만들어주는 뼈대가 됩니다.
+  </p>
+
+  <div class="q-bar" style="color:var(--gwansung);background:var(--gwansung-bg)">
+    사회적 규칙, 직장, 명예, 법도입니다. 나를 억제하는 힘이기에 스트레스가 될 수도 있지만,
+    나를 번듯한 사회인으로 만들어주는 뼈대가 됩니다.
+  </div>
+
+  <div class="two-col">
+    <div class="col-card" style="background:var(--gwansung-bg);border-color:var(--gwansung-border)">
+      <div class="col-card-label" style="color:var(--gwansung)">음양 같음 (+/+)</div>
+      <div class="col-card-name" style="color:var(--gwansung)">편관 偏官 (칠살)</div>
+      <div class="col-card-desc">음양이 같아 사정없이 내리누르는 힘. 강한 책임감·카리스마·권력욕. 혹독하지만 극복 시 큰 명예.</div>
+    </div>
+    <div class="col-card" style="border-color:var(--gwansung-border)">
+      <div class="col-card-label" style="color:var(--gwansung)">음양 다름 (+/−)</div>
+      <div class="col-card-name" style="color:var(--gwansung)">정관 正官</div>
+      <div class="col-card-desc">음양이 달라 부드럽게 나를 다듬어 줌. 안정된 직장·합리적 규칙·도덕성. 상식적 선에서의 사회 시스템.</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag">오행: 金 금</span>
+    <span class="tag">계절: 가을</span>
+    <span class="tag">상생: 관인상생(官印相生)</span>
+    <span class="tag">여성에게: 남편·이성</span>
+  </div>
+
+  <div class="tip-box">
+    <strong>편관(칠살) 해석 주의:</strong> 칠살이라는 이름에 겁먹지 마세요. 편관은 강한 에너지이지만,
+    식신이 편관을 제어하는 "식신제살(食神制殺)" 구조가 되면 오히려 강력한 성공의 원동력이 됩니다.
+    역사 속 강한 인물들에게는 편관이 많습니다.
+  </div>
+</section>
+
+<!-- 인성 -->
+<section class="section" id="insung">
+  <div class="sec-head">
+    <div class="sec-num">7</div>
+    <div class="sec-titles">
+      <div class="sec-title">인성 — 지혜와 수용</div>
+      <div class="sec-sub">나를 생(生)해주는 오행 · 겨울(水)의 에너지</div>
+    </div>
+  </div>
+
+  <p class="prose">
+    인성(印星)은 나를 <strong>생(生)해주는</strong> 오행입니다. 물(水)이 나무를 적셔 키워주듯 나를 채워주는 기운으로,
+    학습·지혜·인내심 그리고 어머니의 기운입니다. 외부의 정보를 받아들여 내 것으로 만드는 능력이며,
+    부동산이나 자격증 같은 '문서'의 기운을 뜻합니다.
+  </p>
+
+  <div class="q-bar" style="color:var(--insung);background:var(--insung-bg)">
+    학습, 지혜, 인내심, 그리고 어머니의 기운입니다. 외부의 정보를 받아들여 내 것으로 만드는 능력이며,
+    부동산이나 자격증 같은 '문서'의 기운을 뜻합니다.
+  </div>
+
+  <div class="two-col">
+    <div class="col-card" style="background:var(--insung-bg);border-color:var(--insung-border)">
+      <div class="col-card-label" style="color:var(--insung)">음양 같음 (+/+)</div>
+      <div class="col-card-name" style="color:var(--insung)">편인 偏印</div>
+      <div class="col-card-desc">"치우친 도장." 계모처럼 조건부로 돕는 기운. 독특한 철학·기술력·의심과 재해석. 신비주의·종교·특수 기술에서 빛남.</div>
+    </div>
+    <div class="col-card" style="border-color:var(--insung-border)">
+      <div class="col-card-label" style="color:var(--insung)">음양 다름 (+/−)</div>
+      <div class="col-card-name" style="color:var(--insung)">정인 正印</div>
+      <div class="col-card-desc">"바른 도장." 친어머니처럼 조건 없는 전폭적 지원. 보편적 학문·자비심·정당한 권리. 수용력이 좋아 사랑받는 힘.</div>
+    </div>
+  </div>
+
+  <div class="tags">
+    <span class="tag">오행: 水 수</span>
+    <span class="tag">계절: 겨울</span>
+    <span class="tag">키워드: 학습·문서·어머니</span>
+    <span class="tag">신강 요소</span>
+  </div>
+
+  <div class="tip-box">
+    <strong>인성 과다 주의:</strong> 인성이 너무 많으면 식상을 극해 재능 표현이 막히고(인성극식상),
+    현실보다 이상에 머무는 경향이 생깁니다. 인성은 비겁과 함께 신강의 요소이므로,
+    인성과 비겁이 과다하면 재성 운이 들어올 때 오히려 부담이 됩니다.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     8. 한눈에 보기
+══════════════════════════════════ -->
+<section class="section" id="ref">
+  <div class="sec-head">
+    <div class="sec-num">8</div>
+    <div class="sec-titles">
+      <div class="sec-title">한눈에 보기 — 십신 전체 정리</div>
+      <div class="sec-sub">생극 관계와 음양에 따라 결정되는 열 개의 이름</div>
+    </div>
+  </div>
+
+  <div class="tbl-wrap">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th>범주</th>
+          <th>생극 관계</th>
+          <th>음양 같음 → 편(偏)</th>
+          <th>음양 다름 → 정(正)</th>
+          <th>핵심 키워드</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill" style="background:var(--bigep-bg);color:var(--bigep)">비겁</span></td>
+          <td style="font-size:12px;color:var(--ink-light)">나와 같은 오행</td>
+          <td><strong style="color:var(--bigep)">비견</strong><br><span style="font-size:12px;color:var(--ink-light)">독립심·자립·동등한 친구</span></td>
+          <td><strong style="color:var(--bigep)">겁재</strong><br><span style="font-size:12px;color:var(--ink-light)">승부욕·경쟁·탈재</span></td>
+          <td style="font-size:12px">나·주체성</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--siksang-bg);color:var(--siksang)">식상</span></td>
+          <td style="font-size:12px;color:var(--ink-light)">내가 생하는 오행</td>
+          <td><strong style="color:var(--siksang)">식신</strong><br><span style="font-size:12px;color:var(--ink-light)">장인정신·몰입·식복</span></td>
+          <td><strong style="color:var(--siksang)">상관</strong><br><span style="font-size:12px;color:var(--ink-light)">천재성·언변·파격</span></td>
+          <td style="font-size:12px">표현·재능</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--jaesung-bg);color:var(--jaesung)">재성</span></td>
+          <td style="font-size:12px;color:var(--ink-light)">내가 극하는 오행</td>
+          <td><strong style="color:var(--jaesung)">편재</strong><br><span style="font-size:12px;color:var(--ink-light)">큰돈·사업·리스크</span></td>
+          <td><strong style="color:var(--jaesung)">정재</strong><br><span style="font-size:12px;color:var(--ink-light)">월급·관리·성실함</span></td>
+          <td style="font-size:12px">결과·재물</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--gwansung-bg);color:var(--gwansung)">관성</span></td>
+          <td style="font-size:12px;color:var(--ink-light)">나를 극하는 오행</td>
+          <td><strong style="color:var(--gwansung)">편관</strong><br><span style="font-size:12px;color:var(--ink-light)">카리스마·극기·칠살</span></td>
+          <td><strong style="color:var(--gwansung)">정관</strong><br><span style="font-size:12px;color:var(--ink-light)">명예·규칙·안정</span></td>
+          <td style="font-size:12px">명예·직장</td>
+        </tr>
+        <tr>
+          <td><span class="pill" style="background:var(--insung-bg);color:var(--insung)">인성</span></td>
+          <td style="font-size:12px;color:var(--ink-light)">나를 생하는 오행</td>
+          <td><strong style="color:var(--insung)">편인</strong><br><span style="font-size:12px;color:var(--ink-light)">기술·철학·의심</span></td>
+          <td><strong style="color:var(--insung)">정인</strong><br><span style="font-size:12px;color:var(--ink-light)">학문·자비·문서운</span></td>
+          <td style="font-size:12px">지혜·수용</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>핵심 정리:</strong> 오행으로 큰 흐름(비겁→식상→재성→관성→인성)을 잡고, 음양으로 세부(편·정)를 구별합니다.<br>
+    음양이 같으면 <strong style="color:var(--bigep)">치우침(偏) — 역동·비범</strong>, 음양이 다르면 <strong style="color:var(--insung)">바름(正) — 안정·보편</strong>.
+  </div>
+
+  <p class="prose" style="margin-top:1.6rem">
+    십신을 단순히 암기하는 것이 아니라, <strong>"왜 이 관계가 이 이름을 갖게 됐는가"</strong>를 이해하면
+    처음 보는 사주도 논리적으로 풀어낼 수 있습니다.
+    사주는 운명의 감옥이 아니라 내 에너지의 지도입니다.
+    십신의 흐름을 이해하는 것이 그 지도를 읽는 첫걸음입니다.
+  </p>
+</section>
+
+</main>
+
+<footer>
+  <strong>십신(十神) 완전 학습 가이드</strong><br>
+  비겁·식상·재성·관성·인성 — 나와 세상의 관계를 읽는 열 개의 이름<br>
+  이 자료는 학습 목적으로 제작되었으며, 명리학은 동양의 기호 논리학입니다.
+</footer>
+
+<script>
+// ── CYCLE DATA ──
+const CYCLE = [
+  {
+    color: 'var(--bigep)',
+    bg: 'var(--bigep-bg)',
+    border: 'var(--bigep-border)',
+    num: '1',
+    title: '나(비겁) → 식상(표현)',
+    sub: '봄 — 씨앗이 꽃을 피우다',
+    label: '식신생재의 출발',
+    detail: '나무가 꽃을 피우듯, 내가 가진 에너지를 밖으로 표현하고 활동하는 단계입니다. <strong>본능적인 활동과 재능의 발현</strong>을 뜻합니다. 내 안에 쌓인 기운이 말·행동·창작으로 터져 나오는 것이 바로 식상입니다.'
+  },
+  {
+    color: 'var(--siksang)',
+    bg: 'var(--siksang-bg)',
+    border: 'var(--siksang-border)',
+    num: '2',
+    title: '식상(표현) → 재성(재물)',
+    sub: '여름→늦여름 — 꽃이 지고 열매가 맺히다',
+    label: '식신생재 食神生財',
+    detail: '꽃이 지고 열매가 맺히듯, 나의 활동이 구체적인 결과물(돈, 성과)로 이어지는 과정입니다. <strong>열심히 일하면 결과가 따라온다</strong>는 가장 긍정적인 흐름입니다. 재능을 갈고닦은 만큼 현실적인 보상이 생깁니다.'
+  },
+  {
+    color: 'var(--jaesung)',
+    bg: 'var(--jaesung-bg)',
+    border: 'var(--jaesung-border)',
+    num: '3',
+    title: '재성(재물) → 관성(명예)',
+    sub: '늦여름→가을 — 수확하고 체계를 세우다',
+    label: '재생관 財生官',
+    detail: '수확한 열매를 창고에 넣고 관리 체계를 만들듯, 자산이 쌓이면 이를 지키기 위한 <strong>규칙과 사회적 지위</strong>가 필요해집니다. 돈이 많아지면 세금도 내고 사회적 책임도 커지는 것과 같습니다.'
+  },
+  {
+    color: 'var(--gwansung)',
+    bg: 'var(--gwansung-bg)',
+    border: 'var(--gwansung-border)',
+    num: '4',
+    title: '관성(명예) → 인성(지혜)',
+    sub: '가을→겨울 — 시스템이 지식을 낳다',
+    label: '관인상생 官印相生',
+    detail: '국가나 조직의 시스템이 학문과 자격으로 이어져 후대를 교육하듯, <strong>사회적 틀이 나를 보호하는 문서나 지식으로 변환</strong>됩니다. 직장을 다니며 자격증을 따거나 경험이 지혜로 쌓이는 흐름입니다.'
+  },
+  {
+    color: 'var(--insung)',
+    bg: 'var(--insung-bg)',
+    border: 'var(--insung-border)',
+    num: '5',
+    title: '인성(지혜) → 나(비겁)',
+    sub: '겨울→봄 — 지혜가 나를 키우다',
+    label: '순환 완성',
+    detail: '지식과 어머니의 사랑이 나를 키우듯, <strong>다시 나를 강하게 만들어 순환을 완성</strong>합니다. 공부하고 성장한 내가 더 강한 에너지로 다시 세상에 표현(식상)을 시작하면서 새로운 사이클이 열립니다.'
+  }
+];
+
+let openIdx = 0;
+
+function renderCycle() {
+  const list = document.getElementById('cycle-list');
+  list.innerHTML = CYCLE.map((c, i) => `
+    <div class="cycle-item${i === openIdx ? ' open' : ''}"
+         style="${i === openIdx ? 'background:' + c.bg + ';border-color:' + c.border : ''}"
+         onclick="toggleCycle(${i})">
+      <div class="ci-num" style="background:${c.bg};color:${c.color};border:1px solid ${c.border}">${c.num}</div>
+      <div class="ci-body">
+        <div class="ci-title" style="${i === openIdx ? 'color:' + c.color : ''}">${c.title}</div>
+        <div class="ci-sub">${c.sub}</div>
+        <div class="ci-detail">${c.detail}<br><br><span style="font-size:11px;font-weight:500;padding:2px 10px;border-radius:20px;background:${c.bg};color:${c.color};border:1px solid ${c.border}">${c.label}</span></div>
+      </div>
+      <div class="ci-arrow">▶</div>
+    </div>
+  `).join('');
+}
+
+function toggleCycle(i) {
+  openIdx = (openIdx === i) ? -1 : i;
+  renderCycle();
+}
+
+renderCycle();
+
+// ── Active nav highlight on scroll ──
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.nav-link[href="#' + e.target.id + '"]');
+      if (link) {
+        link.classList.add('active');
+        link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>
