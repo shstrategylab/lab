@@ -481,11 +481,25 @@ function calculate() {
   G.ohengScore=oh;
 
   const ts={비견:0,겁재:0,식신:0,상관:0,편재:0,정재:0,편관:0,정관:0,편인:0,정인:0};
+  // 위치별 가중치 점수 추적 (천간:35, 월지:40, 일지:35, 기타지지:20)
+  const tsScore={비견:0,겁재:0,식신:0,상관:0,편재:0,정재:0,편관:0,정관:0,편인:0,정인:0};
   pillars.forEach(p=>{
-    if(p.cls!=='day') ts[getTenStar(da.stem,p.stem)]++;
-    ts[getBranchStar(da.stem,p.branch)]++;
+    // 천간
+    if(p.cls!=='day'){
+      const stemStar=getTenStar(da.stem,p.stem);
+      ts[stemStar]++;
+      tsScore[stemStar]+=35;
+    }
+    // 지지 — 월지(40), 일지(35), 기타(20)
+    const brStar=getBranchStar(da.stem,p.branch);
+    ts[brStar]++;
+    const brWeight = p.cls==='month' ? 40 : p.cls==='day' ? 35 : 20;
+    tsScore[brStar]+=brWeight;
   });
+  // 100점 캡
+  Object.keys(tsScore).forEach(k=>tsScore[k]=Math.min(tsScore[k],100));
   G.tenStar=ts;
+  G.tenStarScore=tsScore;
 
   const cl=CHEONEUL[da.stem]||[];
   const hasGL=pillars.some(p=>cl.includes(p.branch));
@@ -721,7 +735,7 @@ function runAI(){
   const compRows = starOrder2.map(star => {
     const d = STAR_DATA[star];
     const cnt = G.tenStar[star] || 0;
-    const sajuPct = Math.min(Math.round(cnt / 4 * 100), 100);
+    const sajuPct = G.tenStarScore[star] || 0;  // 위치 가중치 점수
     const keys = d.checks.map((_,i) => `${star}-${i}`);
     const answered = keys.filter(k => G.answers[k] !== undefined);
     const yes = answered.filter(k => G.answers[k] === 'yes').length;
@@ -777,10 +791,11 @@ function runAI(){
   <!-- 섹션 1: 사주 잠재력 vs 현재 자기인식 비교 그래프 -->
   <div style="padding:20px;background:var(--surface2);border:1px solid var(--border);">
     <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:6px;">【 사주 기질 vs 현재 자기인식 비교 】</div>
-    <div style="display:flex;gap:16px;font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--gray);margin-bottom:16px;">
+    <div style="display:flex;gap:16px;font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--gray);margin-bottom:4px;">
       <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:28px;height:4px;background:var(--border2);border-radius:0;"></span>사주 잠재력</span>
       <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:28px;height:4px;background:var(--gold2);border-radius:0;"></span>현재 자기인식</span>
     </div>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:#aaa;margin-bottom:16px;">※ 잠재력: 월지 40점 · 천간/일지 35점 · 기타 지지 20점 (위치 가중치 합산)</div>
     <div style="display:flex;flex-direction:column;gap:14px;">
       ${compRows.map(r => {
         const gapText = r.gap > 15 ? `▲ +${r.gap}% 후천 발달` : r.gap < -15 ? `▼ ${r.gap}% 억압/잠재` : `≈ 일치`;
