@@ -481,25 +481,30 @@ function calculate() {
   G.ohengScore=oh;
 
   const ts={비견:0,겁재:0,식신:0,상관:0,편재:0,정재:0,편관:0,정관:0,편인:0,정인:0};
-  // 위치별 가중치 점수 추적 (천간:35, 월지:40, 일지:35, 기타지지:20)
   const tsScore={비견:0,겁재:0,식신:0,상관:0,편재:0,정재:0,편관:0,정관:0,편인:0,정인:0};
+  // 위치별 상세 기록: { star: [{pos:'월지',weight:40,label:'월주 지지'}, ...] }
+  const tsDetail={};
+  const posLabel={hour:'시주',day:'일주',month:'월주',year:'년주'};
   pillars.forEach(p=>{
-    // 천간
     if(p.cls!=='day'){
       const stemStar=getTenStar(da.stem,p.stem);
       ts[stemStar]++;
       tsScore[stemStar]+=35;
+      if(!tsDetail[stemStar]) tsDetail[stemStar]=[];
+      tsDetail[stemStar].push({pos:posLabel[p.cls]+' 천간', weight:35});
     }
-    // 지지 — 월지(40), 일지(35), 기타(20)
     const brStar=getBranchStar(da.stem,p.branch);
     ts[brStar]++;
     const brWeight = p.cls==='month' ? 40 : p.cls==='day' ? 35 : 20;
+    const brPosName = p.cls==='month' ? '월지(핵심)' : p.cls==='day' ? '일지' : posLabel[p.cls]+' 지지';
     tsScore[brStar]+=brWeight;
+    if(!tsDetail[brStar]) tsDetail[brStar]=[];
+    tsDetail[brStar].push({pos:brPosName, weight:brWeight});
   });
-  // 100점 캡
   Object.keys(tsScore).forEach(k=>tsScore[k]=Math.min(tsScore[k],100));
   G.tenStar=ts;
   G.tenStarScore=tsScore;
+  G.tenStarDetail=tsDetail;
 
   const cl=CHEONEUL[da.stem]||[];
   const hasGL=pillars.some(p=>cl.includes(p.branch));
@@ -730,45 +735,86 @@ function runAI(){
 
   const dm=DAYMASTER_DESC[dayS];
 
-  // ── 자기객관화 일치도 계산 ──
+  // ── 자기객관화 일치도 계산 (유형별 분리) ──
   const starOrder2=['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'];
   const compRows = starOrder2.map(star => {
     const d = STAR_DATA[star];
     const cnt = G.tenStar[star] || 0;
-    const sajuPct = G.tenStarScore[star] || 0;  // 위치 가중치 점수
+    const sajuPct = G.tenStarScore[star] || 0;
     const keys = d.checks.map((_,i) => `${star}-${i}`);
     const answered = keys.filter(k => G.answers[k] !== undefined);
     const yes = answered.filter(k => G.answers[k] === 'yes').length;
     const selfPct = answered.length ? Math.round(yes / keys.length * 100) : null;
     const gap = selfPct !== null ? selfPct - sajuPct : null;
-    return { star, cnt, sajuPct, selfPct, gap, color: d.color };
+    // 유형 분류
+    let type = 'neutral';
+    if (selfPct !== null) {
+      if (sajuPct >= 20 && selfPct >= 50) type = 'match';         // 사주 있음 + 자기인식 높음 → 일치
+      else if (sajuPct >= 20 && selfPct < 50) type = 'suppressed'; // 사주 있음 + 자기인식 낮음 → 억압
+      else if (sajuPct < 20 && selfPct >= 60) type = 'developed';  // 사주 없음 + 자기인식 높음 → 후천 성장
+      else type = 'neutral';
+    }
+    return { star, cnt, sajuPct, selfPct, gap, color: d.color, type };
   }).filter(r => r.selfPct !== null);
 
-  const avgGap = compRows.length ? Math.round(compRows.map(r=>Math.abs(r.gap)).reduce((a,b)=>a+b,0) / compRows.length) : 0;
-  const matchScore = Math.max(0, 100 - avgGap);
+  // 점수 계산 — 유형별로 다르게
+  let totalScore = 0, totalWeight = 0;
+  compRows.forEach(r => {
+    if (r.type === 'match') {
+      // 사주 기질을 잘 인식 — 차이 없을수록 만점 (가중치 3)
+      const s = Math.max(0, 100 - Math.abs(r.gap));
+      totalScore += s * 3; totalWeight += 3;
+    } else if (r.type === 'suppressed') {
+      // 억압/미인식 — 차이 클수록 감점 (가중치 2)
+      const s = Math.max(0, 100 - Math.abs(r.gap));
+      totalScore += s * 2; totalWeight += 2;
+    } else if (r.type === 'developed') {
+      // 후천 성장 — selfPct 높을수록 보너스 (가중치 1.5)
+      totalScore += r.selfPct * 1.5; totalWeight += 1.5;
+    } else {
+      // 중립 — 가중치 낮게 (0.5)
+      totalScore += 50 * 0.5; totalWeight += 0.5;
+    }
+  });
+  const matchScore = totalWeight ? Math.round(totalScore / totalWeight) : 0;
+
+  // 유형별 요약
+  const matchedList = compRows.filter(r => r.type === 'match');
+  const suppressedList = compRows.filter(r => r.type === 'suppressed');
+  const developedList = compRows.filter(r => r.type === 'developed');
 
   let matchLabel, matchColor, matchComment;
   if (matchScore >= 80) {
     matchLabel = '매우 높음 ★★★'; matchColor = '#2a5e3a';
-    matchComment = '사주의 기질을 현실에서 잘 인식하고 있습니다. 타고난 성향과 현재 자기이해가 잘 맞아 있어, 강점과 약점을 균형 있게 바라보고 있습니다.';
-  } else if (matchScore >= 60) {
+    matchComment = `타고난 기질을 뚜렷하게 인식하고 있으며${developedList.length > 0 ? ', 사주에 없는 기질까지 후천적으로 키워낸' : ''} 자기객관화가 매우 잘 되어 있는 상태입니다.`;
+  } else if (matchScore >= 65) {
     matchLabel = '양호 ★★☆'; matchColor = '#3a6b47';
-    matchComment = '대체로 자기 기질을 잘 파악하고 있으나, 일부 십성에서 사주와 자기인식 사이에 간격이 있습니다. 차이가 큰 항목을 더 들여다보면 성장의 실마리를 찾을 수 있습니다.';
-  } else if (matchScore >= 40) {
+    matchComment = `대체로 자기 기질을 잘 파악하고 있습니다${developedList.length > 0 ? '. 후천적으로 성장시킨 기질도 있어 의식적 노력이 엿보입니다' : ''}.`;
+  } else if (matchScore >= 45) {
     matchLabel = '보통 ★☆☆'; matchColor = '#7a5a18';
-    matchComment = '사주 기질과 현재 자기인식 사이에 상당한 간격이 있습니다. 타고난 기질이 억압되어 있거나, 후천적으로 형성된 자아상이 사주와 많이 달라진 상태일 수 있습니다.';
+    matchComment = `사주 기질과 자기인식 사이에 간격이 있습니다${suppressedList.length > 0 ? '. 타고난 기질 중 인식하지 못하거나 억압된 부분이 있으니' : '. 억압된 기질에 주목하면'} 성장의 실마리를 찾을 수 있습니다.`;
   } else {
-    matchLabel = '낮음 ☆☆☆'; matchColor = '#8b2e2e';
-    matchComment = '사주 기질과 자기인식 간의 괴리가 큽니다. 환경·경험으로 본래 기질이 많이 억압되었거나, 스스로를 있는 그대로 바라보기 어려운 상태일 수 있습니다. 차이가 큰 십성부터 천천히 탐색해보세요.';
+    matchLabel = '탐색 필요 ☆☆☆'; matchColor = '#8b2e2e';
+    matchComment = `사주 기질과 자기인식 간의 괴리가 큽니다. 환경·경험으로 본래 기질이 억압되었거나, 아직 자신을 깊이 탐색하지 못한 상태일 수 있습니다. 아래 항목들을 천천히 살펴보세요.`;
   }
 
-  const bigGaps = [...compRows].sort((a,b) => Math.abs(b.gap) - Math.abs(a.gap)).slice(0,3);
+  // 사주 구성 해설 생성
+  const sajuBreakdown = starOrder2.map(star => {
+    const detail = G.tenStarDetail[star];
+    const score = G.tenStarScore[star] || 0;
+    if (!detail || detail.length === 0) return null;
+    const posText = detail.map(d => `${d.pos}(+${d.weight}점)`).join(', ');
+    return { star, score, posText, color: STAR_DATA[star].color };
+  }).filter(Boolean).sort((a,b) => b.score - a.score);
+
+  const bigGaps = [...compRows].filter(r => r.type !== 'neutral')
+    .sort((a,b) => Math.abs(b.gap) - Math.abs(a.gap)).slice(0,3);
 
   // HTML 생성
   let html=`
   <div style="display:flex;flex-direction:column;gap:20px;">
 
-  <!-- 섹션 0: 자기객관화 일치도 종합 -->
+  <!-- 섹션 0: 자기객관화 종합 일치도 -->
   <div style="padding:20px;background:var(--ink);border:1px solid var(--border2);position:relative;overflow:hidden;">
     <div style="position:absolute;top:0;right:0;width:120px;height:120px;background:rgba(184,146,42,0.07);border-radius:50%;transform:translate(30px,-30px);"></div>
     <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold2);margin-bottom:16px;">【 자기객관화 종합 일치도 】</div>
@@ -780,12 +826,50 @@ function runAI(){
       <div style="flex:1;">
         <div style="font-family:'Noto Sans KR',sans-serif;font-size:.9rem;font-weight:700;color:${matchColor};background:rgba(255,255,255,0.07);display:inline-block;padding:4px 12px;margin-bottom:10px;">${matchLabel}</div>
         <div style="height:10px;background:rgba(255,255,255,0.1);border-radius:0;overflow:hidden;">
-          <div style="height:100%;width:${matchScore}%;background:linear-gradient(90deg,var(--gold3),var(--gold2));transition:width 1s ease;"></div>
+          <div style="height:100%;width:${matchScore}%;background:linear-gradient(90deg,var(--gold3),var(--gold2));"></div>
         </div>
         <div style="display:flex;justify-content:space-between;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;color:#888;margin-top:4px;"><span>0</span><span>50</span><span>100</span></div>
       </div>
     </div>
-    <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.85;color:#ddd;">${matchComment}</p>
+    <p style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.85;color:#ddd;margin-bottom:16px;">${matchComment}</p>
+
+    <!-- 점수 산출 근거 -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(184,146,42,0.2);padding:12px;font-family:'Noto Sans KR',sans-serif;font-size:.78rem;line-height:1.9;color:#bbb;">
+      <div style="color:var(--gold2);font-weight:700;margin-bottom:8px;">📊 점수 산출 방식</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+        ${matchedList.length > 0 ? `<span style="padding:3px 10px;background:rgba(42,94,58,0.4);border:1px solid #2a5e3a;color:#7ecfa0;font-size:.75rem;">✅ 사주 일치 ${matchedList.length}개 (가중치 ×3)</span>` : ''}
+        ${suppressedList.length > 0 ? `<span style="padding:3px 10px;background:rgba(139,46,46,0.3);border:1px solid #8b2e2e;color:#f0a0a0;font-size:.75rem;">⚠️ 억압/미인식 ${suppressedList.length}개 (가중치 ×2)</span>` : ''}
+        ${developedList.length > 0 ? `<span style="padding:3px 10px;background:rgba(42,72,120,0.4);border:1px solid #2a4878;color:#a0c0f0;font-size:.75rem;">🌱 후천 성장 ${developedList.length}개 (가중치 ×1.5)</span>` : ''}
+      </div>
+      <div style="color:#999;font-size:.73rem;">
+        · <b style="color:#c0c0c0;">사주 일치</b>: 타고난 기질을 잘 인식하고 있음 — 차이 없을수록 높은 점수<br>
+        · <b style="color:#c0c0c0;">억압/미인식</b>: 사주에 있지만 자기인식이 낮음 — 차이 클수록 감점<br>
+        · <b style="color:#c0c0c0;">후천 성장</b>: 사주에 없지만 스스로 키워낸 기질 — 높을수록 보너스
+      </div>
+    </div>
+  </div>
+
+  <!-- 섹션 0-1: 사주 구성 해설 (어디에 뭐가 있어서 몇 점인지) -->
+  <div style="padding:20px;background:var(--surface2);border:1px solid var(--border);">
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:3px;color:var(--gold3);margin-bottom:6px;">【 내 사주의 십성 구성 해설 】</div>
+    <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;color:var(--gray);margin-bottom:14px;">월지 40점 · 천간/일지 각 35점 · 기타 지지 20점 위치 가중치 합산 (최대 100점)</div>
+    ${sajuBreakdown.length > 0 ? `
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      ${sajuBreakdown.map(s => `
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;font-weight:700;color:${s.color};width:40px;flex-shrink:0;">${s.star}</span>
+        <div style="flex:1;">
+          <div style="height:8px;background:var(--border);position:relative;">
+            <div style="position:absolute;top:0;left:0;height:100%;width:${s.score}%;background:${s.color};opacity:0.8;"></div>
+          </div>
+          <div style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:var(--gray);margin-top:3px;">${s.posText} → 합계 <b style="color:${s.color};">${s.score}점</b></div>
+        </div>
+        <span style="font-family:'Noto Sans KR',sans-serif;font-size:.9rem;font-weight:700;color:${s.color};width:36px;text-align:right;">${s.score}점</span>
+      </div>`).join('')}
+    </div>
+    <div style="margin-top:14px;font-family:'Noto Sans KR',sans-serif;font-size:.78rem;color:var(--gray);padding:10px;background:var(--goldbg);border-left:3px solid var(--gold2);">
+      ※ 사주에 없는 십성(0점)이라도 자기체크에서 높게 나오면 <b>후천 성장 기질</b>로 별도 평가합니다.
+    </div>` : `<p style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;color:var(--gray);">사주 데이터를 불러오는 중입니다.</p>`}
   </div>
 
   <!-- 섹션 1: 사주 잠재력 vs 현재 자기인식 비교 그래프 -->
@@ -798,15 +882,18 @@ function runAI(){
     <div style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:#aaa;margin-bottom:16px;">※ 잠재력: 월지 40점 · 천간/일지 35점 · 기타 지지 20점 (위치 가중치 합산)</div>
     <div style="display:flex;flex-direction:column;gap:14px;">
       ${compRows.map(r => {
-        const gapText = r.gap > 15 ? `▲ +${r.gap}% 후천 발달` : r.gap < -15 ? `▼ ${r.gap}% 억압/잠재` : `≈ 일치`;
-        const gapColor = r.gap > 15 ? '#2a4878' : r.gap < -15 ? '#8b2e2e' : '#2a5e3a';
+        let tagText, tagColor;
+        if (r.type === 'match')         { tagText = '✅ 기질 일치'; tagColor = '#2a5e3a'; }
+        else if (r.type === 'suppressed'){ tagText = `⚠️ 억압 ${r.gap}%`; tagColor = '#8b2e2e'; }
+        else if (r.type === 'developed') { tagText = `🌱 후천 성장 +${r.gap}%`; tagColor = '#2a4878'; }
+        else { tagText = '— 중립'; tagColor = '#999'; }
         return `<div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
             <div style="display:flex;align-items:center;gap:8px;">
               <span style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;color:${r.color};">${r.star}</span>
-              <span style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:var(--gray);">사주 ${r.cnt}개</span>
+              <span style="font-family:'Noto Sans KR',sans-serif;font-size:.7rem;color:var(--gray);">사주 잠재력 ${r.sajuPct}점</span>
             </div>
-            <span style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;color:${gapColor};">${gapText}</span>
+            <span style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;color:${tagColor};">${tagText}</span>
           </div>
           <div style="position:relative;height:8px;background:var(--border);margin-bottom:3px;">
             <div style="position:absolute;top:0;left:0;height:100%;width:${r.sajuPct}%;background:var(--border2);"></div>
@@ -815,7 +902,7 @@ function runAI(){
             <div style="position:absolute;top:0;left:0;height:100%;width:${r.selfPct}%;background:${r.color};opacity:0.85;"></div>
           </div>
           <div style="display:flex;justify-content:space-between;font-family:'Noto Sans KR',sans-serif;font-size:.68rem;color:var(--gray);margin-top:3px;">
-            <span>잠재력 ${r.sajuPct}%</span><span>자기인식 ${r.selfPct}%</span>
+            <span>잠재력 ${r.sajuPct}점</span><span>자기인식 ${r.selfPct}%</span>
           </div>
         </div>`;
       }).join('')}
