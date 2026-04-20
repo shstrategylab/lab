@@ -45,11 +45,11 @@ header h1 {
 }
 header p {
   margin-top: 8px;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
   letter-spacing: 0.08em;
 }
-.hanja { font-size: 0.75em; opacity: 0.5; margin-left: 6px; }
+.hanja { font-size: 0.85em; opacity: 0.65; margin-left: 6px; }
 
 /* ─── layout ─── */
 main {
@@ -74,7 +74,7 @@ main {
   padding: 28px;
 }
 .panel-title {
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: 0.2em;
   color: var(--gold);
   text-transform: uppercase;
@@ -87,7 +87,7 @@ main {
 .field { margin-bottom: 18px; }
 label {
   display: block;
-  font-size: 12px;
+  font-size: 14px;
   color: var(--muted);
   letter-spacing: 0.1em;
   margin-bottom: 6px;
@@ -100,7 +100,7 @@ input[type=date], input[type=time], select {
   background: var(--paper);
   color: var(--ink);
   font-family: 'Noto Serif KR', serif;
-  font-size: 14px;
+  font-size: 16px;
   outline: none;
   transition: border-color .2s;
 }
@@ -117,7 +117,7 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   border: none;
   border-radius: 8px;
   font-family: 'Noto Serif KR', serif;
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: 0.12em;
   cursor: pointer;
   margin-top: 6px;
@@ -140,7 +140,7 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   padding: 10px 6px;
   text-align: center;
 }
-.pillar-label { font-size: 10px; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 8px; }
+.pillar-label { font-size: 12px; color: var(--muted); letter-spacing: 0.12em; margin-bottom: 8px; }
 .pillar-gan {
   font-size: 22px;
   font-weight: 700;
@@ -153,7 +153,7 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   line-height: 1;
   margin-bottom: 4px;
 }
-.pillar-sub { font-size: 10px; color: var(--muted); }
+.pillar-sub { font-size: 12px; color: var(--muted); }
 
 /* element colors */
 .elem-목 { color: #2d6a2d; }
@@ -163,11 +163,11 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
 .elem-수 { color: var(--blue); }
 
 /* ─── ilseonig table ─── */
-.seong-table { width:100%; border-collapse:collapse; font-size:13px; margin-top:12px; }
+.seong-table { width:100%; border-collapse:collapse; font-size:14px; margin-top:12px; }
 .seong-table th {
   background: var(--paper2);
   font-weight: 600;
-  font-size: 11px;
+  font-size: 13px;
   letter-spacing: 0.08em;
   padding: 7px 10px;
   border: 1px solid var(--border);
@@ -177,7 +177,7 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   padding: 7px 10px;
   border: 1px solid var(--border);
   text-align: center;
-  font-size: 13px;
+  font-size: 14px;
 }
 
 /* ─── interpretation ─── */
@@ -188,12 +188,12 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   padding: 14px 16px;
   margin: 12px 0;
 }
-.interp-block h4 { font-size: 12px; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
-.interp-block p { font-size: 13px; line-height: 1.8; color: var(--ink); }
+.interp-block h4 { font-size: 14px; letter-spacing: 0.12em; color: var(--gold); margin-bottom: 6px; }
+.interp-block p { font-size: 14px; line-height: 1.8; color: var(--ink); }
 
 .tag {
   display: inline-block;
-  font-size: 11px;
+  font-size: 13px;
   padding: 3px 10px;
   border-radius: 20px;
   margin: 3px 3px 3px 0;
@@ -212,7 +212,7 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
 /* ─── today bar ─── */
 .today-bar {
   text-align:center;
-  font-size:13px;
+  font-size:15px;
   color:var(--muted);
   margin-bottom: 20px;
   letter-spacing: 0.06em;
@@ -233,10 +233,10 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   background: var(--ink);
   color: var(--paper);
   display: flex; align-items: center; justify-content: center;
-  font-size: 11px; letter-spacing: 0.04em;
+  font-size: 13px; letter-spacing: 0.04em;
 }
 .big-char { font-size: 38px; font-weight: 700; text-align:center; line-height:1; }
-.small-label { font-size: 11px; color: var(--muted); text-align:center; margin-top:4px; }
+.small-label { font-size: 13px; color: var(--muted); text-align:center; margin-top:4px; }
 
 .divider { border:none; border-top:1px solid var(--border); margin: 20px 0; }
 </style>
@@ -291,12 +291,12 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
   </div>
 
   <button class="btn" onclick="analyze()">일진법으로 분석하기</button>
-  <div id="lunar-notice" style="display:none;margin-top:10px;font-size:12px;color:var(--blue);background:rgba(26,58,92,0.07);border-radius:6px;padding:8px 12px;letter-spacing:0.04em;"></div>
+  <div id="lunar-notice" style="display:none;margin-top:10px;font-size:14px;color:var(--blue);background:rgba(26,58,92,0.07);border-radius:6px;padding:8px 12px;letter-spacing:0.04em;"></div>
 </div>
 
 <!-- 사주 미리보기 패널 -->
 <div class="panel">
-  <div class="panel-title">사주 명식<span style="float:right;font-size:10px;color:var(--muted);">시 · 일 · 월 · 연</span></div>
+  <div class="panel-title">사주 명식<span style="float:right;font-size:12px;color:var(--muted);">시 · 일 · 월 · 연</span></div>
   <div class="today-bar" id="today-bar">오늘 일진을 로딩 중...</div>
   <div class="pillars" id="pillars">
     <div class="pillar"><div class="pillar-label">시주</div><div class="pillar-gan">—</div><div class="pillar-ji">—</div></div>
@@ -304,7 +304,7 @@ input[type=date]:focus, input[type=time]:focus, select:focus {
     <div class="pillar"><div class="pillar-label">월주</div><div class="pillar-gan">—</div><div class="pillar-ji">—</div></div>
     <div class="pillar"><div class="pillar-label">연주</div><div class="pillar-gan">—</div><div class="pillar-ji">—</div></div>
   </div>
-  <p style="font-size:11px;color:var(--muted);text-align:center;">생년월일을 입력하고 분석 버튼을 누르세요</p>
+  <p style="font-size:13px;color:var(--muted);text-align:center;">생년월일을 입력하고 분석 버튼을 누르세요</p>
 </div>
 
 <!-- 결과 (전체 너비) -->
@@ -827,22 +827,22 @@ function analyze() {
 
   <!-- ① 헤더: 일주 vs 일진 -->
   <div style="text-align:center;padding:18px 0 14px;">
-    <div style="font-size:11px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;">${targetDateLabel} · ${iljinStr}</div>
+    <div style="font-size:13px;letter-spacing:0.18em;color:var(--muted);margin-bottom:8px;">${targetDateLabel} · ${iljinStr}</div>
     <div style="display:flex;justify-content:center;align-items:center;gap:24px;margin-bottom:12px;flex-wrap:wrap;">
       <div style="text-align:center;">
-        <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:4px;">내 일주 (日柱)</div>
+        <div style="font-size:13px;color:var(--muted);letter-spacing:.1em;margin-bottom:4px;">내 일주 (日柱)</div>
         <div class="big-char elem-${GAN_ELEM[ij.ganIdx]}" style="font-size:42px;line-height:1;">${GAN[ij.ganIdx]}<span style="font-size:30px;">${JI[ij.jiIdx]}</span></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:3px;">${GAN_ELEM[ij.ganIdx]}·${JI_ELEM[ij.jiIdx]} / ${shinStrong?'신강(身强)':'신약(身弱)'}</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:3px;">${GAN_ELEM[ij.ganIdx]}·${JI_ELEM[ij.jiIdx]} / ${shinStrong?'신강(身强)':'신약(身弱)'}</div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:10px;color:${scoreColor};font-weight:700;letter-spacing:.1em;margin-bottom:6px;">${yongLabel}</div>
-        <div style="width:48px;height:48px;border-radius:50%;border:2px solid ${scoreColor};display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:13px;font-weight:700;color:${scoreColor};">${score}</div>
-        <div style="font-size:11px;color:${scoreColor};font-weight:700;margin-top:4px;">${scoreLabel}</div>
+        <div style="font-size:13px;color:${scoreColor};font-weight:700;letter-spacing:.1em;margin-bottom:6px;">${yongLabel}</div>
+        <div style="width:56px;height:56px;border-radius:50%;border:2px solid ${scoreColor};display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:15px;font-weight:700;color:${scoreColor};">${score}</div>
+        <div style="font-size:13px;color:${scoreColor};font-weight:700;margin-top:4px;">${scoreLabel}</div>
       </div>
       <div style="text-align:center;">
-        <div style="font-size:10px;color:var(--muted);letter-spacing:.1em;margin-bottom:4px;">오늘 일진 (日辰)</div>
+        <div style="font-size:13px;color:var(--muted);letter-spacing:.1em;margin-bottom:4px;">오늘 일진 (日辰)</div>
         <div class="big-char elem-${GAN_ELEM[tj.ganIdx]}" style="font-size:42px;line-height:1;">${GAN[tj.ganIdx]}<span style="font-size:30px;">${JI[tj.jiIdx]}</span></div>
-        <div style="font-size:10px;color:var(--muted);margin-top:3px;">${GAN_ELEM[tj.ganIdx]}·${JI_ELEM[tj.jiIdx]} / ${ganSeong}·${jiSeong}</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:3px;">${GAN_ELEM[tj.ganIdx]}·${JI_ELEM[tj.jiIdx]} / ${ganSeong}·${jiSeong}</div>
       </div>
     </div>
   </div>
@@ -850,7 +850,7 @@ function analyze() {
   <hr class="divider">
 
   <!-- ② 원국 교차 분석 — 핵심 -->
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px;">[ 원국(原局) 교차 분석 — 일진이 내 사주에 미치는 영향 ]</div>
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px;">[ 원국(原局) 교차 분석 — 일진이 내 사주에 미치는 영향 ]</div>
 
   <!-- 신강/신약 + 용신 판정 -->
   <div class="interp-block" style="border-left-color:${scoreColor};margin-bottom:10px;">
@@ -880,7 +880,7 @@ function analyze() {
 
   <!-- 원국 기둥별 충·합 작용 -->
   ${pillarHits.length > 0 ? `
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin:14px 0 8px;">[ 오늘 일진이 흔드는 기둥 — 어떤 인생 영역이 움직이나 ]</div>
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin:14px 0 8px;">[ 오늘 일진이 흔드는 기둥 — 어떤 인생 영역이 움직이나 ]</div>
   ${pillarHits.map(h => {
     const d = PILLAR_DOMAIN[h.label] || {};
     const hasChung = h.hits.some(x=>x.type.includes('충')||x.type.includes('형'));
@@ -890,7 +890,7 @@ function analyze() {
       <span style="color:var(--muted);">${d.warn||''}</span></p>
     </div>`;
   }).join('')}` : `
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin:14px 0 8px;">[ 원국 기둥과의 작용 ]</div>
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin:14px 0 8px;">[ 원국 기둥과의 작용 ]</div>
   <div class="interp-block" style="border-left-color:var(--muted);">
     <p style="color:var(--muted);">오늘 일진이 원국의 어떤 기둥과도 직접적인 충·합을 일으키지 않습니다. 비교적 평온한 흐름입니다.</p>
   </div>`}
@@ -898,7 +898,7 @@ function analyze() {
   <hr class="divider">
 
   <!-- ③ 철학관식 영역별 풀이 -->
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px;">[ 오늘 하루 영역별 풀이 ]</div>
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px;">[ 오늘 하루 영역별 풀이 ]</div>
 
   <div class="interp-block" style="border-left-color:${isYongsin?'#2d6a2d':isGisin?'var(--red)':'var(--muted)'};">
     <h4>${si.icon||''} 오늘의 핵심 기운 — ${ganSeong} (천간) · ${jiSeong} (지지)</h4>
@@ -910,18 +910,18 @@ function analyze() {
     <div class="interp-block" style="margin:0;border-left-color:#2d6a2d;">
       <h4 style="color:#2d6a2d;">💼 일·직장</h4>
       <p>${si.work||'—'}
-      ${isYongsin?' <em style="color:#2d6a2d;font-size:11px;">☑ 용신일 — 적극 행동 유리</em>':isGisin?' <em style="color:var(--red);font-size:11px;">⚠ 기신일 — 새 일 시작 자제</em>':''}</p>
+      ${isYongsin?' <em style="color:#2d6a2d;font-size:13px;">☑ 용신일 — 적극 행동 유리</em>':isGisin?' <em style="color:var(--red);font-size:13px;">⚠ 기신일 — 새 일 시작 자제</em>':''}</p>
     </div>
     <div class="interp-block" style="margin:0;border-left-color:var(--gold);">
       <h4 style="color:var(--gold);">💰 재물·금전</h4>
       <p>${si.money||'—'}
-      ${isGmJi?' <em style="color:var(--blue);font-size:11px;">⬡ 공망 — 수입이 들어와도 실속이 약합니다</em>':''}</p>
+      ${isGmJi?' <em style="color:var(--blue);font-size:13px;">⬡ 공망 — 수입이 들어와도 실속이 약합니다</em>':''}</p>
     </div>
     <div class="interp-block" style="margin:0;border-left-color:var(--blue);">
       <h4 style="color:var(--blue);">🤝 인간관계</h4>
       <p>${si.relation||'—'}
-      ${isChung?' <em style="color:var(--red);font-size:11px;">⚡ 충 — 관계에서 마찰·단절 주의</em>':''}
-      ${isHap?' <em style="color:#2d6a2d;font-size:11px;">🔗 합 — 협력·화해에 유리</em>':''}</p>
+      ${isChung?' <em style="color:var(--red);font-size:13px;">⚡ 충 — 관계에서 마찰·단절 주의</em>':''}
+      ${isHap?' <em style="color:#2d6a2d;font-size:13px;">🔗 합 — 협력·화해에 유리</em>':''}</p>
     </div>
     <div class="interp-block" style="margin:0;border-left-color:#6b3d8a;">
       <h4 style="color:#6b3d8a;">🧭 오늘 할 일</h4>
@@ -938,7 +938,7 @@ function analyze() {
   <hr class="divider">
 
   <!-- ④ 12신살 -->
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px;">[ 12신살(十二神殺) — 오늘의 에너지 장(場) ]</div>
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin-bottom:8px;">[ 12신살(十二神殺) — 오늘의 에너지 장(場) ]</div>
   <div class="interp-block">
     <h4>🌀 ${sisal} — ${ss.mean}</h4>
     <p><strong>오늘 분위기:</strong> ${ss.mood}<br>
@@ -947,7 +947,7 @@ function analyze() {
 
   <!-- ⑤ 공망 -->
   ${isGmJi ? `
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin:14px 0 8px;">[ 공망(空亡) — 허(虛)한 날 ]</div>
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin:14px 0 8px;">[ 공망(空亡) — 허(虛)한 날 ]</div>
   <div class="interp-block" style="border-left-color:var(--blue);background:rgba(26,58,92,0.05);">
     <h4 style="color:var(--blue);">⬡ 공망 해당 — 결과가 비는 날</h4>
     <p>오늘 일진 지지 <strong>${JI[tj.jiIdx]}</strong>가 당신 일주 공망에 속합니다.<br>
@@ -958,8 +958,8 @@ function analyze() {
   <hr class="divider">
 
   <!-- ⑥ 철학관식 종합 풀이 -->
-  <div style="font-size:11px;letter-spacing:.16em;color:var(--gold);margin-bottom:10px;">[ 철학관式 종합 풀이 — 오늘 이 사람에게 ]</div>
-  <div style="padding:18px;background:var(--paper2);border:1px solid var(--border);border-radius:0;line-height:2;font-size:13px;color:var(--ink);">
+  <div style="font-size:13px;letter-spacing:.16em;color:var(--gold);margin-bottom:10px;">[ 철학관式 종합 풀이 — 오늘 이 사람에게 ]</div>
+  <div style="padding:18px;background:var(--paper2);border:1px solid var(--border);border-radius:0;line-height:2;font-size:15px;color:var(--ink);">
     <p>
       <strong>${ilzuStr} 일주</strong>인 당신은 ${shinStrong?'신강(身强)':'신약(身弱)'} 사주입니다.
       오늘 <strong>${iljinStr}</strong>이 들어오면서 당신에게 <strong style="color:${isYongsin?'#2d6a2d':isGisin?'var(--red)':'inherit'}">${ganSeong}</strong>의 기운이 작동합니다.
