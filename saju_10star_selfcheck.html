@@ -977,6 +977,169 @@ function runAI(){
     </div>
   </div>
 
+  <!-- 섹션 6: 십성 분포 특성 요약 + 나침반 종합 진단 -->
+  ${(()=>{
+    // ── 십성 분포 패턴 분석 ──
+    const starOrder3=['비견','겁재','식신','상관','편재','정재','편관','정관','편인','정인'];
+    const totalStarCount = starOrder3.reduce((a,s)=>a+(G.tenStar[s]||0),0);
+
+    // 그룹별 합산 (비겁/식상/재성/관성/인성)
+    const groups = {
+      '비겁': {stars:['비견','겁재'], label:'비겁(比劫)', desc:'자아·독립·경쟁', color:'#3a6b47'},
+      '식상': {stars:['식신','상관'], label:'식상(食傷)', desc:'표현·창의·반골', color:'#6b3d8a'},
+      '재성': {stars:['편재','정재'], label:'재성(財星)', desc:'현실·재물·관계', color:'#7a5a18'},
+      '관성': {stars:['편관','정관'], label:'관성(官星)', desc:'명예·규범·통제', color:'#8b2e2e'},
+      '인성': {stars:['편인','정인'], label:'인성(印星)', desc:'학습·직관·내면', color:'#2a5e5a'},
+    };
+    const groupScores = Object.entries(groups).map(([key,g])=>{
+      const cnt = g.stars.reduce((a,s)=>a+(G.tenStar[s]||0),0);
+      const scoreSum = g.stars.reduce((a,s)=>a+(G.tenStarScore[s]||0),0);
+      return {...g, key, cnt, scoreSum};
+    }).sort((a,b)=>b.scoreSum-a.scoreSum);
+
+    const topGroup = groupScores[0];
+    const bottomGroup = groupScores[groupScores.length-1];
+
+    // 십성 분포에 따른 사주 특성 문장 생성
+    const distributionPatterns = [];
+    if(topGroup.scoreSum >= 60) distributionPatterns.push(`<strong>${topGroup.label}(${topGroup.desc})</strong>이 가장 두드러진 사주입니다.`);
+    if(groupScores.filter(g=>g.scoreSum>=30).length>=4) distributionPatterns.push('여러 기질이 고르게 분포된 다재다능형입니다.');
+    if(matchedList.length>=3) distributionPatterns.push('타고난 기질을 잘 인식하고 있는 편입니다.');
+    if(developedList.length>=2) distributionPatterns.push(`후천적으로 키운 기질(${developedList.map(r=>r.star).join('·')})이 두드러집니다.`);
+    if(suppressedList.length>=2) distributionPatterns.push(`아직 발휘되지 못한 잠재 기질(${suppressedList.map(r=>r.star).join('·')})이 있습니다.`);
+
+    // ── 타고난 vs 의식적으로 키운 기질 비교표 데이터 ──
+    const bornRows = compRows.filter(r=>r.type==='match'||r.type==='suppressed').sort((a,b)=>b.sajuPct-a.sajuPct).slice(0,3);
+    const grownRows = compRows.filter(r=>r.type==='developed').sort((a,b)=>b.selfPct-a.selfPct).slice(0,3);
+
+    // ── 훌륭한 부분 / 더 키울 부분 ──
+    const praiseItems = [];
+    const growItems = [];
+
+    // 타고난 기질을 잘 인식하는 경우 → 훌륭
+    matchedList.forEach(r=>{
+      praiseItems.push({ star:r.star, color:r.color, msg:`${r.star} 기질(${STAR_DATA[r.star].desc.split('—')[1]?.trim()||''})을 타고났고, 자기체크에서도 ${r.selfPct}%로 높게 나타납니다. 이 기질을 잘 인식하고 활용하고 있습니다.` });
+    });
+    // 후천 성장 기질 → 훌륭
+    developedList.forEach(r=>{
+      praiseItems.push({ star:r.star, color:r.color, msg:`사주에 ${r.star} 기질이 적었음에도 자기인식 ${r.selfPct}%로 의식적으로 키워냈습니다. 이는 타고난 한계를 스스로 극복한 성장의 증거입니다.` });
+    });
+    // 억압된 기질 → 더 키울 필요
+    suppressedList.forEach(r=>{
+      growItems.push({ star:r.star, color:r.color, msg:`${r.star} 기질(${STAR_DATA[r.star].desc.split('—')[1]?.trim()||''})이 사주에 잠재되어 있지만 자기인식은 ${r.selfPct}%에 그칩니다. 이 기질을 의식적으로 꺼내어 쓰는 연습이 필요합니다.` });
+    });
+    // 사주에 없고 자기인식도 낮은 기질 → 키울 필요
+    const absentLow = compRows.filter(r=>r.type==='neutral'&&r.sajuPct<20&&r.selfPct!==null&&r.selfPct<40).slice(0,2);
+    absentLow.forEach(r=>{
+      growItems.push({ star:r.star, color:r.color, msg:`${r.star} 기질은 사주에도 자기인식에도 약합니다. 의식적인 개발이 가장 큰 성장 레버리지가 될 수 있습니다.` });
+    });
+
+    // 최소 1개씩은 보장
+    if(praiseItems.length===0){
+      const best=compRows.sort((a,b)=>(b.selfPct||0)-(a.selfPct||0))[0];
+      if(best) praiseItems.push({ star:best.star, color:best.color, msg:`자기체크에서 ${best.star} 기질이 ${best.selfPct}%로 가장 높게 나타납니다. 이 기질을 중심으로 자신의 강점을 구체화해보세요.` });
+    }
+    if(growItems.length===0){
+      const lowest=compRows.sort((a,b)=>(a.selfPct||0)-(b.selfPct||0))[0];
+      if(lowest) growItems.push({ star:lowest.star, color:lowest.color, msg:`${lowest.star} 기질을 의식적으로 탐색하면 새로운 가능성이 열릴 수 있습니다.` });
+    }
+
+    // 나침반 방향 문장 (일간 + 상위 그룹 기반)
+    const compassDir = `${dm.name} 일간의 ${topGroup.label} 성향을 핵심 동력으로 삼되, ${bottomGroup.label}(${bottomGroup.desc}) 영역을 의식적으로 보완할 때 가장 균형 잡힌 성장이 가능합니다.`;
+
+    return `
+  <div style="padding:28px 24px 32px;background:linear-gradient(135deg,#1a1209 0%,#2a1e0a 100%);border:1px solid var(--border2);position:relative;overflow:hidden;">
+    <div style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(184,146,42,0.06);border-radius:50%;"></div>
+    <div style="position:absolute;bottom:-30px;left:-30px;width:120px;height:120px;background:rgba(184,146,42,0.04);border-radius:50%;"></div>
+
+    <!-- 헤더 -->
+    <div style="text-align:center;margin-bottom:28px;position:relative;">
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;letter-spacing:5px;color:var(--gold2);margin-bottom:10px;">【 나침반 종합 진단 】</div>
+      <div style="font-size:1.5rem;font-weight:900;color:#fff;margin-bottom:6px;">나는 지금 어디 있고, 어디로 가야 하는가</div>
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;color:#aaa;line-height:1.7;">타고난 십성 분포 · 후천 기질 성장 · 발전 방향을 한눈에</div>
+    </div>
+
+    <!-- 블록 1: 십성 분포에 따른 사주 특성 -->
+    <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(184,146,42,0.25);padding:20px;margin-bottom:16px;">
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:3px;color:var(--gold2);margin-bottom:14px;">① 십성 분포 — 당신의 사주 특성</div>
+      <!-- 그룹 바 -->
+      <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;">
+        ${groupScores.map(g=>`
+        <div style="display:grid;grid-template-columns:80px 1fr 48px;align-items:center;gap:10px;">
+          <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;font-weight:700;color:${g.color};">${g.label}</div>
+          <div style="height:8px;background:rgba(255,255,255,0.08);position:relative;">
+            <div style="position:absolute;top:0;left:0;height:100%;width:${Math.min(g.scoreSum,100)}%;background:${g.color};opacity:0.85;transition:width 1s;"></div>
+          </div>
+          <div style="font-family:'Noto Sans KR',sans-serif;font-size:.8rem;color:${g.color};text-align:right;font-weight:700;">${g.scoreSum}점</div>
+        </div>`).join('')}
+      </div>
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.88rem;line-height:1.9;color:#ddd;">
+        ${distributionPatterns.join(' ')}
+      </div>
+    </div>
+
+    <!-- 블록 2: 타고난 기질 vs 의식적으로 키운 기질 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+      <div style="background:rgba(42,94,58,0.15);border:1px solid rgba(42,94,58,0.4);padding:16px;">
+        <div style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:2px;color:#7ecfa0;margin-bottom:12px;">🌿 타고난 기질</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${bornRows.length>0?bornRows.map(r=>`
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:6px;height:6px;background:${r.color};border-radius:50%;flex-shrink:0;"></span>
+            <span style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;color:${r.color};">${r.star}</span>
+            <span style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:#aaa;margin-left:auto;">잠재 ${r.sajuPct}점</span>
+          </div>`).join(''):'<div style="font-family:\'Noto Sans KR\',sans-serif;font-size:.8rem;color:#888;">분포가 고른 편입니다</div>'}
+        </div>
+      </div>
+      <div style="background:rgba(42,72,120,0.15);border:1px solid rgba(42,72,120,0.4);padding:16px;">
+        <div style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:2px;color:#7eaacf;margin-bottom:12px;">🌱 의식적으로 키운 기질</div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          ${grownRows.length>0?grownRows.map(r=>`
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:6px;height:6px;background:${r.color};border-radius:50%;flex-shrink:0;"></span>
+            <span style="font-family:'Noto Sans KR',sans-serif;font-size:.82rem;font-weight:700;color:${r.color};">${r.star}</span>
+            <span style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;color:#aaa;margin-left:auto;">자기인식 ${r.selfPct}%</span>
+          </div>`).join(''):'<div style="font-family:\'Noto Sans KR\',sans-serif;font-size:.8rem;color:#888;">타고난 기질 중심으로 살아온 편입니다</div>'}
+        </div>
+      </div>
+    </div>
+
+    <!-- 블록 3: 훌륭한 부분 -->
+    <div style="background:rgba(42,94,58,0.12);border-left:3px solid #5aaf7a;padding:16px 18px;margin-bottom:12px;">
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:2px;color:#7ecfa0;margin-bottom:12px;">✦ 이미 훌륭한 부분</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${praiseItems.slice(0,3).map(p=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;color:${p.color};white-space:nowrap;padding-top:2px;">${p.star}</span>
+          <p style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;line-height:1.8;color:#ddd;">${p.msg}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- 블록 4: 더 키울 부분 -->
+    <div style="background:rgba(139,46,46,0.12);border-left:3px solid #c77a6b;padding:16px 18px;margin-bottom:20px;">
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.75rem;font-weight:700;letter-spacing:2px;color:#e4a090;margin-bottom:12px;">◈ 더 키울 필요가 있는 부분</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        ${growItems.slice(0,3).map(g=>`
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <span style="font-family:'Noto Sans KR',sans-serif;font-size:.78rem;font-weight:700;color:${g.color};white-space:nowrap;padding-top:2px;">${g.star}</span>
+          <p style="font-family:'Noto Sans KR',sans-serif;font-size:.85rem;line-height:1.8;color:#ddd;">${g.msg}</p>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- 블록 5: 나침반 방향 -->
+    <div style="border:1px solid var(--gold2);padding:20px;text-align:center;position:relative;">
+      <div style="font-family:'Noto Sans KR',sans-serif;font-size:.72rem;font-weight:700;letter-spacing:4px;color:var(--gold2);margin-bottom:12px;">나침반이 가리키는 방향</div>
+      <p style="font-family:'Noto Serif KR',serif;font-size:.95rem;line-height:2.0;color:#f0e8d0;">${compassDir}</p>
+      <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(184,146,42,0.25);font-family:'Noto Sans KR',sans-serif;font-size:.82rem;color:#aaa;line-height:1.9;">
+        나침반은 목적지를 정해주지 않습니다. 다만 <strong style="color:var(--gold2);">지금 내가 어느 방향을 향하고 있는지</strong>를 알려줍니다.<br>
+        이 진단이 당신이 이미 가진 것을 더 선명하게 보고, 아직 쓰지 못한 것을 꺼내는 계기가 되길 바랍니다.
+      </div>
+    </div>
+  </div>`;
+  })()}
+
   </div>`;
 
   document.getElementById('ai-out').innerHTML=html;
