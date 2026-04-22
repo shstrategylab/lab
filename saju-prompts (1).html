@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주풀이 프롬프트 가이드</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --paper-dark: #ede6d6;
+    --gold: #c9a84c;
+    --gold-light: #e8cd87;
+    --gold-dim: #8a6f30;
+    --red: #8b2020;
+    --red-light: #c44040;
+    --teal: #1a5f5f;
+    --teal-light: #2a8a8a;
+    --muted: #6b5e4a;
+    --border: rgba(201,168,76,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--ink);
+    color: var(--paper);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, rgba(201,168,76,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(26,95,95,0.08) 0%, transparent 50%),
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+    animation: fadeDown 0.8s ease both;
+  }
+
+  .header-symbol {
+    font-size: 2.4rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+
+  .header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.8rem, 5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--paper);
+    letter-spacing: 0.05em;
+    line-height: 1.3;
+    margin-bottom: 12px;
+  }
+
+  .header h1 span {
+    color: var(--gold);
+  }
+
+  .header-sub {
+    font-size: 0.9rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    font-weight: 300;
+  }
+
+  .header-divider {
+    width: 120px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+    margin: 24px auto 0;
+  }
+
+  /* Notice box */
+  .notice {
+    background: linear-gradient(135deg, rgba(139,32,32,0.15), rgba(139,32,32,0.08));
+    border: 1px solid rgba(139,32,32,0.4);
+    border-left: 3px solid var(--red);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+    animation: fadeDown 0.8s 0.1s ease both;
+  }
+
+  .notice-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 0.8rem;
+    color: var(--red-light);
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .notice p {
+    font-size: 0.88rem;
+    color: rgba(245,240,232,0.75);
+    line-height: 1.8;
+    font-weight: 300;
+  }
+
+  /* Menu tabs */
+  .tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 2px;
+    flex-wrap: wrap;
+    animation: fadeDown 0.8s 0.2s ease both;
+  }
+
+  .tab {
+    flex: 1;
+    min-width: 140px;
+    padding: 14px 8px;
+    background: rgba(245,240,232,0.04);
+    border: 1px solid var(--border);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.25s ease;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    position: relative;
+  }
+
+  .tab:hover {
+    background: rgba(201,168,76,0.08);
+    color: var(--gold-light);
+  }
+
+  .tab.active {
+    background: rgba(201,168,76,0.12);
+    border-color: var(--gold);
+    border-bottom: 1px solid rgba(201,168,76,0.12);
+    color: var(--gold);
+    font-weight: 500;
+    z-index: 1;
+    margin-bottom: -1px;
+  }
+
+  .tab-number {
+    display: block;
+    font-size: 0.7rem;
+    color: var(--gold-dim);
+    margin-bottom: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  .tab.active .tab-number {
+    color: var(--gold);
+  }
+
+  /* Prompt card */
+  .prompt-card {
+    background: rgba(245,240,232,0.04);
+    border: 1px solid var(--border);
+    border-radius: 0 0 8px 8px;
+    padding: 40px;
+    animation: fadeDown 0.8s 0.3s ease both;
+    display: none;
+  }
+
+  .prompt-card.active {
+    display: block;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .card-title-group {}
+
+  .card-badge {
+    font-size: 0.72rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    display: block;
+  }
+
+  .card-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--paper);
+    letter-spacing: 0.03em;
+  }
+
+  .card-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 6px;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* Copy button */
+  .copy-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+    border: none;
+    border-radius: 4px;
+    color: var(--ink);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .copy-btn:hover {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(201,168,76,0.3);
+  }
+
+  .copy-btn.copied {
+    background: linear-gradient(135deg, var(--teal), var(--teal-light));
+    color: var(--paper);
+  }
+
+  .copy-btn svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+  }
+
+  /* Prompt box */
+  .prompt-box {
+    background: rgba(10,8,4,0.5);
+    border: 1px solid rgba(201,168,76,0.15);
+    border-radius: 6px;
+    padding: 28px 32px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .prompt-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+  }
+
+  .prompt-text {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 0.84rem;
+    line-height: 2;
+    color: rgba(245,240,232,0.82);
+    white-space: pre-wrap;
+    word-break: keep-all;
+    font-weight: 300;
+  }
+
+  /* Section markers in prompt */
+  .prompt-text .section {
+    color: var(--gold-light);
+    font-weight: 500;
+  }
+
+  /* How to use */
+  .how-to {
+    margin-top: 28px;
+    padding: 20px 24px;
+    background: rgba(26,95,95,0.1);
+    border: 1px solid rgba(26,95,95,0.3);
+    border-radius: 4px;
+  }
+
+  .how-to-title {
+    font-size: 0.75rem;
+    color: var(--teal-light);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .how-to ol {
+    padding-left: 20px;
+  }
+
+  .how-to li {
+    font-size: 0.83rem;
+    color: rgba(245,240,232,0.65);
+    line-height: 1.9;
+    font-weight: 300;
+  }
+
+  .how-to li strong {
+    color: rgba(245,240,232,0.85);
+    font-weight: 500;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 64px;
+    padding-top: 32px;
+    border-top: 1px solid rgba(201,168,76,0.15);
+    animation: fadeDown 0.8s 0.4s ease both;
+  }
+
+  .footer-symbol {
+    font-size: 1.2rem;
+    color: var(--gold-dim);
+    letter-spacing: 0.4em;
+    margin-bottom: 12px;
+  }
+
+  .footer p {
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.8;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+  }
+
+  /* Animations */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .container { padding: 40px 16px 60px; }
+    .prompt-card { padding: 24px 20px; }
+    .prompt-box { padding: 20px 18px; }
+    .tab { min-width: 100px; padding: 12px 6px; font-size: 0.76rem; }
+    .card-header { flex-direction: column; }
+    .copy-btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-symbol">☯ 命 ☯</div>
+    <h1>사주풀이 <span>프롬프트</span> 가이드</h1>
+    <p class="header-sub">만세력 이미지를 클로드에 첨부하고 원하는 프롬프트를 복사하여 사용하세요</p>
+    <div class="header-divider"></div>
+  </div>
+
+  <!-- Notice -->
+  <div class="notice">
+    <div class="notice-title">⚠ 사용 전 안내</div>
+    <p>사주풀이는 기질과 에너지 흐름의 <strong>경향성</strong>을 읽는 도구입니다. 실제 삶은 환경·선택·의지·우연 등 사주가 담지 못하는 수많은 변수에 의해 달라집니다. 이 프롬프트는 자기 이해의 참고 자료로 활용하시고, 중요한 결정은 반드시 본인의 판단과 책임 아래 내리시기 바랍니다.</p>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" id="tabs">
+    <div class="tab active" onclick="switchTab(0)">
+      <span class="tab-number">01</span>기질·성향
+    </div>
+    <div class="tab" onclick="switchTab(1)">
+      <span class="tab-number">02</span>에너지 흐름
+    </div>
+    <div class="tab" onclick="switchTab(2)">
+      <span class="tab-number">03</span>관계 패턴
+    </div>
+    <div class="tab" onclick="switchTab(3)">
+      <span class="tab-number">04</span>의사결정
+    </div>
+    <div class="tab" onclick="switchTab(4)">
+      <span class="tab-number">05</span>한계 안내
+    </div>
+  </div>
+
+  <!-- Card 1 -->
+  <div class="prompt-card active" id="card-0">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-badge">Prompt 01 · 기질과 성향 파악</span>
+        <div class="card-title">타고난 기질을 읽다</div>
+        <div class="card-desc">일간·십성·오행으로 이 사람의 핵심 성향과 행동 패턴을 분석합니다</div>
+      </div>
+      <button class="copy-btn" onclick="copyPrompt(0)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        프롬프트 복사
+      </button>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="prompt-0">첨부된 만세력 이미지를 보고, 이 사람의 타고난 기질과 성향을 쉽고 친근하게 설명해주세요.
+사주를 처음 접하는 사람도 바로 이해할 수 있도록, 전문 용어가 나올 때마다
+"이게 무슨 뜻이냐면~" 하는 식으로 자연스럽게 풀어서 설명해주세요.
+
+---
+
+아래 4가지 흐름으로 설명해주세요.
+
+1. 이 사람의 핵심 기질은 무엇인가요?
+   만세력에서 일간(태어난 날의 천간, 즉 이 사람의 본질적인 에너지)을 읽어주세요.
+   예를 들어 갑목(甲木)이라면 "큰 나무처럼 위로 뻗으려는 성질, 주도적이고 추진력이 강한 편"
+   이런 식으로, 왜 그런 기질이 나오는지 이유와 함께 설명해주세요.
+
+2. 이 사람은 어떻게 생각하고 행동하는 경향이 있나요?
+   원국(사주 전체 구성)에서 가장 두드러지는 십성(十星, 각 글자가 나에게 어떤 의미인지 나타내는 분류)을
+   찾아주세요. 그리고 그 십성이 실제로 어떤 행동 패턴으로 나타나는지
+   일상적인 예시를 들어 설명해주세요.
+   예) "식신이 강하다는 건, 먹고 즐기고 표현하는 걸 좋아한다는 뜻이에요.
+       이런 분들은 대체로 창의적인 일이나 사람을 즐겁게 하는 일에서 에너지를 얻는 경향이 있습니다."
+
+3. 이 사람에게 넘치는 에너지와 부족한 에너지는 무엇인가요?
+   오행(목·화·토·금·수, 자연의 다섯 가지 기운) 중 어떤 기운이 많고 적은지 확인해주세요.
+   넘치는 기운은 어떤 과잉 성향으로 나타날 수 있는지,
+   부족한 기운은 어떤 부분에서 아쉬움이나 어려움으로 나타날 수 있는지
+   구체적으로 이야기해주세요.
+
+4. 한 줄로 정리하면 어떤 사람인가요?
+   위 분석을 바탕으로 이 사람의 기질을 누구나 이해할 수 있는 말로 2~3문장 안에 요약해주세요.
+   "이 분은 한마디로 ~한 에너지를 가진 분입니다. ~한 상황에서 강점이 드러나고,
+   ~한 부분을 의식적으로 보완하면 더 균형 잡힌 삶이 가능합니다." 같은 형식으로요.
+
+---
+
+설명할 때 이 점을 꼭 지켜주세요.
+
+- "~입니다", "~라고 볼 수 있어요", "~하는 경향이 있습니다" 같은 친근한 말투로 써주세요.
+- 어려운 한자어나 명리 용어가 나오면 바로 옆에 쉬운 말로 풀어주세요.
+- "반드시 ~이다", "틀림없이 ~할 것이다" 같은 단정적인 표현은 쓰지 마세요.
+- 분석 마지막에 꼭 이 말을 덧붙여주세요:
+  "이 분석은 타고난 기질의 경향성을 읽은 것입니다.
+   실제 삶은 어떤 환경에서 자랐는지, 어떤 선택을 해왔는지에 따라 얼마든지 달라질 수 있어요."</pre>
+    </div>
+    <div class="how-to">
+      <div class="how-to-title">✦ 사용 방법</div>
+      <ol>
+        <li><strong>위 프롬프트를 복사</strong>하세요</li>
+        <li>클로드 대화창에 <strong>만세력 이미지를 첨부</strong>하세요</li>
+        <li>복사한 프롬프트를 <strong>텍스트로 입력</strong>하고 전송하세요</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Card 2 -->
+  <div class="prompt-card" id="card-1">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-badge">Prompt 02 · 시기의 에너지 흐름</span>
+        <div class="card-title">대운과 세운의 흐름을 읽다</div>
+        <div class="card-desc">대운 전체 흐름과 현재 세운의 에너지 성격을 분석합니다</div>
+      </div>
+      <button class="copy-btn" onclick="copyPrompt(1)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        프롬프트 복사
+      </button>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="prompt-1">첨부된 만세력 이미지를 보고, 이 사람의 시기별 에너지 흐름을 쉽게 설명해주세요.
+사주를 처음 보는 사람도 "아, 이 시기가 이런 느낌이구나" 하고 바로 감이 오도록
+구체적인 이유와 함께 풀어서 이야기해주세요.
+
+---
+
+아래 2가지 흐름으로 설명해주세요.
+
+1. 이 사람의 인생 전체 흐름은 어떻게 흘러가나요?
+   만세력에 표시된 대운(大運, 약 10년 단위로 바뀌는 큰 에너지의 흐름)을
+   순서대로 읽어주세요.
+   각 대운마다 어떤 성격의 에너지가 들어오는지, 그래서 이 시기가 어떤 느낌의
+   시간이 될 수 있는지 설명해주세요.
+   단순히 "좋다/나쁘다"가 아니라, 예를 들어
+   "이 시기는 바깥으로 나가고 확장하는 에너지가 강해지는 때입니다.
+    새로운 것을 시작하거나 사람들과 활발히 교류하는 흐름이 만들어지기 쉽습니다."
+   이런 식으로 에너지의 성격과 그 이유를 함께 설명해주세요.
+   전체 대운을 보면서 인생의 큰 흐름이 어떻게 변화하는지도 정리해주세요.
+   (예: "초반에는 내면을 쌓는 시기, 중반에는 밖으로 펼치는 시기, 후반에는 안정을 다지는 시기"처럼요.)
+
+2. 지금 이 시기, 올해의 에너지는 어떤가요?
+   현재 세운(歲運, 올해의 에너지 흐름)을 읽어주세요.
+   올해 들어온 에너지가 이 사람의 타고난 사주, 그리고 지금 흐르고 있는
+   대운과 어떻게 어울리거나 부딪히는지 설명해주세요.
+   그 결과 올해가 어떤 성격의 한 해가 될 수 있는지,
+   어떤 방향에 에너지를 쏟으면 자연스러운지 이야기해주세요.
+   마지막에 "올해를 한 문장으로 표현하면 ~입니다" 형식으로 요약해주세요.
+
+---
+
+설명할 때 이 점을 꼭 지켜주세요.
+
+- "~입니다", "~라고 볼 수 있어요", "~하는 경향이 있습니다" 같은 친근한 말투로 써주세요.
+- 어려운 용어가 나오면 바로 쉬운 말로 풀어주세요.
+  예) 인성(印星) → "배움, 지원, 안정의 에너지"
+- "이 시기에 반드시 ~가 일어난다"는 식의 단정은 쓰지 마세요.
+  에너지의 성격과 흐름을 설명하는 것이지, 사건을 예언하는 게 아닙니다.
+- 특정 시기를 "나쁜 운"이라고 표현하지 마세요.
+  어떤 에너지든 어떻게 활용하느냐에 따라 달라질 수 있다는 관점을 유지해주세요.
+- 분석 마지막에 꼭 이 말을 덧붙여주세요:
+  "대운과 세운은 어떤 에너지의 흐름이 오는지를 보여주는 것입니다.
+   그 흐름 속에서 어떤 선택을 하느냐는 전적으로 본인에게 달려 있어요."</pre>
+    </div>
+    <div class="how-to">
+      <div class="how-to-title">✦ 사용 방법</div>
+      <ol>
+        <li><strong>위 프롬프트를 복사</strong>하세요</li>
+        <li>클로드 대화창에 <strong>만세력 이미지를 첨부</strong>하세요</li>
+        <li>복사한 프롬프트를 <strong>텍스트로 입력</strong>하고 전송하세요</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Card 3 -->
+  <div class="prompt-card" id="card-2">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-badge">Prompt 03 · 관계 패턴 이해</span>
+        <div class="card-title">관계의 패턴을 읽다</div>
+        <div class="card-desc">연인·부모자녀·직장 등 전체 관계 영역과 반복 갈등 구조를 분석합니다</div>
+      </div>
+      <button class="copy-btn" onclick="copyPrompt(2)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        프롬프트 복사
+      </button>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="prompt-2">첨부된 만세력 이미지를 보고, 이 사람이 관계에서 보이는 패턴을 쉽고 따뜻하게 설명해주세요.
+"왜 나는 이런 관계가 반복될까?" 하는 궁금증에 답이 되도록,
+이유와 근거를 들어 논리적으로 풀어주세요.
+
+---
+
+아래 4가지 흐름으로 설명해주세요.
+
+1. 연인·배우자와의 관계에서 이 사람은 어떤 패턴을 보이나요?
+   일지(日支, 태어난 날의 지지로 배우자궁이라고도 합니다)와
+   관성(官星, 파트너·배우자를 나타내는 기운)을 읽어주세요.
+   이 사람이 친밀한 관계에서 자연스럽게 취하는 태도, 기대하는 것,
+   반복적으로 어려움을 느끼는 지점이 무엇인지 이야기해주세요.
+   예) "일지에 이 기운이 있다는 건, 가까운 관계에서 안정을 강하게 원한다는 뜻입니다.
+       그래서 변화가 많거나 예측하기 어려운 파트너와는 긴장감을 느끼기 쉬운 편이에요."
+
+2. 부모·자녀 관계에서는 어떤 모습이 나타나나요?
+   인성(印星, 부모·보호·돌봄의 기운)과 식상(食傷, 자녀·표현·베푸는 기운)을 읽어주세요.
+   위아래 세대와의 관계에서 이 사람이 자연스럽게 맡게 되는 역할,
+   그리고 이 관계에서 에너지를 얻는지 소모하는지도 함께 이야기해주세요.
+
+3. 직장·사회적 관계에서는 어떤 스타일인가요?
+   관성(조직·권위와의 관계를 나타내는 기운)과
+   비겁(比劫, 나와 비슷한 동료·경쟁 관계를 나타내는 기운)의 균형을 읽어주세요.
+   이 사람이 조직 안에서 주로 어떤 포지션을 취하는지,
+   윗사람이나 규칙에 대해 어떻게 반응하는 경향이 있는지 설명해주세요.
+
+4. 이 사람에게 반복되는 관계 패턴이 있나요?
+   원국에서 충(沖, 서로 정면으로 부딪히는 기운의 조합)이나
+   형(刑, 은근히 마찰을 만드는 기운의 조합)이 있다면,
+   어떤 관계 영역에서 이런 긴장이 반복될 수 있는지 설명해주세요.
+   중요한 건 단순히 "힘들다"고 끝내지 않고,
+   어떤 조건에서 이 긴장이 완화될 수 있는지도 함께 이야기해주세요.
+
+---
+
+설명할 때 이 점을 꼭 지켜주세요.
+
+- "~입니다", "~라고 볼 수 있어요", "~하는 경향이 있습니다" 같은 친근한 말투로 써주세요.
+- 특정 관계를 "나쁘다", "맞지 않는다"고 단정하지 마세요.
+  관계는 두 사람의 노력과 이해로 언제든 달라질 수 있습니다.
+- 용어가 나올 때마다 바로 쉬운 말로 풀어주세요.
+- 분석 마지막에 꼭 이 말을 덧붙여주세요:
+  "관계 패턴은 타고난 기질이 만들어내는 경향성입니다.
+   어떤 관계든 서로를 이해하고 노력하는 만큼 얼마든지 달라질 수 있어요."</pre>
+    </div>
+    <div class="how-to">
+      <div class="how-to-title">✦ 사용 방법</div>
+      <ol>
+        <li><strong>위 프롬프트를 복사</strong>하세요</li>
+        <li>클로드 대화창에 <strong>만세력 이미지를 첨부</strong>하세요</li>
+        <li>복사한 프롬프트를 <strong>텍스트로 입력</strong>하고 전송하세요</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Card 4 -->
+  <div class="prompt-card" id="card-3">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-badge">Prompt 04 · 의사결정 보조 참고</span>
+        <div class="card-title">결정의 타이밍을 읽다</div>
+        <div class="card-desc">이직·이사·창업 결정의 에너지 유불리와 타이밍 흐름을 분석합니다</div>
+      </div>
+      <button class="copy-btn" onclick="copyPrompt(3)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        프롬프트 복사
+      </button>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="prompt-3">첨부된 만세력 이미지를 보고, 이 사람의 주요 결정들에 대해 사주 에너지 흐름의
+관점에서 쉽게 설명해주세요.
+"지금이 움직여야 할 타이밍인가, 아니면 준비할 타이밍인가"를
+이유와 근거를 들어 논리적으로 이야기해주세요.
+
+---
+
+아래 3가지 주제로 설명해주세요.
+
+1. 이직이나 커리어 전환, 지금 어떤 흐름인가요?
+   이 사람의 사주에서 직업·조직과 관련된 기운(관성, 官星)과
+   자기표현·기술과 관련된 기운(식상, 食傷)이 어떻게 구성되어 있는지 먼저 설명해주세요.
+   그 다음, 지금 흐르는 대운·세운의 에너지가 커리어 전환에 유리한 흐름인지
+   아니면 현재 자리에서 내실을 다지는 흐름인지 설명해주세요.
+   왜 그렇게 보는지 근거도 함께 이야기해주세요.
+
+2. 이사나 이민, 환경을 바꾸는 건 어떤가요?
+   사주에 역마(驛馬, 이동과 변화를 상징하는 기운)가 있는지,
+   있다면 지금 그 기운이 활성화되는 시기인지 확인해주세요.
+   지금 대운·세운의 흐름이 새로운 환경으로의 이동을 지지하는지,
+   아니면 현재 기반을 유지하는 게 자연스러운 흐름인지 설명해주세요.
+   이유와 함께 이야기해주세요.
+
+3. 창업이나 투자, 새로운 도전은 어떤가요?
+   재물과 결실을 나타내는 기운(재성, 財星)과
+   독립·자아를 나타내는 기운(비겁, 比劫)의 균형을 먼저 설명해주세요.
+   지금 시기의 에너지가 적극적으로 확장하기 좋은 흐름인지,
+   아니면 준비와 보완이 필요한 흐름인지 이야기해주세요.
+   왜 그런지 근거를 들어 설명해주세요.
+
+---
+
+각 주제를 설명할 때 이 구조로 이야기해주세요.
+
+   [이 사람의 타고난 성향]
+   → 이 영역에서 이 사람이 원래 어떤 에너지를 갖고 있는지
+
+   [지금 이 시기의 흐름]
+   → 현재 대운·세운이 이 결정에 유리한지 불리한지, 그 이유는?
+
+   [그래서 타이밍은?]
+   → 지금이 적극적으로 나서기 좋은 때인지, 준비에 집중할 때인지
+
+---
+
+설명할 때 이 점을 꼭 지켜주세요.
+
+- "~입니다", "~라고 볼 수 있어요" 같은 친근한 말투로 써주세요.
+- "지금 하면 망한다", "올해 하면 성공한다" 같은 단정적 표현은 절대 쓰지 마세요.
+  에너지 흐름을 설명하는 것이지, 결과를 예언하는 게 아닙니다.
+- 용어가 나올 때마다 바로 쉬운 말로 풀어주세요.
+- 분석 마지막에 꼭 이 말을 덧붙여주세요:
+  "사주의 에너지 흐름은 결정을 내릴 때 참고할 수 있는 여러 요소 중 하나입니다.
+   최종 판단은 지금 본인의 현실 상황과 준비 정도, 그리고 본인의 가치관을 바탕으로
+   스스로 내리시는 게 가장 중요합니다."</pre>
+    </div>
+    <div class="how-to">
+      <div class="how-to-title">✦ 사용 방법</div>
+      <ol>
+        <li><strong>위 프롬프트를 복사</strong>하세요</li>
+        <li>클로드 대화창에 <strong>만세력 이미지를 첨부</strong>하세요</li>
+        <li>복사한 프롬프트를 <strong>텍스트로 입력</strong>하고 전송하세요</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Card 5 -->
+  <div class="prompt-card" id="card-4">
+    <div class="card-header">
+      <div class="card-title-group">
+        <span class="card-badge">Prompt 05 · 사주 한계 안내</span>
+        <div class="card-title">사주의 경계를 읽다</div>
+        <div class="card-desc">분석 마무리 단계에서 사주의 한계와 올바른 활용법을 안내합니다</div>
+      </div>
+      <button class="copy-btn" onclick="copyPrompt(4)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        프롬프트 복사
+      </button>
+    </div>
+    <div class="prompt-box">
+      <pre class="prompt-text" id="prompt-4">지금까지 진행한 사주 분석을 마무리하면서,
+사주풀이가 무엇이고 어디까지 믿을 수 있는지, 어떻게 활용하는 게 좋은지를
+따뜻하고 솔직하게 설명해주세요.
+사주를 처음 접하는 사람도 "아, 이렇게 쓰는 거구나" 하고 이해할 수 있도록
+쉽고 논리적으로 이야기해주세요.
+
+---
+
+아래 4가지 흐름으로 설명해주세요.
+
+1. 사주가 담지 못하는 것들이 있어요
+   사주는 태어난 년·월·일·시, 딱 이 네 가지 정보만 씁니다.
+   그런데 실제 삶에는 사주가 전혀 반영하지 못하는 변수들이 엄청나게 많습니다.
+   아래 항목들이 실제 삶에 얼마나 큰 영향을 미치는지, 구체적인 예를 들어 설명해주세요.
+
+   - 어떤 나라, 어떤 시대, 어떤 가정에서 태어났는가 (환경)
+   - 타고난 건강 상태나 신체적 조건 (신체)
+   - 어떤 선택을 해왔는가, 얼마나 노력했는가 (의지와 선택)
+   - 어떤 사람을 우연히 만났는가, 어떤 상황에 있었는가 (우연)
+   - 전쟁, 경제위기, 팬데믹 같은 시대적 사건 (집단적 사건)
+
+   "같은 사주를 가진 사람이 전 세계에 수천 명이 있지만, 그들의 삶은 모두 다릅니다.
+   이 사실 하나만으로도 사주가 운명을 결정하지 않는다는 걸 알 수 있어요."
+   이런 식으로 쉽고 설득력 있게 설명해주세요.
+
+2. 그런데 왜 사주가 맞는 것처럼 느껴질까요?
+   많은 사람들이 사주풀이를 듣고 "맞다!"고 느끼는 이유가 있습니다.
+   아래 심리적 이유들을 쉽게 설명해주세요.
+
+   - 바넘 효과: 누구에게나 해당되는 말을 나만의 이야기처럼 느끼는 현상
+   - 확증 편향: 맞은 것만 기억하고 틀린 것은 잊어버리는 경향
+   - 사후 해석: 일이 벌어진 후에 "그래서 그랬구나"로 역방향으로 끼워 맞추는 것
+   - 해석자마다 다른 풀이: 같은 사주를 보는 역술가 10명이 있으면 10개의 다른 해석이 나올 수 있다는 것
+
+   사주를 부정하는 게 아니라, 왜 이런 현상이 일어나는지를 이해하는 것이
+   사주를 더 현명하게 활용하는 첫걸음이라는 관점으로 설명해주세요.
+
+3. 그럼 사주를 어떻게 활용하는 게 좋을까요?
+   사주를 가장 잘 활용하는 방법과, 반대로 조심해야 할 활용법을 구분해서 설명해주세요.
+
+   잘 활용하는 방법:
+   - 내 기질과 반복되는 패턴을 이해하는 자기 성찰의 도구로
+   - 어떤 시기에 어떤 에너지가 강해지는지 참고하는 관점으로
+   - 의사결정 때 여러 고려 요소 중 하나로 가볍게 참고하는 용도로
+
+   조심해야 할 활용:
+   - "몇 살에 결혼한다", "올해 큰일이 생긴다" 같은 단정적 예언을 믿는 것
+   - 중요한 결정을 사주에 전적으로 맡기는 것
+   - "나는 사주가 안 좋다"는 말을 운명처럼 받아들이는 것
+
+4. 오늘 이 분석을 통해 얻어가셨으면 하는 것
+   이번에 살펴본 기질·시기·관계·의사결정 분석 전체를 돌아보면서,
+   이 사람이 자신에 대해 새롭게 이해하게 된 것, 또는 앞으로 의식하면 좋을 것이
+   무엇인지 2~3문장으로 따뜻하게 정리해주세요.
+
+---
+
+설명할 때 이 점을 꼭 지켜주세요.
+
+- 전문 용어는 최대한 줄이고, 쉬운 일상 언어로 써주세요.
+- 사주를 비판하거나 무시하는 게 아니라, 균형 잡힌 시각을 전달해주세요.
+- 읽는 사람이 불안해지거나 사주에 더 의존하게 만드는 표현은 쓰지 마세요.
+- 분석 마지막에 꼭 이 말을 덧붙여주세요:
+  "사주는 당신이 어떤 사람인지를 들여다보는 하나의 언어입니다.
+   그 언어가 당신의 삶을 결정하는 것이 아니라,
+   당신이 그 언어를 어떻게 읽고 활용하느냐가 중요합니다.
+   오늘 이 분석이 스스로를 조금 더 깊이 이해하는 계기가 되셨으면 합니다."</pre>
+    </div>
+    <div class="how-to">
+      <div class="how-to-title">✦ 사용 방법</div>
+      <ol>
+        <li>프롬프트 01~04 분석을 모두 마친 후 <strong>마지막 단계</strong>에서 사용하세요</li>
+        <li>클로드 대화창에 <strong>위 프롬프트를 복사하여 입력</strong>하세요</li>
+        <li>이미지 첨부 없이 <strong>텍스트만 전송</strong>해도 됩니다</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-symbol">木 火 土 金 水</div>
+    <p>이 가이드의 프롬프트는 사주명리학을 자기 이해의 도구로 활용하기 위해 설계되었습니다.<br>
+    운명의 결정이 아닌, 스스로를 더 깊이 이해하는 언어로 사용하시기 바랍니다.</p>
+  </div>
+
+</div>
+
+<script>
+  function switchTab(index) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', i === index);
+    });
+    document.querySelectorAll('.prompt-card').forEach((c, i) => {
+      c.classList.toggle('active', i === index);
+    });
+  }
+
+  function copyPrompt(index) {
+    const text = document.getElementById('prompt-' + index).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.querySelectorAll('.copy-btn')[index];
+      const original = btn.innerHTML;
+      btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> 복사 완료!`;
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.innerHTML = original;
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+</script>
+
+</body>
+</html>
