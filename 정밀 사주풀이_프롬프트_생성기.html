@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주풀이 프롬프트 생성기 v4.2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0b08;
+    --surface: #16120e;
+    --card: #1e1810;
+    --border: #2e2518;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dim: #7a6530;
+    --text: #e8dcc8;
+    --text-muted: #8a7a60;
+    --text-dim: #5a4e3a;
+    --accent: #8b1a1a;
+    --accent-light: #c23030;
+    --green: #2a5c3a;
+    --green-light: #4a9c6a;
+    --selected-bg: #1e1608;
+    --selected-border: #c9a84c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* 배경 장식 */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 15% 20%, rgba(201,168,76,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 85% 80%, rgba(139,26,26,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* 헤더 */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .header-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 14px;
+    margin-bottom: 20px;
+  }
+
+  header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--gold-light);
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+  }
+
+  header p {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  /* 구분선 */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+  }
+  .divider span {
+    font-size: 11px;
+    color: var(--gold-dim);
+    letter-spacing: 2px;
+  }
+
+  /* 섹션 카드 그룹 */
+  .group-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  .group {
+    margin-bottom: 28px;
+  }
+
+  /* 기본 설정 카드 */
+  .base-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .base-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold-dim);
+  }
+
+  .base-card:hover {
+    border-color: var(--gold-dim);
+    background: #231e15;
+  }
+
+  .base-card.selected {
+    border-color: var(--gold);
+    background: var(--selected-bg);
+  }
+
+  .base-card.selected::before {
+    background: var(--gold);
+  }
+
+  .base-info h3 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .base-info p {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* 섹션 그리드 */
+  .section-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+
+  .section-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .section-btn::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--border);
+    transition: background 0.18s;
+  }
+
+  .section-btn:hover {
+    border-color: var(--gold-dim);
+    background: #1c1810;
+  }
+
+  .section-btn:hover::before { background: var(--gold-dim); }
+
+  .section-btn.selected {
+    border-color: var(--gold);
+    background: var(--selected-bg);
+  }
+
+  .section-btn.selected::before { background: var(--gold); }
+
+  .section-num {
+    font-size: 10px;
+    color: var(--gold-dim);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+    font-family: monospace;
+  }
+
+  .section-btn.selected .section-num { color: var(--gold); }
+
+  .section-name {
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .section-btn.selected .section-name { color: var(--text); }
+
+  /* 빠른 선택 버튼 */
+  .quick-select {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .quick-btn {
+    font-size: 11px;
+    color: var(--text-muted);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 5px 12px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+
+  .quick-btn:hover {
+    border-color: var(--gold-dim);
+    color: var(--gold-dim);
+  }
+
+  /* 하단 액션바 */
+  .action-bar {
+    position: sticky;
+    bottom: 0;
+    background: linear-gradient(to top, var(--bg) 80%, transparent);
+    padding: 24px 0 16px;
+    margin-top: 40px;
+  }
+
+  .action-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .selection-info {
+    flex: 1;
+    min-width: 160px;
+  }
+
+  .selection-info .count {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+
+  .selection-info .count span {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+  }
+
+  .selection-info .chars {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 8px;
+  }
+
+  .btn-copy {
+    background: var(--gold);
+    color: #0d0b08;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.15s;
+  }
+
+  .btn-copy:hover { background: var(--gold-light); }
+  .btn-copy:disabled {
+    background: var(--border);
+    color: var(--text-dim);
+    cursor: not-allowed;
+  }
+
+  .btn-copy.success {
+    background: var(--green);
+    color: var(--green-light);
+  }
+
+  .btn-clear {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-family: 'Noto Sans KR', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .btn-clear:hover {
+    border-color: var(--accent);
+    color: var(--accent-light);
+  }
+
+  /* 미리보기 토글 */
+  .preview-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-top: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 11px;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 10px 0 0;
+    margin-top: 12px;
+    cursor: pointer;
+    text-align: left;
+    letter-spacing: 0.5px;
+    transition: color 0.15s;
+  }
+
+  .preview-toggle:hover { color: var(--text-muted); }
+
+  .preview-box {
+    margin-top: 12px;
+    background: #0a0804;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 14px 16px;
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.6;
+    max-height: 160px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+    font-family: 'Noto Sans KR', sans-serif;
+    display: none;
+  }
+
+  .preview-box.open { display: block; }
+
+  .preview-box::-webkit-scrollbar { width: 4px; }
+  .preview-box::-webkit-scrollbar-track { background: transparent; }
+  .preview-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* 체크 아이콘 */
+  .check-icon {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .section-btn.selected .check-icon,
+  .base-card.selected .check-icon {
+    display: flex;
+  }
+
+  .check-icon::after {
+    content: '✓';
+    font-size: 9px;
+    color: #0d0b08;
+    font-weight: 700;
+  }
+
+  /* 토스트 */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--gold);
+    color: #0d0b08;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding: 10px 24px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 100;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-badge">Prompt Generator</div>
+    <h1>사주풀이 프롬프트 생성기</h1>
+    <p>필요한 섹션을 선택하면 Claude에 붙여넣을 프롬프트가 만들어집니다</p>
+  </header>
+
+  <!-- 기본 설정 -->
+  <div class="group">
+    <div class="group-label">기본 설정 (항상 포함 권장)</div>
+    <div class="base-card" id="baseCard" onclick="toggleBase()">
+      <div class="base-info">
+        <h3>📋 시주 미상 처리 원칙 + 만세력 읽기 + 핵심 계산 규칙 (A~K)</h3>
+        <p>모든 풀이의 기반이 되는 규칙 전체 · 12,347자 포함</p>
+      </div>
+      <div class="check-icon"></div>
+    </div>
+  </div>
+
+  <div class="divider"><span>풀이 섹션</span></div>
+
+  <!-- 빠른 선택 -->
+  <div class="group">
+    <div class="quick-select">
+      <button class="quick-btn" onclick="selectGroup('all')">전체 선택</button>
+      <button class="quick-btn" onclick="selectGroup('part1')">1차 요청 (▶0~▶8)</button>
+      <button class="quick-btn" onclick="selectGroup('part2')">2차 요청 (▶9~▶14)</button>
+      <button class="quick-btn" onclick="selectGroup('none')">선택 해제</button>
+    </div>
+
+    <div class="group-label">원국 분석</div>
+    <div class="section-grid" id="sectionGrid">
+      <!-- JS로 렌더 -->
+    </div>
+  </div>
+
+  <!-- 하단 액션바 -->
+  <div class="action-bar">
+    <div class="action-inner">
+      <div class="selection-info">
+        <div class="count" id="countDisplay">0 <span>개 선택</span></div>
+        <div class="chars" id="charsDisplay">약 0자</div>
+      </div>
+      <div class="btn-group">
+        <button class="btn-clear" onclick="clearAll()">초기화</button>
+        <button class="btn-copy" id="copyBtn" onclick="copyPrompt()" disabled>클립보드 복사</button>
+      </div>
+      <button class="preview-toggle" onclick="togglePreview()">▼ 미리보기</button>
+      <div class="preview-box" id="previewBox"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SECTIONS_DATA = {"base": "## **【 시주 미상 처리 원칙 — 풀이 전 반드시 확인 】**\n\n* 시주(時柱)가 없거나 판독 불가인 경우, 아래 원칙을 전체 풀이에 일관되게 적용합니다.  \n* 년주·월주·일주 6글자만으로 풀이를 진행합니다.  \n* ▶2 시주 배치, ▶7\\~8 시지 충·합 분석, 자식운·말년운 내용은 「시주 미상으로 판단 보류」라고 명시 후 생략합니다.  \n* 이후 각 섹션에서 (시주 미상 처리 원칙 참고)로만 참조하고 동일 안내를 반복하지 않습니다.\n\n---\n\n## **【 만세력 이미지 읽기 — 풀이 전 가장 먼저 수행 】**\n\n첨부 이미지에서 아래 정보를 직접 추출하고, 풀이 맨 앞에 아래 형식으로 먼저 정리하세요.\n\n### **【확인된 사주 정보】**\n\n| 항목 | 내용 |\n| ----- | ----- |\n| 성별 / 나이 |  |\n| 년주(年柱) | 천간 \\_\\_ · 지지 \\_\\_ |\n| 월주(月柱) | 천간 \\_\\_ · 지지 \\_\\_ |\n| 일주(日柱) | 천간 \\_\\_ · 지지 \\_\\_ ← 일간 \\= 나 자신 |\n| 시주(時柱) | 천간 \\_\\_ · 지지 \\_\\_ (없으면 시주 미상) |\n| 현재 대운(大運) | 천간 \\_\\_ · 지지 \\_\\_ · \\_\\_세부터 |\n| 올해 세운(歲運) | 천간 \\_\\_ · 지지 \\_\\_ |\n| 특별히 궁금한 점 | (메모가 있으면 기재, 없으면 없음) |\n\n※ 세운은 입춘(양력 2월 4\\~5일) 기준으로 해가 바뀝니다. 이미지에 연도가 있으면 그 연도 기준, 없으면 아래 참조표를 사용하세요. 그래도 확인이 안 되면 사용자에게 연도를 확인 후 진행하세요.\n\n※ 이미지에서 글자가 불분명한 경우 「판독불가」로 표시하고 판독 가능한 정보만으로 풀이를 진행하세요.\n\n### **▣ 연도별 간지 참조표**\n\n| 연도 | 간지 | 연도 | 간지 | 연도 | 간지 | 연도 | 간지 |\n| ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |\n| 1960 | 庚子 | 1961 | 辛丑 | 1962 | 壬寅 | 1963 | 癸卯 |\n| 1964 | 甲辰 | 1965 | 乙巳 | 1966 | 丙午 | 1967 | 丁未 |\n| 1968 | 戊申 | 1969 | 己酉 | 1970 | 庚戌 | 1971 | 辛亥 |\n| 1972 | 壬子 | 1973 | 癸丑 | 1974 | 甲寅 | 1975 | 乙卯 |\n| 1976 | 丙辰 | 1977 | 丁巳 | 1978 | 戊午 | 1979 | 己未 |\n| 1980 | 庚申 | 1981 | 辛酉 | 1982 | 壬戌 | 1983 | 癸亥 |\n| 1984 | 甲子 | 1985 | 乙丑 | 1986 | 丙寅 | 1987 | 丁卯 |\n| 1988 | 戊辰 | 1989 | 己巳 | 1990 | 庚午 | 1991 | 辛未 |\n| 1992 | 壬申 | 1993 | 癸酉 | 1994 | 甲戌 | 1995 | 乙亥 |\n| 1996 | 丙子 | 1997 | 丁丑 | 1998 | 戊寅 | 1999 | 己卯 |\n| 2000 | 庚辰 | 2001 | 辛巳 | 2002 | 壬午 | 2003 | 癸未 |\n| 2004 | 甲申 | 2005 | 乙酉 | 2006 | 丙戌 | 2007 | 丁亥 |\n| 2008 | 戊子 | 2009 | 己丑 | 2010 | 庚寅 | 2011 | 辛卯 |\n| 2012 | 壬辰 | 2013 | 癸巳 | 2014 | 甲午 | 2015 | 乙未 |\n| 2016 | 丙申 | 2017 | 丁酉 | 2018 | 戊戌 | 2019 | 己亥 |\n| 2020 | 庚子 | 2021 | 辛丑 | 2022 | 壬寅 | 2023 | 癸卯 |\n\n| 2024 | 甲辰 | 2025 | 乙巳 | 2026 | 丙午 | 2027 | 丁未 |\n| 2028 | 戊申 | 2029 | 己酉 | 2030 | 庚戌 | 2031 | 辛亥 |\n| 2032 | 壬子 | 2033 | 癸丑 | 2034 | 甲寅 | 2035 | 乙卯 |\n\n※ 표에 없는 연도는 甲子년(1984년)을 기점으로 역산·정산하세요. 천간은 甲乙丙丁戊己庚辛壬癸 순 10년 순환, 지지는 子丑寅卯辰巳午未申酉戌亥 순 12년 순환.\n\n---\n\n## **【 핵심 계산 규칙 — 풀이 전 반드시 먼저 수행 】**\n\n### **▣ 규칙 A. 십성 도출 — 2단계 절차를 반드시 지키세요**\n\n#### **\\[1단계\\] 오행 관계로 계열 결정 (일간 기준)**\n\n| 관계 | 계열 |\n| ----- | ----- |\n| 같은 오행 | 비겁(比劫) 계열 |\n| 내가 생(生)하는 오행 | 식상(食傷) 계열 |\n| 내가 극(剋)하는 오행 | 재성(財星) 계열 |\n| 나를 극(剋)하는 오행 | 관성(官星) 계열 |\n| 나를 생(生)하는 오행 | 인성(印星) 계열 |\n\n#### **\\[2단계\\] 음양으로 편/정 결정**\n\n* **비겁 계열**: 일간과 음양 같으면 → 비견(比肩), 다르면 → 겁재(劫財)  \n* **나머지 계열**: 일간과 음양 같으면 → 편(偏), 다르면 → 정(正)\n\n**음양표**\n\n* 양(陽) 천간: 甲 丙 戊 庚 壬  \n* 음(陰) 천간: 乙 丁 己 辛 癸  \n* 양(陽) 지지: 子 寅 辰 午 申 戌  \n* 음(陰) 지지: 丑 卯 巳 未 酉 亥\n\n※ 지지의 십성은 반드시 지장간(地藏干) 정기(正氣)를 기준으로 계산합니다.\n\n**지장간 정기표**\n\n| 지지 | 정기 | 지지 | 정기 | 지지 | 정기 | 지지 | 정기 |\n| ----- | ----- | ----- | ----- | ----- | ----- | ----- | ----- |\n| 子 | 壬(양수) | 丑 | 己(음토) | 寅 | 甲(양목) | 卯 | 乙(음목) |\n| 辰 | 戊(양토) | 巳 | 丙(양화) | 午 | 丁(음화) | 未 | 己(음토) |\n| 申 | 庚(양금) | 酉 | 辛(음금) | 戌 | 戊(양토) | 亥 | 壬(양수) |\n\n※ 본 풀이는 자평명리학(子平命理學) 기준을 따릅니다. 子의 정기는 壬(양수)으로 적용합니다.\n\n※ 충·합으로 지지가 변화한 경우, 변화 후의 오행을 기준으로 정기를 재계산하여 십성을 도출하세요.\n\n---\n\n### **▣ 규칙 B. 충·합·파·해 계산 및 우선순위**\n\n**\\[지지 육충(六沖)\\]**\n\n子↔午 / 丑↔未 / 寅↔申 / 卯↔酉 / 辰↔戌 / 巳↔亥\n\n**\\[지지 육합(六合)\\]**\n\n子↔丑 / 寅↔亥 / 卯↔戌 / 辰↔酉 / 巳↔申 / 午↔未\n\n※ 육합은 삼합·방합보다 약하게 작용하지만, 대운·세운 풀이에서 자주 영향을 줍니다. 두 글자가 만날 때 발동하며 해당 글자들이 서로 당기는 방향으로 작용합니다.\n\n**\\[천간합(天干合)\\]**\n\n甲↔己 / 乙↔庚 / 丙↔辛 / 丁↔壬 / 戊↔癸\n\n**\\[지지삼합(三合)\\]** — 세 글자가 모두 있을 때만 완전 성립, 두 글자면 반합(半合)으로 약하게 작용\n\n* 寅午戌 → 火  \n* 巳酉丑 → 金  \n* 申子辰 → 水  \n* 亥卯未 → 木\n\n**\\[지지방합(方合)\\]** — 세 글자가 모두 있을 때만 완전 성립\n\n* 寅卯辰 → 木  \n* 巳午未 → 火  \n* 申酉戌 → 金  \n* 亥子丑 → 水\n\n※ 삼합·방합의 성립 범위: 원국 단독으로 확인하고, 대운·세운까지 포함해 세 글자가 갖춰질 때 완전 성립함을 별도로 명시하세요.\n\n**\\[지지 육파(六破)\\]** — 충보다 약하며, 관계의 균열·배신·계획 틀어짐으로 나타남\n\n子↔酉 / 丑↔辰 / 寅↔亥 / 卯↔午 / 巳↔申 / 未↔戌\n\n※ **합파(合破) 주의:** 寅↔亥는 육합이면서 동시에 육파입니다. 겉으로는 서로 당기지만 속으로는 균열이 생기는 구조로, 「겉은 친밀하나 결국 깨지기 쉬운 인연」으로 해석합니다. 합이 우선 작용하지만 파의 균열 작용도 함께 명시하세요.\n\n**\\[지지 육해(六害)\\]** — 파보다 약하며, 오해·원망·막힘·배신감으로 나타남. 합을 방해하는 글자가 해가 됨\n\n| 해 조합 | 방해하는 합 |\n| ----- | ----- |\n| 子↔未 | 子丑합을 未가 방해 |\n| 丑↔午 | 午未합을 丑이 방해 |\n| 寅↔巳 | 寅亥합을 巳가 방해 |\n| 卯↔辰 | 卯戌합을 辰이 방해 |\n| 申↔亥 | 巳申합을 亥가 방해 |\n| 酉↔戌 | 酉辰합을 戌이 방해 |\n\n#### **충·합·파·해 우선순위 — 반드시 이 순서로 판단하세요**\n\n1. **합(合)을 먼저 확인합니다.** 합이 성립하면 해당 글자는 묶인 상태로 처리합니다.  \n2. 합이 성립한 글자는 충의 작용을 받지 않습니다(합이 충을 해소).  \n3. 단, 세운·대운에서 들어오는 충은 원국의 합을 깨뜨릴 수 있습니다. 이 경우 「합이 충으로 풀린다」고 표현하며, 해당 글자의 에너지가 다시 활성화됩니다.  \n4. 삼합·방합 성립 여부를 확인합니다.  \n5. **파(破)를 확인합니다.** 합이 성립한 글자에도 파가 동시에 해당하는 경우(합파), 반드시 명시합니다.  \n6. **해(害)를 마지막으로 확인합니다.** 해는 작용이 가장 약하지만, 특히 부모·형제·배우자·자식 자리(년·월·일·시지)에 발동할 때는 반드시 해석에 포함합니다.\n\n**작용 강도 순위: 충 > 파 > 해**\n\n#### **파·해의 삶의 영역별 해석 기준**\n\n파·해가 발동하는 기둥(자리)에 따라 영향을 받는 삶의 영역이 다릅니다. 부모·형제·배우자·자식 풀이(규칙 K)에서 반드시 이 기준을 적용하세요.\n\n| 자리 | 파·해 영향 |\n| ----- | ----- |\n| 년지 파·해 | 조상·어린 시절·사회적 인간관계의 균열, 가까운 사람에게 배신감 |\n| 월지 파·해 | 직업 환경·부모 자리의 균열, 직장 내 배신·계획 틀어짐, 부모와의 갈등 |\n| 일지 파·해 | 배우자·나 자신 자리의 균열, 부부 관계 균열·오해·배신감 (가장 강한 영향) |\n| 시지 파·해 | 자식·노년 계획의 균열, 자식과의 오해·막힘 |\n\n※ 원국 내에서 파·해가 성립하면 삶의 반복 패턴으로 작동합니다. 대운·세운에서 파·해 글자가 들어올 때 해당 자리의 파·해가 강하게 발동됨을 별도로 명시하세요.\n\n※ 본 풀이는 자형(自刑)은 다루지 않습니다.\n\n---\n\n### **▣ 규칙 C. 십성 해석 시 원국 구성 먼저 확인**\n\n풀이 전에 반드시 이 체크리스트를 수행하세요:\n\n* \\[ \\] ① 원국에 관성(편관·정관)이 있는가? → 없으면 「관성 무(無)」로 표시  \n* \\[ \\] ② 원국에 재성(편재·정재)이 있는가? → 없으면 「재성 무(無)」로 표시  \n* \\[ \\] ③ 원국에 인성(편인·정인)이 있는가? → 없으면 「인성 무(無)」로 표시  \n* \\[ \\] ④ 어떤 오행이 0개인가? → 「X오행 완전 부재」로 표시\n\n※ 대운·세운으로 들어오는 십성 해석 차이 (▶6 대운, ▶7 세운 풀이에 일관되게 적용):\n\n* 원국에 있는 십성이 대운·세운으로 들어오면 → **강화·활성화**  \n* 원국에 없는 십성이 대운·세운으로 들어오면 → **낯선 에너지로 부담·변화**\n\n※ 각 섹션에서 (규칙 C 원칙 적용)으로 참조 표시하면 됩니다.\n\n---\n\n### **▣ 규칙 D. 천간합 해석 기준**\n\n천간합은 두 글자가 서로 당기는 현상이지, 무조건 「좋은 인연」이나 「기회」가 아닙니다.\n\n#### **\\[합거(合去) vs 기신 제거 판단\\]**\n\n1. 합이 되는 오행이 **용신**이면 → 합거(合去, 묶여서 못 쓰게 됨) → **불리**  \n2. 합이 되는 오행이 **기신**이면 → 기신이 묶임 → **유리**  \n3. 일간과 세운 천간이 합하면 → 일간이 외부에 끌려가는 구조. 원국에 해당 십성이 없다면 → 낯선 역할·책임이 강요되는 느낌\n\n#### **\\[합화(合化) 여부 판단 — 합거 판단 후 반드시 추가 확인\\]**\n\n합화란 두 천간이 합하여 전혀 다른 새 오행으로 변질되는 현상입니다.\n\n**합화 성립 조건**: 합이 일어나는 계절(월지)의 오행이 합화 결과 오행과 동일할 때만 성립합니다. 월지가 합화 결과 오행을 단순히 생(生)해주는 경우는 합화로 판단하지 않습니다.\n\n**합화 오행 대응표**\n\n| 천간합 | 합화 오행 |\n| ----- | ----- |\n| 甲己합 | 土 |\n| 乙庚합 | 金 |\n| 丙辛합 | 水 |\n| 丁壬합 | 木 |\n| 戊癸합 | 火 |\n\n※ 합화가 성립하면 해당 천간은 합화 오행으로 치환되었다고 보고 바뀐 오행으로 십성을 재계산하세요. 성립하지 않으면 합거로만 처리합니다. 이 판단 없이 「좋다/나쁘다」를 단정하지 마세요.\n\n---\n\n### **▣ 규칙 E. 종격(從格) 예외 처리 — 반드시 먼저 확인**\n\n아래 조건 중 하나라도 해당하면 일반 신강·신약 용신론 적용 전에 종격 가능성을 먼저 검토하고 풀이에 명시하세요.\n\n* 한 오행이 5자 이상이며, 월지가 해당 오행인 경우  \n* 일간을 돕는 글자(비겁·인성)가 1자 이하이고, 한 오행이 나머지를 압도하는 경우  \n* 일간이 원국에서 완전히 고립되어 생(生)·비(比) 글자가 전혀 없는 경우\n\n※ **시주 미상인 경우 종격 기준 조정**: 전체 글자 수가 6자로 줄어드므로, 「한 오행이 4자 이상이며 월지가 해당 오행」이거나 「일간을 돕는 글자가 1자 이하이고 한 오행이 나머지를 압도」하는 경우 종격 가능성을 검토합니다.\n\n※ 종격으로 판단될 경우: 「이 사주는 ○○格으로, 해당 오행의 흐름을 따르는 것이 유리합니다」라고 별도 안내하고 이후 풀이를 종격 기준으로 진행하세요.\n\n---\n\n### **▣ 규칙 F. 신강·신약 경계 케이스 처리**\n\n월지·일지·글자 수를 종합 판단했을 때 신강·신약이 뚜렷하지 않은 경우, 「중화(中和) 사주」로 표시하고 용신을 단정 짓지 마세요.\n\n대신: 「관성·식상 흐름이 유리하며, 인성·비겁이 과도하게 강화되는 시기는 주의가 필요합니다.」 형식으로 서술하세요.\n\n**신강·신약 판단 기준 — 우선순위 순서로 적용**\n\n* **핵심 1순위**: 월지가 일간과 같은 오행이거나 일간을 생해주는가?  \n* **핵심 2순위**: 일지가 일간과 같은 오행이거나 일간을 생해주는가?  \n* **보조 기준**: 일간을 돕는 비겁·인성 글자 수 vs 극하는 글자 수\n\n※ 월지 → 일지 → 나머지 글자 순으로 비중을 두어 종합 판단하세요.\n\n---\n\n### **▣ 규칙 G. 대운 사건 예측 — 5단계 분석 절차**\n\n#### **\\[1단계\\] 원국 베이스라인 확인 (규칙 C 연동)**\n\n* 원국에 있는 십성 → 대운·세운에서 강화·활성화  \n* 원국에 없는 십성 → 낯선 사건 발생 (부담·변화)\n\n#### **\\[2단계\\] 대운 십성의 사건 유형 파악**\n\n| 십성 | 사건 유형 |\n| ----- | ----- |\n| 비견·겁재 | 경쟁, 독립, 이별, 동업, 형제 |\n| 식신·상관 | 직업 변화, 창업, 자식, 표현 욕구 |\n| 편재·정재 | 재물 변화, 아버지, (남성) 여성 인연 |\n| 편관·정관 | 직장·승진·이직, (여성) 남성 인연, 법적 문제 |\n| 편인·정인 | 학업, 이사, 종교, 어머니 |\n\n#### **\\[3단계\\] 충·합이 건드리는 원국의 자리 확인**\n\n| 자리 | 영향 |\n| ----- | ----- |\n| 년지 충·합 | 조상, 고향, 어린 시절 기억 |\n| 월지 충·합 | 직업, 부모, 청년기 터전 |\n| 일지 충 | 배우자, 나 자신의 건강·심리 (가장 강한 충격) |\n| 시지 충·합 | 자식, 부하, 말년 계획 (시주 미상 처리 원칙 참고) |\n\n#### **\\[4단계\\] 대운·세운 방향성 비교 (증폭 vs 상쇄)**\n\n| 관계 | 결과 |\n| ----- | ----- |\n| 같은 오행·십성이 겹침 | 사건 폭발적 증폭 |\n| 서로 생(生)하는 관계 | 흐름 부드럽게 지속 |\n| 서로 충(沖)하는 관계 | 혼란, 계획 틀어짐 |\n| 세운이 대운을 합(合)으로 묶음 | 대운 에너지 억제 |\n\n#### **\\[5단계\\] 십성 겹침 공식으로 사건 유형 특정**\n\n* 재성(대운) \\+ 재성(세운) \\+ 원국 재성 有 → 재물의 큰 변동  \n* 관성(대운) \\+ 관성(세운) \\+ 일지 충 → 직장 이동 또는 법적 사건  \n* 인성(대운) \\+ 인성 충(세운) → 문서·학업 계획 틀어짐, 어머니 관련 사건  \n* 식상(대운) \\+ 관성(세운) → 직장 충돌, 이직 욕구, 갈등  \n* 비겁(대운) \\+ 재성(세운) → 경쟁자 등장, 재물 손실, 동업 갈등\n\n※ 사건 예측은 「이런 에너지가 강해지는 시기」로 표현하고, 단정적인 사건 단언은 피하세요. 주의 사항(건강·법적 문제 등)은 희석 없이 명확하게 전달하세요.\n\n---\n\n### **【 규칙 H. 신살(神殺) 해석 — 삶의 패턴을 읽는 보조 도구 】**\n\n신살은 삶의 특정 패턴과 기질을 파악하는 보조 도구입니다. 아래 원칙을 반드시 지키세요.\n\n**※ 만세력 이미지 우선 원칙**: 만세력 이미지에 신살이 표기되어 있으면 해당 표기를 최우선으로 읽습니다. 아래 기준표는 이미지에 표기되지 않은 신살을 직접 확인할 때 참고용으로 사용하세요.\n\n#### **▣ 해석 우선순위**\n\n1. 삶의 패턴과 직결되는 핵심 신살 우선 해석: **역마살·도화살·천을귀인·문창귀인·화개살·백호살**  \n2. 대운·세운 글자와 겹칠 때 강화 작용이 발동됨을 반드시 명시  \n3. 단순 나열 금지 — 실제 삶에서 어떻게 나타나는지 연결하여 서술\n\n#### **▣ 주요 신살 기준표**\n\n**[ 일간과 무관하게 지지 자체로 판단하는 신살 ]**\n\n| 신살 | 해당 지지 | 의미 |\n| ----- | ----- | ----- |\n| 역마살(驛馬殺) | 寅·申·巳·亥 | 이동·변화·해외·출장이 많은 삶의 패턴 |\n| 도화살(桃花殺) | 子·午·卯·酉 | 매력·인기·예술적 감수성, 관계 변동 |\n| 화개살(華蓋殺) | 辰·戌·丑·未 | 고독·예술·종교적 기질, 혼자 깊이 파고드는 성향 |\n\n**[ 일간별 대응표가 필요한 신살 ]**\n\n| 일간 | 천을귀인(天乙貴人) | 문창귀인(文昌貴人) | 양인살(羊刃殺) |\n| ----- | ----- | ----- | ----- |\n| 甲 | 丑·未 | 巳 | 卯 |\n| 乙 | 子·申 | 午 | 辰 |\n| 丙 | 亥·酉 | 申 | 午 |\n| 丁 | 亥·酉 | 酉 | 未 |\n| 戊 | 丑·未 | 申 | 午 |\n| 己 | 子·申 | 酉 | 未 |\n| 庚 | 丑·未 | 亥 | 酉 |\n| 辛 | 寅·午 | 子 | 戌 |\n| 壬 | 卯·巳 | 寅 | 子 |\n| 癸 | 卯·巳 | 卯 | 丑 |\n\n* **천을귀인(天乙貴人)**: 원국 지지 중 위 해당 지지가 있으면 성립. 위기 시 귀인의 도움, 좋은 인연을 상징합니다.\n* **문창귀인(文昌貴人)**: 원국 지지 중 위 해당 지지가 있으면 성립. 학문·문장·표현 능력이 뛰어난 기질을 나타냅니다.\n* **양인살(羊刃殺)**: 원국 지지 중 위 해당 지지가 있으면 성립. 강한 의지와 추진력이 있지만 과격·충동에 주의가 필요합니다.\n\n**[ 만세력 이미지 표기 기준 신살 ]**\n\n* **백호살(白虎殺)**: 만세력 이미지에 표기된 경우에만 해석합니다. 강렬한 기운으로 사고·수술·급변에 주의가 필요한 에너지입니다. 대운·세운에서 해당 자리가 충을 받는 시기에 특히 강하게 발동됩니다.\n\n* 신살은 원국에서 확인되는 경우에만 해석합니다. 해당 신살이 없으면 해당 항목을 생략하고, 억지로 의미를 부여하거나 없는 신살을 끼워 넣지 마세요.  \n* 신살 하나만으로 길흉을 단정하지 마세요. 반드시 원국·대운·세운과 연계하여 해석하세요.\n\n---\n\n### **【 규칙 I. 반복 패턴 분석 — 원국 구조에서 읽는 삶의 흐름 】**\n\n반복 패턴은 원국의 구조적 특성과 지지의 12년 순환 주기에서 도출합니다.\n\n#### **▣ 분석 기준**\n\n* 특정 십성이 과다(3개 이상)하거나 완전 부재(0개)일 때 삶에서 반복되는 경향  \n* 충·합이 발동하는 운의 주기 — 지지는 12년 순환, 같은 충·합이 반복적으로 발동  \n* 대운이 10년 단위로 바뀌며 특정 오행이 반복 등장할 때의 패턴  \n* 일지(배우자 자리)가 특정 운에서 반복적으로 충을 받는 구조  \n* 반복 패턴은 원국 구조에서 명확히 읽히는 경우에만 서술합니다.  \n* 패턴이 불분명하거나 구조적 근거가 부족하면 해당 항목을 생략하고, 억지로 패턴을 만들어내거나 추측으로 채우지 마세요.  \n* 「\\~할 것 같습니다」「\\~로 보입니다」 등 근거 없는 추측성 표현은 사용하지 마세요.\n\n---\n\n### **【 규칙 J. 격국(格局) 분석 — 이 사람이 어떤 구조로 살아가는가 】**\n\n격국은 월지(月支)를 중심으로 이 사주가 어떤 방식으로 에너지를 펼치는지를 결정하는 틀입니다.\n\n#### **▣ 격국 도출 절차**\n\n1. 월지의 지장간 정기를 기준으로 월령(月令)을 확인합니다.  \n2. 월령 오행이 천간에 투출(透出)되어 있으면 해당 십성으로 격국을 정합니다.  \n3. 투출된 천간이 없으면 월지 정기의 십성으로 격국을 정합니다.  \n4. 특수격(종격 등)이 성립하면 규칙 E에 따라 우선 처리합니다.\n\n#### **▣ 주요 격국과 삶의 방향**\n\n| 격국 | 삶의 방향 |\n| ----- | ----- |\n| 정관격(正官格) | 조직·명예·책임을 중시, 안정적 커리어 지향 |\n| 편관격(偏官格) | 강한 추진력·도전 기질, 역경을 통해 성장 |\n| 정재격(正財格) | 실질적·현실적, 꾸준한 축적과 안정 추구 |\n| 편재격(偏財格) | 활동적·사교적, 사업·투자·변화를 즐김 |\n| 식신격(食神格) | 표현·창작·여유, 자기 페이스로 살아가는 삶 |\n| 상관격(傷官格) | 뛰어난 재능·창의성, 기존 틀을 깨는 기질 |\n| 정인격(正印格) | 학문·직관·안정, 배움과 내면 성장 중시 |\n| 편인격(偏印格) | 독창적 사고·전문성, 비주류적 재능 |\n| 비견격·겁재격 | 독립심·자립 기질, 경쟁과 개척의 삶 |\n\n#### **▣ 격국 풀이 시 서술 방법**\n\n* 격국명과 함께 이 사람의 타고난 삶의 방향성을 1\\~2문단으로 서술  \n* 격국이 용신과 어떻게 연결되는지 설명  \n* 격국이 파격(破格)되는 경우(기신이 격국을 깨는 경우) 반드시 명시\n\n월지만으로 격국이 명확히 결정되지 않는 경우, 억지로 격국을 단정하지 말고 「격국 판정이 불분명한 사주」로 표시하고 원국의 전체적 오행 흐름으로 대체 서술하세요.\n\n---\n\n### **▣ 규칙 K. 부모·형제·배우자·자식·재물운 — 십성 + 합충파해 병행 분석**\n\n각 관계는 **해당 십성(관계의 성격) + 자리(기둥)의 합충파해(언제·어떻게 흔들리는가)**를 반드시 함께 분석합니다.\n\n**\\[십성 기준표\\]**\n\n| 관계 | 십성 | 주요 자리 |\n| ----- | ----- | ----- |\n| 어머니 | 인성(정인·편인) | 인성이 있는 기둥 |\n| 아버지 | 재성(정재·편재) | 재성이 있는 기둥 |\n| 형제 | 비겁(비견·겁재) | 비겁이 있는 기둥 |\n| 배우자 | 일지 십성 | 일지 |\n| 자식 | 식상(남성) · 관성(여성) | 시지 |\n| 재물 | 재성 유입 / 겁재·식상 누출 | 재성이 있는 기둥 |\n\n**\\[합충파해 적용 원칙\\]**\n\n1. 원국에서 해당 자리에 합충파해가 성립하면 → **삶의 반복 패턴**으로 작동. 반드시 명시  \n2. 대운·세운에서 해당 자리를 충·파·해하는 글자가 들어오면 → **관계 사건 발동 시기**로 명시  \n3. 어느 기둥이 어느 기둥을 해치는지 확인. 예) 월지(직업)가 일지(배우자)를 해(害) → 일·가정 갈등 반복 패턴  \n4. 합파(合破) 동시 성립(寅↔亥) → 겉은 당기지만 속은 균열. 반드시 명시  \n5. 십성이나 합충파해 근거가 불분명하면 억지로 서술하지 말고 「판단 보류」로 명시\n\n---\n\n## **【 금기 표현 목록 — 어떤 경우에도 사용하지 마세요 】**\n\n**❌ 사용 금지 표현**\n\n* 「반드시 \\~합니다」 / 「틀림없이 \\~됩니다」  \n* 「100% \\~입니다」 / 「확실히 \\~」  \n* 「이직하게 됩니다」 / 「결혼합니다」 / 「합격합니다」 등 단정적 사건 선언  \n* 「대박이 납니다」 / 「최고의 해입니다」 등 근거 없는 과장  \n* 「최악입니다」 / 「망합니다」 등 근거 없는 단정적 부정  \n* 원국에 없는 신살을 억지로 적용하거나 패턴이 없는데 패턴을 만들어내는 것  \n* 격국이 불분명한데 억지로 격국을 단정하는 것\n\n**✅ 대신 아래 표현을 사용하세요**\n\n* 「\\~하는 에너지가 강해지는 시기입니다」  \n* 「\\~를 경험할 가능성이 높아집니다」  \n* 「\\~에 주의가 필요한 흐름입니다」  \n* 「\\~를 준비하기 좋은 시기입니다」  \n* 「원국에서 이 패턴이 확인되지 않아 해당 항목은 생략합니다」\n\n---\n\n## **【 글쓰기 원칙 — 반드시 지키세요 】**\n\n* 각 섹션은 **① 원리 설명(왜 이런 에너지인지) → ② 내 사주 적용(실제 글자로 구체적으로) → ③ 삶의 의미(실제 생활에서 어떻게 나타나는지)** 3단 구조로 작성  \n* **말투**: 따뜻하고 친근하게, 오래 알아온 선생님처럼  \n* 한자어는 반드시 괄호로 쉬운 풀이를 달아주세요. 예) 신강(身强, 내 에너지가 강한 상태)  \n* 용어 첫 등장 시 반드시 쉬운 설명을 달고, 이후에는 생략 가능  \n* 부정적 내용은 「이걸 알면 이렇게 활용할 수 있어요」로 재프레이밍하되, 건강 이상·큰 손실·사고 위험 등 명백한 주의 사항은 사실 자체를 희석하거나 긍정적으로 왜곡하지 마세요.  \n* 「왜냐하면 \\~이기 때문이에요」를 자주 사용해 원리까지 이해되도록\n\n---", "s0": "### **▶ 0\\. 만세력 정보 확인 (맨 앞에 배치)**\n\n위 【확인된 사주 정보】 표를 먼저 출력하세요. 불분명한 글자는 이 단계에서 밝히고 진행하세요.\n\n시주 미상인 경우: 「시주 미상으로 판단 보류 — 시주 미상 처리 원칙에 따라 진행합니다」라고 한 줄 명시하고 이후 반복 안내는 생략합니다.\n\n---", "s1": "### **▶ 1\\. 일간(日干) 소개**\n\n* 일간(나 자신)의 오행과 음양을 먼저 밝히세요.  \n* 이 일간의 기질·성향·에너지를 구체적인 비유와 함께 설명하세요.  \n  * 예) 「辛金은 막 세공된 보석처럼 \\~」\n\n---", "s2": "### **▶ 2\\. 팔자 십성 배치**\n\n* 규칙 A의 2단계 절차로 나머지 글자들의 십성을 도출하세요.  \n* 각 글자마다 계산 근거(오행 관계 \\+ 음양 비교)를 한 줄씩 보여주세요.  \n* 지지는 지장간 정기를 기준으로 계산했음을 명시하세요.\n\n**각 기둥의 삶의 영역**\n\n| 기둥 | 삶의 영역 |\n| ----- | ----- |\n| 년주(년간·년지) | 조상·어린 시절·사회적 뿌리 |\n| 월주(월간·월지) | 부모·청년기·직업 환경 |\n| 일주(일간·일지) | 나 자신·배우자·중년 |\n| 시주(시간·시지) | 자식·노년·말년운 (시주 미상 처리 원칙 참고) |\n\n**십성별 삶의 영역**\n\n| 십성 | 삶의 영역 |\n| ----- | ----- |\n| 비견·겁재 | 나 자신, 경쟁, 형제자매 |\n| 식신·상관 | 표현력, 재능, 자식 |\n| 편재·정재 | 돈, 아버지 / 남성에게 추가로: 여성(배우자 인연) |\n| 편관·정관 | 직업, 명예, 조직 / 여성에게 추가로: 남성(배우자 인연) |\n| 편인·정인 | 학문, 어머니, 직관 |\n\n---", "s3": "### **▶ 3\\. 오행 강약 분석**\n\n* 8글자의 오행 분포를 표로 보여주세요. 완전히 없는 오행(0개)이 있으면 반드시 강조하세요.  \n* **종격 확인 (규칙 E)**: 조건 해당 여부를 먼저 검토하고, 종격 판정 시 이후 풀이를 종격 기준으로 전환하세요.  \n* **신강·신약 판단 (규칙 F)**: 경계 케이스라면 「중화 사주」로 표시하고 유연하게 서술하세요.  \n* 넘치는 오행과 부족한 오행이 삶에서 어떻게 나타나는지 설명하세요.\n\n---", "s4": "### **▶ 4\\. 격국(格局) 분석 【NEW】**\n\n규칙 J의 절차에 따라 격국을 도출하고 이 사람의 타고난 삶의 구조와 방향성을 서술하세요. 격국이 파격(破格)되는 경우 반드시 명시하고, 격국이 불분명하면 억지로 단정하지 말고 오행 흐름으로 대체 서술하세요.\n\n---", "s5": "### **▶ 5\\. 용신(用神) 찾기**\n\n▶3에서 확인된 오행 분포와 신강·신약 판단 결과를 토대로 용신(用神, 내 사주에서 가장 필요한 오행)을 도출하세요.\n\n| 사주 유형 | 용신 방향 |\n| ----- | ----- |\n| 신강 사주 | 나를 극하거나 설기(泄氣)하는 오행 → 관성·재성·식상 |\n| 신약 사주 | 나를 도와주는 오행 → 인성·비겁 |\n| 중화 사주 | 단정 짓지 말고 유리한 방향 흐름으로 서술 (규칙 F 참고) |\n\n* 용신 오행이 상징하는 것(직업·환경·방향·색깔)을 구체적으로 설명하세요.  \n* 기신(忌神, 내 사주에서 피해야 할 오행)도 함께 알려주세요.\n\n---", "s6": "### **▶ 6\\. 신살(神殺) 분석 【NEW】**\n\n규칙 H의 기준에 따라 원국에서 확인되는 신살만 해석하세요. 각 신살이 대운·세운과 겹칠 때 어떻게 강화되는지 연계하여 서술하세요. 해당 신살이 없거나 원국에서 확인되지 않으면 해당 항목을 생략하고 억지로 채우지 마세요.\n\n---", "s7": "### **▶ 7\\. 원국 종합 해석**\n\n규칙 C의 체크리스트 결과(▶3에서 이미 확인된 내용)를 참조하여 아래 항목들을 풀이하세요. (오행 분포·십성 유무 재확인은 생략하고 ▶3 결과를 그대로 활용합니다.)\n\n* **7-1.** 성격의 장점과 단점 (단점은 활용법과 함께)  \n* **7-2.** 타고난 직업 적성과 재능  \n* **7-3.** 인간관계 패턴 (잘 맞는 사람 / 어려운 관계)  \n* **7-4.** 돈과 재물에 대한 태도  \n* **7-5.** 부모·형제·배우자·자식운 및 재물운 상세 (규칙 K 적용)\n\n  ※ **서술 범위 구분**: ▶7-5에서는 원국 내 구조적 합충파해 패턴(삶의 반복 패턴)만 서술합니다. 대운·세운에서 해당 자리가 충·파·해되는 **발동 시기**는 ▶9(대운) · ▶10(세운)에서 각각 서술하세요. 중복 서술하지 마세요.\n\n---", "s8": "### **▶ 8\\. 반복 패턴 분석 【NEW】**\n\n규칙 I의 기준에 따라 원국 구조에서 읽히는 삶의 반복 패턴을 서술하세요. 원국에서 패턴이 명확히 확인되는 경우에만 서술하고, 근거가 부족하면 생략하세요. 억지로 패턴을 만들거나 추측으로 채우지 마세요.\n\n---", "s9": "### **▶ 9\\. 대운 분석**\n\n※ **▶9의 역할**: 현재 진행 중인 대운을 심층 분석합니다. 생애 전체 대운의 조망은 ▶12에서 다룹니다. 중복 서술하지 마세요.\n\n1. 대운 천간의 십성(규칙 A)을 밝히세요.  \n2. 대운의 오행이 용신인지 기신인지 먼저 판단하고, 전체 대운의 길흉 방향을 먼저 제시하세요.  \n3. 대운 지지와 원국 지지들 사이의 충·합·파·해·삼합·방합을 규칙 B 우선순위(합→충→파→해→삼합·방합 순)에 따라 전부 확인하세요. 파·해가 부모·배우자·자식 자리(월·일·시지)에 발동할 때는 반드시 해석에 포함하세요.  \n4. 앞 5년은 천간 에너지가 선명하게 드러나고, 뒤 5년은 지지 에너지가 점차 부각되는 흐름으로 서술하세요. 두 에너지를 딱 잘라 나누지 말고 「흐름의 무게중심 이동」으로 표현하세요.  \n5. 천간합이 있다면 규칙 D의 기준(합거 판단→합화 여부 확인)으로 유불리를 판단하세요.  \n6. 대운의 십성이 원국에 있는지 없는지 확인 후 해석하세요. (규칙 C 원칙 적용)\n\n※ 천간과 지지의 길흉이 상반될 경우: 「전반 5년은 ○○의 영향으로 \\[긍정/부정\\] 흐름이지만, 후반으로 갈수록 ○○가 부각되어 흐름이 전환됩니다」 형식으로 명확히 서술하세요.\n\n---", "s10": "### **▶ 10\\. 세운 분석 (올해)**\n\n1. 세운 천간의 십성(규칙 A)을 밝히세요.  \n2. 세운 천간과 일간 사이의 천간합 여부를 확인하고, 있다면 규칙 D 기준으로 판단하세요.  \n3. 세운 지지와 원국·대운 지지들 사이의 충·합·파·해를 규칙 B 우선순위에 따라 전부 확인하세요. 파·해가 부모·배우자·자식 자리(월·일·시지)에 발동하면 반드시 해석에 포함하세요.  \n4. 세운의 십성이 원국에 있는지 없는지 확인 후 해석하세요. (규칙 C 원칙 적용)  \n5. 대운과 세운이 같은 방향인지 충돌하는지 판단하세요.  \n6. 연초(천간 에너지 먼저 작용)와 연중·연말(지지 에너지 점차 부각)의 흐름을 구분해 설명하되, 단정적인 월 구분보다 「전반적 흐름」으로 유연하게 서술하세요.\n\n---", "s11": "### **▶ 11\\. 향후 3\\~5년 세운별 전망 【NEW】**\n\n현재 세운 이후 3\\~5년의 세운을 연도별로 분석하여 표로 제시하세요.\n\n| 연도 | 세운 간지 | 십성 | 대운과의 관계 | 주요 에너지 및 주의점 |\n| ----- | ----- | ----- | ----- | ----- |\n|  |  |  |  |  |\n\n※ 연도별 전망은 「이런 에너지가 강해지는 시기」로 표현하고, 단정적 사건 선언은 피하세요. 세운 전망도 원국·대운과의 연계 분석을 반드시 근거로 제시하고, 근거 없는 길흉 단정은 하지 마세요.\n\n---", "s12": "### **▶ 12\\. 대운 사건 예측**\n\n※ **▶12의 역할**: ▶9에서 현재 대운을 심층 분석했으므로, 여기서는 **생애 전체 대운(10대~90대)의 조망**에 집중합니다. 현재 대운은 「▶9 참조」로 간략히 언급하고 중복 서술하지 마세요.\n\n규칙 G의 5단계 절차에 따라 10대, 20대, 30대, 40대, 50대, 60대, 70대, 80대, 90대 대운과 세운을 교차 분석하고, 가능성 있는 중요 사건 유형들만을 서술하세요. 각 단계를 순서대로 명시하며 풀이하세요.\n\n---", "s13": "### **▶ 13\\. 특별 질문 답변**\n\n위 사주 에너지를 근거로 질문에 구체적으로 답변하세요. (질문이 없으면 이 항목은 생략)\n\n---", "s14": "### **▶ 14\\. 종합 메시지**\n\n* 이 사주의 전체 에너지 특징을 논리적 문장으로 정리하세요.  \n* 앞으로 어떤 방향으로 살아가면 좋은지 따뜻한 조언과 응원의 말로 마무리하세요.\n\n---\n\n*사주풀이 프롬프트 v4.2 — v4.1 기반 + 사용 가이드 추가(출력 분할 안내) + 지장간 정기표 구조 수정(주석 표 중간 삽입 오류 해결) + 신살 기준표 전면 보강(천을귀인·문창귀인·양인살 일간별 대응표 추가) + 만세력 이미지 우선 원칙 추가 + 백호살 복원(만세력 표기 기준으로 처리)*"};
+
+const SECTION_META = [
+  { key: 's0',  num: '▶ 0',  name: '만세력 정보 확인',       group: 1 },
+  { key: 's1',  num: '▶ 1',  name: '일간(日干) 소개',         group: 1 },
+  { key: 's2',  num: '▶ 2',  name: '팔자 십성 배치',          group: 1 },
+  { key: 's3',  num: '▶ 3',  name: '오행 강약 분석',          group: 1 },
+  { key: 's4',  num: '▶ 4',  name: '격국(格局) 분석',         group: 1 },
+  { key: 's5',  num: '▶ 5',  name: '용신(用神) 찾기',         group: 1 },
+  { key: 's6',  num: '▶ 6',  name: '신살(神殺) 분석',         group: 1 },
+  { key: 's7',  num: '▶ 7',  name: '원국 종합 해석',          group: 1 },
+  { key: 's8',  num: '▶ 8',  name: '반복 패턴 분석',          group: 1 },
+  { key: 's9',  num: '▶ 9',  name: '대운 분석',               group: 2 },
+  { key: 's10', num: '▶10',  name: '세운 분석 (올해)',         group: 2 },
+  { key: 's11', num: '▶11',  name: '향후 3~5년 전망',         group: 2 },
+  { key: 's12', num: '▶12',  name: '대운 사건 예측',          group: 2 },
+  { key: 's13', num: '▶13',  name: '특별 질문 답변',          group: 2 },
+  { key: 's14', num: '▶14',  name: '종합 메시지',             group: 2 },
+];
+
+let selected = new Set();
+let baseSelected = true; // 기본 설정은 기본으로 선택
+
+// 초기 렌더
+function render() {
+  const grid = document.getElementById('sectionGrid');
+  let lastGroup = null;
+  let html = '';
+  
+  SECTION_META.forEach(sec => {
+    if (sec.group !== lastGroup && lastGroup !== null) {
+      html += '</div><div class="group-label" style="margin-top:20px; margin-bottom:12px;">운 분석 · 전망</div><div class="section-grid">';
+    }
+    lastGroup = sec.group;
+    const sel = selected.has(sec.key) ? 'selected' : '';
+    html += `
+      <button class="section-btn ${sel}" onclick="toggleSection('${sec.key}')">
+        <div class="section-num">${sec.num}</div>
+        <div class="section-name">${sec.name}</div>
+        <div class="check-icon"></div>
+      </button>`;
+  });
+  
+  grid.innerHTML = html;
+  updateBaseCard();
+  updateStats();
+}
+
+function toggleBase() {
+  baseSelected = !baseSelected;
+  updateBaseCard();
+  updateStats();
+}
+
+function updateBaseCard() {
+  const card = document.getElementById('baseCard');
+  if (baseSelected) card.classList.add('selected');
+  else card.classList.remove('selected');
+}
+
+function toggleSection(key) {
+  if (selected.has(key)) selected.delete(key);
+  else selected.add(key);
+  render();
+}
+
+function selectGroup(type) {
+  if (type === 'all') {
+    SECTION_META.forEach(s => selected.add(s.key));
+    baseSelected = true;
+  } else if (type === 'part1') {
+    ['s0','s1','s2','s3','s4','s5','s6','s7','s8'].forEach(k => selected.add(k));
+    baseSelected = true;
+  } else if (type === 'part2') {
+    ['s9','s10','s11','s12','s13','s14'].forEach(k => selected.add(k));
+    baseSelected = true;
+  } else if (type === 'none') {
+    selected.clear();
+    baseSelected = false;
+  }
+  render();
+}
+
+function clearAll() {
+  selected.clear();
+  baseSelected = false;
+  render();
+}
+
+function buildPrompt() {
+  let parts = [];
+  if (baseSelected) parts.push(SECTIONS_DATA.base);
+  SECTION_META.forEach(sec => {
+    if (selected.has(sec.key)) parts.push(SECTIONS_DATA[sec.key]);
+  });
+  return parts.join('\n\n---\n\n');
+}
+
+function updateStats() {
+  const count = selected.size + (baseSelected ? 1 : 0);
+  const prompt = buildPrompt();
+  const chars = prompt.length;
+  
+  document.getElementById('countDisplay').innerHTML = `${count} <span>개 선택</span>`;
+  document.getElementById('charsDisplay').textContent = `약 ${chars.toLocaleString()}자`;
+  
+  const btn = document.getElementById('copyBtn');
+  btn.disabled = count === 0;
+
+  // 미리보기 열려있으면 업데이트
+  const preview = document.getElementById('previewBox');
+  if (preview.classList.contains('open')) {
+    preview.textContent = prompt.slice(0, 800) + (prompt.length > 800 ? '\n\n... (이하 생략)' : '');
+  }
+}
+
+async function copyPrompt() {
+  const prompt = buildPrompt();
+  if (!prompt) return;
+  
+  try {
+    await navigator.clipboard.writeText(prompt);
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('success');
+    showToast('클립보드에 복사되었습니다');
+    setTimeout(() => {
+      btn.textContent = '클립보드 복사';
+      btn.classList.remove('success');
+    }, 2000);
+  } catch(e) {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = prompt;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('복사되었습니다');
+  }
+}
+
+let previewOpen = false;
+function togglePreview() {
+  const preview = document.getElementById('previewBox');
+  const btn = document.querySelector('.preview-toggle');
+  previewOpen = !previewOpen;
+  if (previewOpen) {
+    preview.classList.add('open');
+    btn.textContent = '▲ 미리보기 닫기';
+    const prompt = buildPrompt();
+    preview.textContent = prompt.slice(0, 800) + (prompt.length > 800 ? '\n\n... (이하 생략)' : '');
+  } else {
+    preview.classList.remove('open');
+    btn.textContent = '▼ 미리보기';
+  }
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+// 초기 실행: 기본 설정만 선택된 상태로 시작
+baseSelected = true;
+render();
+</script>
+</body>
+</html>
