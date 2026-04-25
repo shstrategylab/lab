@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자미두수 — 신해전략연구소</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a12;
+    --bg2: #0f0f1e;
+    --panel: #12121f;
+    --panel2: #1a1a2e;
+    --border: rgba(180,140,80,0.18);
+    --gold: #c9a84c;
+    --gold2: #e8c97a;
+    --gold-dim: rgba(201,168,76,0.12);
+    --crimson: #9b2335;
+    --crimson2: #c62b44;
+    --teal: #2a7a7a;
+    --teal2: #3cb0b0;
+    --indigo: #3a3a8a;
+    --text: #e8e0d0;
+    --text2: #b0a88e;
+    --text3: #706855;
+    --star: #f5e9c8;
+    --radius: 12px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── STARFIELD ── */
+  #starfield {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background: radial-gradient(ellipse at 20% 30%, rgba(60,40,100,0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(40,60,100,0.2) 0%, transparent 50%),
+                var(--bg);
+  }
+  .star {
+    position: absolute; border-radius: 50%;
+    background: #fff; animation: twinkle var(--d, 3s) var(--delay, 0s) ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: var(--lo, 0.1); transform: scale(1); } to { opacity: var(--hi, 0.8); transform: scale(1.4); } }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 10;
+    text-align: center; padding: 70px 20px 50px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, rgba(10,8,20,0.9) 0%, transparent 100%);
+  }
+  .site-label {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 22px;
+    opacity: 0; animation: fadeUp 0.8s 0.2s forwards;
+  }
+  .site-label a { color: inherit; text-decoration: none; }
+  header .hanja {
+    font-family: 'Noto Serif KR', serif; font-size: clamp(52px, 9vw, 90px);
+    font-weight: 700; line-height: 1; letter-spacing: 0.12em;
+    background: linear-gradient(135deg, var(--gold2) 0%, var(--gold) 50%, #a07830 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    opacity: 0; animation: fadeUp 0.8s 0.4s forwards;
+  }
+  header h1 {
+    font-family: 'Noto Serif KR', serif; font-size: clamp(22px, 4vw, 34px);
+    font-weight: 300; letter-spacing: 0.3em; color: var(--text);
+    margin-top: 12px;
+    opacity: 0; animation: fadeUp 0.8s 0.6s forwards;
+  }
+  header p.sub {
+    max-width: 580px; margin: 18px auto 0; color: var(--text2); font-size: 14px;
+    line-height: 1.9; opacity: 0; animation: fadeUp 0.8s 0.8s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,20,0.85); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 4px;
+    padding: 10px 20px;
+  }
+  nav a {
+    font-family: 'Noto Serif KR', serif; font-size: 13px; color: var(--text2);
+    text-decoration: none; padding: 6px 14px; border-radius: 20px;
+    border: 1px solid transparent; transition: all 0.25s;
+  }
+  nav a:hover, nav a.active {
+    color: var(--gold2); border-color: var(--border);
+    background: var(--gold-dim);
+  }
+
+  /* ── SECTION ── */
+  section {
+    position: relative; z-index: 5;
+    max-width: 860px; margin: 0 auto; padding: 80px 24px;
+    opacity: 0; transform: translateY(32px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  section.visible { opacity: 1; transform: translateY(0); }
+
+  .part-label {
+    font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+    color: var(--gold); text-transform: uppercase; margin-bottom: 10px;
+  }
+  h2 {
+    font-family: 'Noto Serif KR', serif; font-size: clamp(22px, 3.5vw, 30px);
+    font-weight: 600; line-height: 1.4; margin-bottom: 10px;
+    color: var(--text);
+  }
+  h2 em { font-style: normal; color: var(--gold2); }
+  .section-desc {
+    color: var(--text2); font-size: 14px; margin-bottom: 40px;
+    border-left: 2px solid var(--gold); padding-left: 14px;
+  }
+  p { color: var(--text2); margin-bottom: 1em; }
+
+  /* divider */
+  .divider {
+    width: 60px; height: 1px; background: var(--gold);
+    margin: 12px 0 28px; opacity: 0.5;
+  }
+
+  /* ── CARDS ── */
+  .card-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px; margin-top: 24px;
+  }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px 20px;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+  .card:hover {
+    border-color: var(--gold); transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(201,168,76,0.12);
+  }
+  .card .card-icon {
+    font-size: 28px; margin-bottom: 12px; display: block;
+  }
+  .card h3 {
+    font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 600;
+    color: var(--gold2); margin-bottom: 8px;
+  }
+  .card p { font-size: 13px; color: var(--text3); margin: 0; }
+
+  /* ── 12궁 명반 ── */
+  .mungban-wrap {
+    display: flex; justify-content: center; margin: 32px 0;
+  }
+  .mungban {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 3px;
+    width: min(560px, 100%);
+    aspect-ratio: 1;
+    background: var(--border);
+    border: 1px solid var(--gold);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .gung {
+    background: var(--panel);
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 6px 4px; text-align: center;
+    cursor: pointer; position: relative;
+    transition: background 0.25s;
+    min-height: 0;
+  }
+  .gung:hover { background: var(--panel2); }
+  .gung.center-label {
+    grid-column: 2 / 4; grid-row: 2 / 4;
+    background: rgba(10,8,22,0.95);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    pointer-events: none;
+  }
+  .gung.center-label .hanja-center {
+    font-family: 'Noto Serif KR', serif; font-size: clamp(20px, 4vw, 32px);
+    font-weight: 700; color: var(--gold);
+    background: linear-gradient(135deg, var(--gold2), var(--gold));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .gung .gung-name {
+    font-family: 'Noto Serif KR', serif; font-size: clamp(9px, 1.5vw, 13px);
+    font-weight: 600; color: var(--gold2);
+  }
+  .gung .gung-en { font-size: clamp(7px, 1.1vw, 10px); color: var(--text3); }
+  .gung .gung-stars { font-size: clamp(7px, 1vw, 10px); color: var(--teal2); margin-top: 3px; }
+  .gung.active-gung { background: rgba(201,168,76,0.08); border: 1px solid var(--gold); }
+
+  /* tooltip */
+  .gung-tooltip {
+    display: none; position: fixed; z-index: 200;
+    background: var(--panel2); border: 1px solid var(--gold);
+    border-radius: 10px; padding: 16px 18px;
+    max-width: 260px; pointer-events: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+  }
+  .gung-tooltip.show { display: block; }
+  .gung-tooltip h4 { font-family: 'Noto Serif KR', serif; color: var(--gold2); font-size: 14px; margin-bottom: 6px; }
+  .gung-tooltip p { font-size: 12px; color: var(--text2); margin: 0; }
+
+  /* ── STARS TABLE ── */
+  .star-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px; margin-top: 20px;
+  }
+  .star-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px; cursor: pointer;
+    transition: all 0.25s;
+  }
+  .star-card:hover { border-color: var(--teal2); background: rgba(60,176,176,0.05); }
+  .star-card .sname {
+    font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--star);
+    font-weight: 600; margin-bottom: 4px;
+  }
+  .star-card .stag {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    margin-bottom: 8px; font-weight: 500;
+  }
+  .stag.emperor { background: rgba(155,35,53,0.3); color: #e06a7a; border: 1px solid rgba(155,35,53,0.4); }
+  .stag.assist  { background: rgba(42,122,122,0.3); color: var(--teal2); border: 1px solid rgba(42,122,122,0.4); }
+  .stag.wealth  { background: rgba(201,168,76,0.2); color: var(--gold2); border: 1px solid rgba(201,168,76,0.3); }
+  .stag.wisdom  { background: rgba(58,58,138,0.4); color: #9090e0; border: 1px solid rgba(58,58,138,0.5); }
+  .star-card .sdesc { font-size: 12px; color: var(--text3); }
+
+  /* ── STEPS ── */
+  .steps { display: flex; flex-direction: column; gap: 0; margin-top: 28px; }
+  .step {
+    display: flex; gap: 20px; padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    flex-shrink: 0; width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--gold); display: flex; align-items: center; justify-content: center;
+    font-family: 'Cinzel', serif; font-size: 14px; color: var(--gold);
+  }
+  .step-body h3 {
+    font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 600;
+    color: var(--text); margin-bottom: 6px;
+  }
+  .step-body p { font-size: 13px; color: var(--text3); margin: 0; }
+
+  /* ── QUOTE ── */
+  .quote-box {
+    border-left: 3px solid var(--gold); background: var(--gold-dim);
+    border-radius: 0 10px 10px 0; padding: 20px 24px; margin: 32px 0;
+    font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text2);
+    line-height: 2; font-style: italic;
+  }
+
+  /* ── YUNSE accordion ── */
+  .accordion { margin-top: 24px; display: flex; flex-direction: column; gap: 10px; }
+  .acc-item { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .acc-head {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px; cursor: pointer; background: var(--panel);
+    transition: background 0.25s;
+  }
+  .acc-head:hover { background: var(--panel2); }
+  .acc-head h3 {
+    font-family: 'Noto Serif KR', serif; font-size: 15px; font-weight: 600; color: var(--gold2);
+  }
+  .acc-arrow { color: var(--gold); font-size: 18px; transition: transform 0.3s; }
+  .acc-item.open .acc-arrow { transform: rotate(180deg); }
+  .acc-body {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s;
+    background: var(--bg2); padding: 0 20px; font-size: 13px; color: var(--text2);
+  }
+  .acc-item.open .acc-body { max-height: 300px; padding: 16px 20px; }
+
+  /* ── QUIZ ── */
+  .quiz-wrap { display: flex; flex-direction: column; gap: 28px; margin-top: 28px; }
+  .quiz-item { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 22px; }
+  .quiz-q {
+    font-family: 'Noto Serif KR', serif; font-size: 15px; color: var(--text); margin-bottom: 16px;
+  }
+  .quiz-q span.qnum { color: var(--gold); font-size: 12px; display: block; margin-bottom: 6px; font-family: 'Cinzel', serif; letter-spacing: 2px; }
+  .quiz-opts { display: flex; flex-direction: column; gap: 8px; }
+  .quiz-opt {
+    padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border);
+    cursor: pointer; font-size: 13px; color: var(--text2);
+    transition: all 0.2s; background: var(--bg2);
+  }
+  .quiz-opt:hover { border-color: var(--gold); color: var(--text); }
+  .quiz-opt.correct { border-color: var(--teal2); background: rgba(60,176,176,0.1); color: var(--teal2); }
+  .quiz-opt.wrong   { border-color: var(--crimson2); background: rgba(155,35,53,0.1); color: #e06a7a; }
+  .quiz-opt.disabled { pointer-events: none; opacity: 0.5; }
+  .quiz-feedback { margin-top: 12px; font-size: 13px; display: none; padding: 10px 14px; border-radius: 8px; }
+  .quiz-feedback.show { display: block; }
+  .quiz-feedback.ok  { background: rgba(60,176,176,0.1); color: var(--teal2); }
+  .quiz-feedback.no  { background: rgba(155,35,53,0.1); color: #e06a7a; }
+
+  .score-board {
+    text-align: center; padding: 24px; background: var(--panel2);
+    border: 1px solid var(--border); border-radius: 12px; margin-top: 32px;
+  }
+  .score-board .score-val {
+    font-family: 'Cinzel', serif; font-size: 40px; color: var(--gold2);
+  }
+  .score-board p { color: var(--text2); font-size: 13px; margin-top: 8px; }
+  .btn-reset {
+    margin-top: 16px; padding: 10px 28px; border-radius: 20px;
+    border: 1px solid var(--gold); background: transparent; color: var(--gold2);
+    cursor: pointer; font-family: 'Noto Serif KR', serif; font-size: 13px;
+    transition: all 0.25s;
+  }
+  .btn-reset:hover { background: var(--gold-dim); }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 5; text-align: center;
+    padding: 48px 20px; border-top: 1px solid var(--border);
+    color: var(--text3); font-size: 12px; line-height: 2;
+  }
+  footer strong { color: var(--gold); }
+
+  /* util */
+  .tag {
+    display: inline-block; font-size: 10px; padding: 3px 10px; border-radius: 20px;
+    border: 1px solid var(--border); color: var(--text3); margin-right: 6px; margin-bottom: 4px;
+  }
+
+  @media (max-width: 600px) {
+    section { padding: 56px 16px; }
+    .card-grid { grid-template-columns: 1fr; }
+    .star-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STARFIELD -->
+<div id="starfield"></div>
+
+<!-- HEADER -->
+<header>
+  <p class="site-label"><a href="#">Shin Hae Strategy Lab · 신해전략연구소</a></p>
+  <div class="hanja">紫微斗數</div>
+  <h1>자미두수란 무엇인가</h1>
+  <p class="sub">북극성을 중심으로 12궁과 100여 개의 별을 통해<br>인간의 운명과 성향, 길흉화복을 읽는 동양의 별자리 명리학</p>
+</header>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#part01">① 개요</a>
+  <a href="#part02">② 명반 구조</a>
+  <a href="#part03">③ 12궁 탐구</a>
+  <a href="#part04">④ 주요 별</a>
+  <a href="#part05">⑤ 해석 절차</a>
+  <a href="#part06">⑥ 운세 분석</a>
+  <a href="#part07">⑦ 복습 퀴즈</a>
+</nav>
+
+<!-- TOOLTIP -->
+<div class="gung-tooltip" id="tooltip">
+  <h4 id="tt-name"></h4>
+  <p id="tt-desc"></p>
+</div>
+
+<!-- PART 01 -->
+<section id="part01">
+  <p class="part-label">Part 01</p>
+  <h2>자미두수(紫微斗數) — <em>별로 읽는 운명</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">송나라 진희이(陳希夷) 선생이 창안한 중국의 대표적 점성술. 태어난 연월일시를 기반으로 명반을 구성해 일생의 흐름을 추단한다.</p>
+
+  <div class="quote-box">
+    "자미두수는 당 태종 시절 너무 정확하여 금서로 지정되었다는 전설이 있을 정도로,<br>
+    100여 개 별의 배치와 조합으로 성격·재운·건강·부부운까지 정교하게 예측한다."
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-icon">🌌</span>
+      <h3>기원과 전승</h3>
+      <p>도교 신선 진희이가 창안. 도교·천문학·역학을 융합하여 북극성(자미성)을 중심으로 체계화했다.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">⭐</span>
+      <h3>핵심 원리</h3>
+      <p>14주성과 보좌성·살성 등 100여 개 별을 12궁에 배치. 별의 성질과 위치 조합으로 운명을 해석.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🔮</span>
+      <h3>사주와의 차이</h3>
+      <p>사주가 오행(五行) 기운을 중시한다면, 자미두수는 '별의 성질과 위치'로 구체적 상황을 묘사한다.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🗺️</span>
+      <h3>활용 범위</h3>
+      <p>성향·재운·배우자운·건강운·직업 적성 등 인생 전 분야를 12궁으로 세분화하여 분석한다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PART 02 -->
+<section id="part02">
+  <p class="part-label">Part 02</p>
+  <h2>명반(命盤) — <em>운명의 지도</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">생년월일시를 입력하면 12궁에 별이 자동 배치되어 나만의 명반이 완성된다. 명반은 12칸 도표로 시각화된다.</p>
+
+  <div class="card-grid" style="grid-template-columns: 1fr 1fr; max-width:500px;">
+    <div class="card">
+      <span class="card-icon">🏛️</span>
+      <h3>명궁(命宮)</h3>
+      <p>명반의 핵심. 타고난 성향과 운명의 틀을 결정한다.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🧭</span>
+      <h3>신궁(身宮)</h3>
+      <p>행동성과 실질적 체감. 명궁과 함께 행동 경향성을 분석.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">📐</span>
+      <h3>삼방사정</h3>
+      <p>명궁·관록궁·재백궁·천이궁을 함께 보는 핵심 분석법.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">💫</span>
+      <h3>별의 조화</h3>
+      <p>길성(吉星)은 조력, 살성(殺星)은 장애. 조화로 길흉 판단.</p>
+    </div>
+  </div>
+
+  <div class="quote-box" style="margin-top:28px;">
+    명반 구성 순서: 생년월일시 확인 → 양력·음력·윤달 여부 확인 → 전문 사이트/프로그램으로 12궁 자동 배치 → 별 배치 해석
+  </div>
+</section>
+
+<!-- PART 03 -->
+<section id="part03">
+  <p class="part-label">Part 03</p>
+  <h2>12사항궁(十二事項宮) — <em>인생의 12개 영역</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">명반의 12칸 각각은 인생의 특정 영역을 담당한다. 아래 명반에서 각 궁을 클릭하면 설명을 볼 수 있다.</p>
+
+  <div class="mungban-wrap">
+    <div class="mungban" id="mungban">
+      <!-- 순서: 상단 4, 우측 2, 하단 4 역순, 좌측 2 -->
+    </div>
+  </div>
+  <p style="text-align:center; font-size:12px; color:var(--text3); margin-top:8px;">각 궁을 클릭하면 해설이 나타납니다</p>
+</section>
+
+<!-- PART 04 -->
+<section id="part04">
+  <p class="part-label">Part 04</p>
+  <h2>14주성(主星) — <em>명반을 이끄는 별들</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">자미두수의 핵심 14개 정성(正星). 어떤 별이 명궁에 위치하느냐에 따라 타고난 성향과 운의 방향이 달라진다.</p>
+
+  <div class="star-grid" id="star-grid"></div>
+</section>
+
+<!-- PART 05 -->
+<section id="part05">
+  <p class="part-label">Part 05</p>
+  <h2>명반 해석 절차 — <em>단계별 분석법</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">자미두수는 단계적으로 접근할수록 정확한 해석이 가능하다. 아래 순서를 익히는 것이 공부의 첫 걸음이다.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-body">
+        <h3>명반 작성</h3>
+        <p>생년월일시(양·음력, 윤달 여부 확인)를 사용해 전문 프로그램이나 사이트에서 자미두수 명반을 작성한다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-body">
+        <h3>명궁 및 신궁 확인</h3>
+        <p>인생의 중심인 명궁을 먼저 확인하고, 실질 행동성을 나타내는 신궁을 함께 파악한다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-body">
+        <h3>주성 분석</h3>
+        <p>명궁에 위치한 자미, 탐랑, 무곡 등 14주성의 성질을 분석하여 타고난 기질과 성향을 파악한다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-body">
+        <h3>길성·살성 조화 분석</h3>
+        <p>길성(보좌성)과 살성(장애성)이 명궁 및 각 사항궁과 어떻게 얽혀 있는지 구조를 파악한다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-body">
+        <h3>삼방사정 분석</h3>
+        <p>명궁을 중심으로 관록궁·재백궁·천이궁을 함께 보며 사회적 성취와 환경적 요인을 종합 분석한다.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-body">
+        <h3>운세 흐름 확인</h3>
+        <p>대운(10년), 소운(1년), 유월(1개월) 등의 개념을 적용하여 시기별 운의 변화를 예측한다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PART 06 -->
+<section id="part06">
+  <p class="part-label">Part 06</p>
+  <h2>운세 분석 — <em>시간의 흐름을 읽다</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">자미두수는 정적인 성향 분석뿐 아니라, 시간의 흐름에 따른 운의 변화까지 세밀하게 예측한다.</p>
+
+  <div class="accordion">
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)">
+        <h3>🌊 대운(大運) — 10년 단위</h3>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <p>인생 전체를 10년 단위로 나누어 큰 흐름을 보는 개념. 어느 시기에 어떤 궁이 활성화되는지 파악하여 인생의 전략적 방향을 설정하는 데 활용한다. 대운의 별 배치에 따라 해당 10년의 전반적인 길흉이 결정된다.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)">
+        <h3>🌿 소운·유년(流年) — 1년 단위</h3>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <p>유년은 해당 연도의 운세를 분석하는 1년 단위 개념. 대운의 큰 흐름 안에서 그 해 특유의 사건·변화를 읽는다. 재운의 변화, 대인관계 변동, 건강 주의 시기 등을 미리 파악할 수 있다.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)">
+        <h3>🌙 유월(流月) — 1개월 단위</h3>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <p>월 단위로 운의 흐름을 세분화하여 특정 달의 길흉을 파악한다. 중요한 결정이나 계약, 이직 등의 시점을 정할 때 유월 분석이 유용하다. 대운·유년과 함께 3단계로 교차 분석하면 더 정밀한 예측이 가능하다.</p>
+      </div>
+    </div>
+    <div class="acc-item">
+      <div class="acc-head" onclick="toggleAcc(this)">
+        <h3>✨ 사화(四化) — 별의 변환 작용</h3>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div class="acc-body">
+        <p>화록(化祿)·화권(化權)·화과(化科)·화기(化忌)의 4가지 변환. 특정 별에 사화가 붙으면 해당 궁의 기운이 증폭되거나 변질된다. 특히 화기(化忌)가 명궁이나 재백궁에 들어오면 주의가 필요한 시기로 본다.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid" style="margin-top:32px;">
+    <div class="card">
+      <span class="card-icon">💰</span>
+      <h3>재물운 분석</h3>
+      <p>재백궁과 전택궁의 별 조합으로 자산 형성 시기와 재물 소모 패턴을 파악한다.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">💼</span>
+      <h3>직업 적성</h3>
+      <p>관록궁의 별 조합을 통해 적합한 직업군과 성공 가능성이 높은 분야를 분석한다.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">❤️</span>
+      <h3>부부·이성운</h3>
+      <p>부처궁을 통해 배우자의 성향, 부부간 갈등 요소, 결혼 시기를 파악한다.</p>
+    </div>
+    <div class="card">
+      <span class="card-icon">🏥</span>
+      <h3>건강운</h3>
+      <p>질액궁의 별 배치로 선천적 취약 부위와 주의해야 할 시기를 사전에 파악한다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PART 07 -->
+<section id="part07">
+  <p class="part-label">Part 07</p>
+  <h2>복습 퀴즈 — <em>내용을 확인하라</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">지금까지 공부한 내용을 확인하세요. 틀려도 괜찮습니다 — 틀린 문제가 가장 좋은 스승입니다.</p>
+
+  <div class="score-board">
+    <div class="score-val" id="score-display">0 / 0</div>
+    <p>문제를 풀면 점수가 업데이트됩니다</p>
+    <button class="btn-reset" onclick="resetQuiz()">처음부터 다시</button>
+  </div>
+
+  <div class="quiz-wrap" id="quiz-wrap"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>신해전략연구소</strong> · 자미두수 학습 시스템 · 동양 명리학 기초 과정<br>
+  전통 지혜와 현대 학습의 융합
+</footer>
+
+<script>
+/* ── STARFIELD ── */
+(function(){
+  const sf = document.getElementById('starfield');
+  for(let i=0;i<120;i++){
+    const s=document.createElement('div');
+    s.className='star';
+    const size=Math.random()*2+0.5;
+    s.style.cssText=`
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;top:${Math.random()*100}%;
+      --d:${2+Math.random()*4}s;
+      --delay:${Math.random()*5}s;
+      --lo:${0.05+Math.random()*0.15};
+      --hi:${0.5+Math.random()*0.5};
+    `;
+    sf.appendChild(s);
+  }
+})();
+
+/* ── SCROLL REVEAL ── */
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:0.08});
+document.querySelectorAll('section').forEach(s=>observer.observe(s));
+
+/* ── NAV ACTIVE ── */
+const navLinks=document.querySelectorAll('nav a');
+const sections=document.querySelectorAll('section');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{ if(window.scrollY>=s.offsetTop-120) cur=s.id; });
+  navLinks.forEach(a=>{ a.classList.toggle('active',a.getAttribute('href')==='#'+cur); });
+});
+
+/* ── 12궁 DATA ── */
+const gungData = [
+  { id:'myeong', name:'命宮', ko:'명궁', en:'본인', stars:'자미·천기', desc:'명반의 핵심. 타고난 성향, 기질, 인생 전반의 틀을 결정. 자미두수 해석의 출발점.', pos:[1,1] },
+  { id:'hyeongje', name:'兄弟宮', ko:'형제궁', en:'형제·친구', stars:'태양·태음', desc:'형제자매 및 친밀한 동료와의 관계, 협력 여부를 나타낸다.', pos:[1,2] },
+  { id:'bucheo', name:'夫妻宮', ko:'부처궁', en:'배우자', stars:'천동·거문', desc:'배우자의 성향, 인연 시기, 부부 갈등 요인을 분석한다.', pos:[1,3] },
+  { id:'janyeo', name:'子女宮', ko:'자녀궁', en:'자녀', stars:'천기·탐랑', desc:'자녀와의 인연, 자녀의 기질, 출산 시기를 나타낸다.', pos:[1,4] },
+  { id:'jaebak', name:'財帛宮', ko:'재백궁', en:'재물', stars:'무곡·천상', desc:'금전운, 자산 형성 방식, 재물 소모 패턴을 분석하는 궁.', pos:[2,4] },
+  { id:'jilak', name:'疾厄宮', ko:'질액궁', en:'건강', stars:'태양·파군', desc:'선천적 건강 취약 부위, 주의 시기, 체질을 나타낸다.', pos:[3,4] },
+  { id:'chunyi', name:'遷移宮', ko:'천이궁', en:'이동·대외', stars:'자미·탐랑', desc:'이사·여행·해외 인연, 외부 환경과의 관계를 분석.', pos:[4,4] },
+  { id:'nojok', name:'奴僕宮', ko:'노복궁', en:'직원·부하', stars:'천부·무곡', desc:'아랫사람, 직원, 부하와의 관계 및 협력 여부를 나타낸다.', pos:[4,3] },
+  { id:'gwallog', name:'官祿宮', ko:'관록궁', en:'직업·명예', stars:'천기·천량', desc:'직업 적성, 사회적 성취, 명예와 권위를 분석하는 핵심 궁.', pos:[4,2] },
+  { id:'jeonjak', name:'田宅宮', ko:'전택궁', en:'부동산', stars:'태양·태음', desc:'부동산, 거주 환경, 가업 계승 여부를 나타낸다.', pos:[4,1] },
+  { id:'bokdeok', name:'福德宮', ko:'복덕궁', en:'정신·복', stars:'천동·천기', desc:'내면의 행복감, 정신적 풍요, 종교·철학적 성향을 담는다.', pos:[3,1] },
+  { id:'buma', name:'父母宮', ko:'부모궁', en:'부모', stars:'태양·천량', desc:'부모와의 인연, 윗사람과의 관계, 가정 배경을 분석한다.', pos:[2,1] },
+];
+
+/* 명반 배치 순서 (12칸: 상단→우측→하단역→좌측역) */
+const layoutOrder = [
+  'chunyi','jilak','jaebak','janyeo',   // row 1: col1..4
+  'nojok',                               // row 2 col4
+  // center placeholder row2col2, row2col3 → skip
+  'buma',                                // row 2 col1
+  'gwallog',                             // row 3 col4
+  'myeong',                              // row 3 col1
+  'jeonjak','bokdeok','bucheo','hyeongje', // row 4: col1..4
+];
+
+// grid positions: [row, col]
+const gridPos = {
+  chunyi: [1,1], jilak:[1,2], jaebak:[1,3], janyeo:[1,4],
+  nojok: [2,4], buma:[2,1],
+  gwallog:[3,4], myeong:[3,1],
+  jeonjak:[4,1], bokdeok:[4,2], bucheo:[4,3], hyeongje:[4,4]
+};
+
+function buildMungban(){
+  const mb=document.getElementById('mungban');
+  // place all 12 궁
+  gungData.forEach(g=>{
+    const pos=gridPos[g.id];
+    const div=document.createElement('div');
+    div.className='gung';
+    div.style.gridRow=pos[0]; div.style.gridColumn=pos[1];
+    div.innerHTML=`<div class="gung-name">${g.ko}</div><div class="gung-en">${g.en}</div><div class="gung-stars">${g.stars}</div>`;
+    div.addEventListener('click', (e)=>showTooltip(e, g));
+    mb.appendChild(div);
+  });
+  // center label
+  const center=document.createElement('div');
+  center.className='gung center-label';
+  center.style.gridRow='2/4'; center.style.gridColumn='2/4';
+  center.innerHTML='<div class="hanja-center">紫微<br>斗數</div><div style="font-size:11px;color:var(--text3);margin-top:6px;font-family:Noto Serif KR,serif">명반(命盤)</div>';
+  mb.appendChild(center);
+}
+
+const tooltip=document.getElementById('tooltip');
+function showTooltip(e, g){
+  document.getElementById('tt-name').textContent=`${g.ko}(${g.name}) — ${g.en}`;
+  document.getElementById('tt-desc').textContent=g.desc;
+  tooltip.classList.add('show');
+  posTooltip(e.clientX, e.clientY);
+  setTimeout(()=>{ document.addEventListener('click', hideTooltip, {once:true}); },10);
+}
+function posTooltip(x,y){
+  const tw=tooltip.offsetWidth||260, th=tooltip.offsetHeight||100;
+  let lx=x+14, ly=y+14;
+  if(lx+tw>window.innerWidth) lx=x-tw-14;
+  if(ly+th>window.innerHeight) ly=y-th-14;
+  tooltip.style.left=lx+'px'; tooltip.style.top=ly+'px';
+}
+function hideTooltip(){ tooltip.classList.remove('show'); }
+document.addEventListener('mousemove',e=>{ if(tooltip.classList.contains('show')) posTooltip(e.clientX,e.clientY); });
+
+/* ── STARS DATA ── */
+const stars=[
+  {name:'자미성(紫微星)',tag:'emperor',tagLabel:'제왕',desc:'명반의 주인공. 고귀함, 리더십, 자존심. 권위와 독립심이 강하다.'},
+  {name:'천기성(天機星)',tag:'wisdom',tagLabel:'지혜',desc:'지략과 기획력의 별. 변화를 즐기고 다재다능하나 결정이 느릴 수 있다.'},
+  {name:'태양성(太陽星)',tag:'emperor',tagLabel:'제왕',desc:'열정과 봉사의 별. 외향적이며 사회적 관계에서 빛을 발한다.'},
+  {name:'무곡성(武曲星)',tag:'wealth',tagLabel:'재물',desc:'의지와 재물의 별. 실행력이 강하고 금전 감각이 뛰어나다.'},
+  {name:'천동성(天同星)',tag:'assist',tagLabel:'복록',desc:'복과 편안함의 별. 낙천적이고 인간관계가 원만하다.'},
+  {name:'염정성(廉貞星)',tag:'wisdom',tagLabel:'지혜',desc:'규칙과 법의 별. 원칙주의적이며 예술적 재능도 겸비한다.'},
+  {name:'천부성(天府星)',tag:'wealth',tagLabel:'재물',desc:'창고와 자산의 별. 안정적이고 포용력이 크며 재물 보존에 능하다.'},
+  {name:'태음성(太陰星)',tag:'assist',tagLabel:'복록',desc:'내면과 감성의 별. 섬세하고 직관력이 강하며 부동산 인연이 있다.'},
+  {name:'탐랑성(貪狼星)',tag:'emperor',tagLabel:'제왕',desc:'욕망과 예술의 별. 카리스마가 넘치고 다양한 재주를 가진다.'},
+  {name:'거문성(巨門星)',tag:'wisdom',tagLabel:'지혜',desc:'언어와 의심의 별. 분석력과 표현력이 탁월하나 시비가 따를 수 있다.'},
+  {name:'천상성(天相星)',tag:'assist',tagLabel:'보좌',desc:'인덕과 보좌의 별. 협력과 지원을 받으며 관리·행정에 능하다.'},
+  {name:'천량성(天梁星)',tag:'assist',tagLabel:'보좌',desc:'장수와 보호의 별. 어른스럽고 의리가 있으며 의료·법 분야에 인연.'},
+  {name:'칠살성(七殺星)',tag:'emperor',tagLabel:'제왕',desc:'용맹과 결단의 별. 추진력이 매우 강하나 독립적 성향이 두드러진다.'},
+  {name:'파군성(破軍星)',tag:'wisdom',tagLabel:'지혜',desc:'개혁과 파괴의 별. 새로운 것을 개척하는 힘이 있으나 변동이 잦다.'},
+];
+
+function buildStars(){
+  const sg=document.getElementById('star-grid');
+  stars.forEach(s=>{
+    const div=document.createElement('div');
+    div.className='star-card';
+    div.innerHTML=`<div class="sname">${s.name}</div><span class="stag ${s.tag}">${s.tagLabel}</span><div class="sdesc">${s.desc}</div>`;
+    sg.appendChild(div);
+  });
+}
+
+/* ── ACCORDION ── */
+function toggleAcc(head){
+  const item=head.parentElement;
+  item.classList.toggle('open');
+}
+
+/* ── QUIZ DATA ── */
+const quizData=[
+  {q:'자미두수를 창안한 인물은 누구인가?', opts:['장자','진희이','주희','왕충'], ans:1, explain:'자미두수는 송나라 시대 도교 신선 진희이(陳希夷) 선생이 창안했다고 전해진다.'},
+  {q:'자미두수 명반은 몇 개의 궁(宮)으로 구성되는가?', opts:['8궁','10궁','12궁','14궁'], ans:2, explain:'자미두수 명반은 명궁·형제궁·부처궁 등 12사항궁으로 구성된다.'},
+  {q:'자미두수에서 재물과 금전운을 분석하는 궁은?', opts:['관록궁','천이궁','재백궁','질액궁'], ans:2, explain:'재백궁(財帛宮)은 재물, 금전운, 자산 형성 방식을 담당하는 궁이다.'},
+  {q:'다음 중 직업 적성과 사회적 성취를 나타내는 궁은?', opts:['부처궁','관록궁','복덕궁','노복궁'], ans:1, explain:'관록궁(官祿宮)은 직업 적성, 사회적 명예, 권위를 분석하는 핵심 궁이다.'},
+  {q:'자미두수의 14주성 중 "욕망과 예술의 별"로 불리는 별은?', opts:['거문성','탐랑성','무곡성','천부성'], ans:1, explain:'탐랑성(貪狼星)은 욕망, 예술, 카리스마를 상징하는 별이다.'},
+  {q:'대운(大運)은 몇 년 단위로 운세를 구분하는가?', opts:['5년','10년','12년','60년'], ans:1, explain:'대운은 인생을 10년 단위로 나누어 큰 흐름의 운세를 분석하는 개념이다.'},
+  {q:'삼방사정(三方四正)에서 명궁과 함께 보는 3개 궁이 아닌 것은?', opts:['관록궁','재백궁','천이궁','부처궁'], ans:3, explain:'삼방사정은 명궁·관록궁·재백궁·천이궁의 4개 궁을 함께 분석하는 방법이다. 부처궁은 포함되지 않는다.'},
+  {q:'화록·화권·화과·화기를 통틀어 무엇이라 부르는가?', opts:['삼합','사화','팔괘','오행'], ans:1, explain:'사화(四化)는 화록·화권·화과·화기의 4가지 별의 변환 작용을 말한다.'},
+];
+
+let answered=[];
+let correct=0;
+
+function buildQuiz(){
+  const wrap=document.getElementById('quiz-wrap');
+  wrap.innerHTML='';
+  answered=new Array(quizData.length).fill(false);
+  correct=0;
+  updateScore();
+  quizData.forEach((q,qi)=>{
+    const div=document.createElement('div');
+    div.className='quiz-item';
+    div.innerHTML=`
+      <div class="quiz-q"><span class="qnum">Q${qi+1}</span>${q.q}</div>
+      <div class="quiz-opts">
+        ${q.opts.map((o,oi)=>`<div class="quiz-opt" data-qi="${qi}" data-oi="${oi}" onclick="answerQ(this,${qi},${oi})">${o}</div>`).join('')}
+      </div>
+      <div class="quiz-feedback" id="fb-${qi}"></div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+function answerQ(el,qi,oi){
+  if(answered[qi]) return;
+  answered[qi]=true;
+  const q=quizData[qi];
+  const opts=el.closest('.quiz-opts').querySelectorAll('.quiz-opt');
+  opts.forEach((o,i)=>{
+    o.classList.add('disabled');
+    if(i===q.ans) o.classList.add('correct');
+    else if(i===oi && oi!==q.ans) o.classList.add('wrong');
+  });
+  const fb=document.getElementById('fb-'+qi);
+  if(oi===q.ans){
+    correct++;
+    fb.textContent='✓ 정답입니다! '+q.explain;
+    fb.className='quiz-feedback show ok';
+  } else {
+    fb.textContent='✗ 오답. '+q.explain;
+    fb.className='quiz-feedback show no';
+  }
+  updateScore();
+}
+
+function updateScore(){
+  const total=answered.filter(Boolean).length;
+  document.getElementById('score-display').textContent=`${correct} / ${total}`;
+}
+
+function resetQuiz(){ buildQuiz(); }
+
+/* ── INIT ── */
+buildMungban();
+buildStars();
+buildQuiz();
+</script>
+</body>
+</html>
