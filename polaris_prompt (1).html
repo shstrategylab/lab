@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>자미두수 紫微斗數 북극명경 사건사고 프롬프트 생성기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;500;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+
+:root{
+  --ink:#12111e;
+  --ink2:#3d3c58;
+  --ink3:#7e7d99;
+  --gold:#b89a0e;
+  --gold-light:#e8c840;
+  --gold-pale:#fffbee;
+  --gold-border:#e0cc60;
+  --jade:#155c3f;
+  --jade-light:#1a7a52;
+  --jade-bg:#edf7f2;
+  --jade-border:#b0ddc8;
+  --surface:#ffffff;
+  --surface2:#f7f5f0;
+  --surface3:#efece4;
+  --border:#ddd8cc;
+  --border2:#c8c3b4;
+  --danger:#7a1818;
+  --danger-bg:#fff0f0;
+  --warn-bg:#fff8e6;
+  --warn-text:#7a5500;
+  --radius:8px;
+  --radius-lg:12px;
+  --shadow:0 2px 12px rgba(0,0,0,0.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.12);
+}
+
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--surface2);
+  color:var(--ink);
+  min-height:100vh;
+  font-size:14px;
+  line-height:1.6;
+}
+
+/* ── LAYOUT ── */
+.app{
+  display:grid;
+  grid-template-columns:320px 1fr;
+  grid-template-rows:auto 1fr;
+  min-height:100vh;
+  max-width:1400px;
+  margin:0 auto;
+}
+
+/* ── TOP BAR (mobile) ── */
+.top-bar{
+  display:none;
+  grid-column:1/-1;
+  background:var(--ink);
+  padding:16px 20px;
+  align-items:center;
+  justify-content:space-between;
+}
+.top-bar .logo-zh{
+  font-family:'Noto Serif KR',serif;
+  font-size:18px;
+  letter-spacing:6px;
+  color:var(--gold-light);
+}
+.hamburger{
+  background:none;
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:6px;
+  padding:6px 10px;
+  cursor:pointer;
+  color:#e8e4d8;
+  font-size:16px;
+  transition:background .2s;
+}
+.hamburger:hover{background:rgba(255,255,255,0.1);}
+
+/* ── LEFT PANEL ── */
+.panel-left{
+  background:var(--ink);
+  color:#e8e4d8;
+  display:flex;
+  flex-direction:column;
+  position:sticky;
+  top:0;
+  height:100vh;
+  overflow-y:auto;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,0.15) transparent;
+}
+.panel-left::-webkit-scrollbar{width:4px;}
+.panel-left::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px;}
+
+.panel-header{
+  padding:28px 22px 20px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  background:linear-gradient(180deg,rgba(184,154,14,0.08) 0%,transparent 100%);
+}
+.logo-zh{
+  font-family:'Noto Serif KR',serif;
+  font-size:24px;
+  letter-spacing:10px;
+  color:var(--gold-light);
+  display:block;
+  margin-bottom:4px;
+}
+.logo-kr{
+  font-size:10px;
+  letter-spacing:3px;
+  color:#8886a0;
+  text-transform:uppercase;
+  display:block;
+  margin-bottom:10px;
+}
+.logo-sub{
+  font-size:12px;
+  color:#6e6c88;
+  line-height:1.7;
+}
+
+.section{
+  padding:18px 22px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.section-title{
+  font-size:10px;
+  letter-spacing:2px;
+  color:#6e6c88;
+  margin-bottom:12px;
+  text-transform:uppercase;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.section-title::before{
+  content:'';
+  display:inline-block;
+  width:3px;
+  height:10px;
+  background:var(--gold);
+  border-radius:2px;
+}
+
+/* form elements */
+.form-label{
+  display:block;
+  font-size:11px;
+  color:#8886a0;
+  margin-bottom:6px;
+  letter-spacing:.4px;
+}
+.inp{
+  width:100%;
+  background:rgba(255,255,255,0.07);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:var(--radius);
+  padding:9px 12px;
+  font-size:13px;
+  color:#e8e4d8;
+  outline:none;
+  font-family:'Noto Sans KR',sans-serif;
+  transition:border-color .2s,background .2s;
+  -webkit-appearance:none;
+}
+.inp:focus{border-color:rgba(255,255,255,0.3);background:rgba(255,255,255,0.1);}
+.inp::placeholder{color:#4e4c68;}
+textarea.inp{resize:vertical;min-height:76px;line-height:1.7;}
+
+/* gender radio */
+.radio-row{display:flex;gap:8px;margin-bottom:14px;}
+.radio-btn{
+  flex:1;
+  padding:9px 8px;
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:var(--radius);
+  text-align:center;
+  font-size:13px;
+  cursor:pointer;
+  color:#8886a0;
+  transition:all .2s;
+  user-select:none;
+}
+.radio-btn.active{
+  background:var(--gold);
+  border-color:var(--gold);
+  color:var(--ink);
+  font-weight:500;
+}
+.radio-btn:hover:not(.active){background:rgba(255,255,255,0.06);color:#c8c4d8;}
+
+/* year range */
+.year-row{display:flex;gap:8px;align-items:center;}
+.year-row .inp{text-align:center;}
+.year-sep{font-size:12px;color:#6e6c88;flex-shrink:0;}
+
+/* event grid */
+.select-btns{display:flex;gap:6px;margin-bottom:10px;}
+.sel-btn{
+  font-size:11px;
+  padding:4px 10px;
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:20px;
+  cursor:pointer;
+  color:#8886a0;
+  background:transparent;
+  transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.sel-btn:hover{border-color:rgba(255,255,255,0.3);color:#c8c4d8;}
+
+.event-grid{display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.evt-item{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:6px 7px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:background .15s;
+}
+.evt-item:hover{background:rgba(255,255,255,0.06);}
+.evt-item input[type=checkbox]{
+  width:14px;height:14px;
+  accent-color:var(--gold-light);
+  cursor:pointer;
+  flex-shrink:0;
+}
+.evt-item label{font-size:12px;cursor:pointer;line-height:1.3;color:#b8b4cc;}
+.evt-item.danger label{color:#ffaaaa;}
+.evt-item.warn label{color:#ffd090;}
+.evt-item.good label{color:#96ddaa;}
+.evt-item.neutral label{color:#b8b4cc;}
+
+/* depth */
+.depth-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.depth-btn{
+  padding:9px 6px;
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:var(--radius);
+  font-size:11px;
+  text-align:center;
+  cursor:pointer;
+  color:#6e6c88;
+  transition:all .2s;
+  line-height:1.4;
+  font-family:'Noto Sans KR',sans-serif;
+  background:transparent;
+}
+.depth-btn .d-name{display:block;font-size:12px;margin-bottom:2px;}
+.depth-btn .d-sub{display:block;font-size:10px;color:#4e4c68;}
+.depth-btn:hover:not(.active){background:rgba(255,255,255,0.06);}
+.depth-btn.active{
+  border-color:var(--gold);
+  color:var(--gold-light);
+  background:rgba(184,154,14,0.08);
+}
+.depth-btn.active .d-sub{color:rgba(232,200,64,0.6);}
+
+/* gen button */
+.gen-btn{
+  margin:18px 22px 22px;
+  padding:13px;
+  background:linear-gradient(135deg,#b89a0e,#d4b820);
+  border:none;
+  border-radius:var(--radius);
+  font-family:'Noto Serif KR',serif;
+  font-size:14px;
+  font-weight:500;
+  color:var(--ink);
+  cursor:pointer;
+  letter-spacing:2px;
+  transition:opacity .2s,transform .1s;
+  box-shadow:0 4px 16px rgba(184,154,14,0.3);
+}
+.gen-btn:hover{opacity:.92;}
+.gen-btn:active{transform:scale(0.98);}
+
+/* ── RIGHT PANEL ── */
+.panel-right{
+  display:flex;
+  flex-direction:column;
+  background:var(--surface);
+  min-height:100vh;
+}
+
+.right-header{
+  padding:22px 28px 18px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  background:var(--surface);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.right-header h1{
+  font-family:'Noto Serif KR',serif;
+  font-size:17px;
+  color:var(--ink);
+  font-weight:500;
+  letter-spacing:.5px;
+}
+.status-badge{
+  font-size:11px;
+  background:var(--jade-bg);
+  color:var(--jade);
+  border:1px solid var(--jade-border);
+  padding:4px 12px;
+  border-radius:20px;
+  white-space:nowrap;
+}
+
+/* tabs */
+.tab-bar{
+  display:flex;
+  border-bottom:1px solid var(--border);
+  padding:0 28px;
+  background:var(--surface);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+.tab-bar::-webkit-scrollbar{display:none;}
+.tab{
+  padding:11px 18px;
+  font-size:12px;
+  color:var(--ink3);
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  margin-bottom:-1px;
+  transition:all .2s;
+  letter-spacing:.4px;
+  white-space:nowrap;
+  font-family:'Noto Sans KR',sans-serif;
+  background:none;
+  border-top:none;
+  border-left:none;
+  border-right:none;
+}
+.tab:hover:not(.active){color:var(--ink2);}
+.tab.active{color:var(--jade);border-bottom-color:var(--jade);font-weight:500;}
+
+/* output */
+.output-area{
+  flex:1;
+  padding:24px 28px;
+  overflow-y:auto;
+}
+
+.placeholder{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:320px;
+  color:var(--ink3);
+}
+.placeholder-icon{
+  font-family:'Noto Serif KR',serif;
+  font-size:52px;
+  color:var(--border2);
+  margin-bottom:16px;
+  letter-spacing:0;
+}
+.placeholder p{font-size:14px;line-height:1.8;text-align:center;color:var(--ink3);}
+
+/* tip box */
+.tip-box{
+  background:var(--gold-pale);
+  border:1px solid var(--gold-border);
+  border-radius:var(--radius);
+  padding:12px 16px;
+  margin-bottom:16px;
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+}
+.tip-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.tip-box p{font-size:12px;color:#6a5200;line-height:1.7;}
+.tip-box strong{color:#4a3800;}
+
+/* prompt box */
+.prompt-box{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:18px 20px;
+  margin-bottom:14px;
+  position:relative;
+}
+.prompt-box-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.prompt-box-title{
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--ink3);
+  text-transform:uppercase;
+}
+.copy-btn{
+  padding:5px 12px;
+  font-size:11px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:20px;
+  cursor:pointer;
+  color:var(--ink2);
+  transition:all .2s;
+  font-family:'Noto Sans KR',sans-serif;
+  white-space:nowrap;
+}
+.copy-btn:hover{background:var(--jade-bg);border-color:var(--jade-border);color:var(--jade);}
+.copy-btn.copied{background:var(--jade-bg);border-color:var(--jade-border);color:var(--jade);}
+
+.prompt-text{
+  font-size:12.5px;
+  color:var(--ink);
+  line-height:1.9;
+  white-space:pre-wrap;
+  font-family:'Noto Sans KR',sans-serif;
+  word-break:break-word;
+}
+
+/* guide text */
+.guide-block{margin-bottom:20px;}
+.guide-block h3{
+  font-size:12px;
+  font-weight:500;
+  color:var(--jade);
+  margin-bottom:8px;
+  padding-bottom:6px;
+  border-bottom:1px solid var(--jade-border);
+  letter-spacing:.5px;
+}
+.guide-text{
+  font-size:13px;
+  color:var(--ink2);
+  line-height:1.9;
+  white-space:pre-wrap;
+}
+.guide-text strong{color:var(--ink);font-weight:500;}
+
+/* timeline */
+.timeline{display:flex;flex-direction:column;gap:8px;}
+.tl-item{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  padding:12px 14px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  transition:border-color .2s;
+}
+.tl-item.current{border-color:var(--jade-light);border-width:1.5px;background:var(--jade-bg);}
+.tl-age{
+  font-size:12px;
+  font-weight:500;
+  color:var(--jade);
+  min-width:58px;
+  padding-top:2px;
+  flex-shrink:0;
+}
+.tl-item.current .tl-age{color:var(--jade-light);}
+.tl-tags{display:flex;flex-wrap:wrap;gap:4px;align-items:center;}
+.tl-tag{
+  display:inline-block;
+  font-size:10px;
+  padding:2px 7px;
+  border-radius:10px;
+}
+.tl-tag.danger{background:var(--danger-bg);color:var(--danger);}
+.tl-tag.warn{background:var(--warn-bg);color:var(--warn-text);}
+.tl-tag.good{background:var(--jade-bg);color:var(--jade);}
+.tl-tag.neutral{background:var(--surface2);color:var(--ink3);}
+.tl-note{font-size:11px;color:var(--ink3);margin-top:4px;width:100%;}
+
+/* copy all bar */
+.copy-all-bar{
+  padding:14px 28px;
+  border-top:1px solid var(--border);
+  background:var(--surface);
+  display:flex;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+.copy-all-btn{
+  padding:11px 22px;
+  background:var(--jade);
+  color:#fff;
+  border:none;
+  border-radius:var(--radius);
+  font-family:'Noto Sans KR',sans-serif;
+  font-size:13px;
+  cursor:pointer;
+  font-weight:500;
+  transition:opacity .2s,transform .1s;
+  white-space:nowrap;
+}
+.copy-all-btn:hover{opacity:.9;}
+.copy-all-btn:active{transform:scale(0.98);}
+.copy-note{font-size:12px;color:var(--ink3);line-height:1.5;}
+
+/* ── MOBILE OVERLAY ── */
+.overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  z-index:90;
+}
+.overlay.open{display:block;}
+
+/* ── RESPONSIVE ── */
+@media (max-width:900px){
+  .app{
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto 1fr;
+  }
+  .top-bar{display:flex;}
+
+  .panel-left{
+    position:fixed;
+    top:0;left:0;bottom:0;
+    width:300px;
+    z-index:100;
+    transform:translateX(-100%);
+    transition:transform .3s ease;
+    height:100%;
+  }
+  .panel-left.open{transform:translateX(0);}
+
+  .panel-right{
+    grid-column:1;
+    min-height:calc(100vh - 56px);
+  }
+  .right-header{padding:16px 18px 14px;}
+  .right-header h1{font-size:15px;}
+  .tab-bar{padding:0 14px;}
+  .output-area{padding:16px 18px;}
+  .copy-all-bar{padding:12px 18px;}
+}
+
+@media (max-width:480px){
+  .panel-left{width:280px;}
+  .event-grid{grid-template-columns:1fr 1fr;}
+  .depth-grid{grid-template-columns:1fr 1fr;}
+  .right-header{flex-direction:column;align-items:flex-start;gap:6px;}
+  .status-badge{align-self:flex-end;}
+  .copy-all-bar{flex-direction:column;align-items:flex-start;}
+  .copy-all-btn{width:100%;}
+}
+
+/* close btn for mobile drawer */
+.drawer-close{
+  display:none;
+  position:absolute;
+  top:16px;right:16px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:6px;
+  padding:5px 10px;
+  color:#e8e4d8;
+  font-size:16px;
+  cursor:pointer;
+}
+@media (max-width:900px){
+  .drawer-close{display:block;}
+  .panel-header{position:relative;padding-right:50px;}
+}
+
+/* scrollbar for output */
+.output-area::-webkit-scrollbar{width:5px;}
+.output-area::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+
+<div class="app">
+
+  <!-- TOP BAR (mobile only) -->
+  <div class="top-bar">
+    <span class="logo-zh">紫微斗數</span>
+    <button class="hamburger" onclick="openDrawer()">☰ 설정</button>
+  </div>
+
+  <!-- LEFT PANEL -->
+  <div class="panel-left" id="panel-left">
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+
+    <div class="panel-header">
+      <span class="logo-zh">紫微斗數</span>
+      <span class="logo-kr">사건사고 프롬프트 생성기</span>
+      <p class="logo-sub">나이대별 사건·사고를 자미두수 별자리 방식으로 분석하는 전문 프롬프트를 생성합니다</p>
+    </div>
+
+    <!-- 기본 정보 -->
+    <div class="section">
+      <div class="section-title">기본 정보</div>
+
+      <label class="form-label">성별</label>
+      <div class="radio-row">
+        <div class="radio-btn active" id="rb-male" onclick="setGender('남성')">남성</div>
+        <div class="radio-btn" id="rb-female" onclick="setGender('여성')">여성</div>
+      </div>
+
+      <label class="form-label">양력 / 음력 구분</label>
+      <div class="radio-row" style="margin-bottom:14px;">
+        <div class="radio-btn active" id="rb-solar" onclick="setCalendar('양력')">양력</div>
+        <div class="radio-btn" id="rb-lunar" onclick="setCalendar('음력')">음력</div>
+        <div class="radio-btn" id="rb-lunar-leap" onclick="setCalendar('음력윤달')">음력 윤달</div>
+      </div>
+
+      <label class="form-label">생년월일</label>
+      <div style="display:flex;gap:6px;margin-bottom:12px;">
+        <input class="inp" type="number" id="birth-year"  placeholder="년 (예:1997)" inputmode="numeric" style="flex:3;" oninput="updateAgeDisplay()">
+        <input class="inp" type="number" id="birth-month" placeholder="월" inputmode="numeric" style="flex:1;text-align:center;" min="1" max="12" oninput="updateAgeDisplay()">
+        <input class="inp" type="number" id="birth-day"   placeholder="일" inputmode="numeric" style="flex:1;text-align:center;" min="1" max="31" oninput="updateAgeDisplay()">
+      </div>
+
+      <label class="form-label">출생 시각</label>
+      <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px;">
+        <input class="inp" type="number" id="birth-hour"   placeholder="시" inputmode="numeric" style="flex:1;text-align:center;" min="0" max="23">
+        <span style="color:#6e6c88;font-size:13px;">:</span>
+        <input class="inp" type="number" id="birth-minute" placeholder="분" inputmode="numeric" style="flex:1;text-align:center;" min="0" max="59">
+        <span style="color:#6e6c88;font-size:11px;flex-shrink:0;">(24시 기준)</span>
+      </div>
+
+      <label class="form-label">현재 나이 <span style="color:#6e6c88;font-size:10px;">(만 나이 자동 계산)</span></label>
+      <div id="age-display" style="background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:9px 12px;font-size:13px;color:#8886a0;">
+        생년월일을 입력하면 자동 계산됩니다
+      </div>
+    </div>
+
+    <!-- 분석 범위 -->
+    <div class="section">
+      <div class="section-title">분석 나이 범위</div>
+      <div class="year-row">
+        <input class="inp" type="number" id="yr-from" placeholder="시작" style="text-align:center;" inputmode="numeric">
+        <span class="year-sep">~</span>
+        <input class="inp" type="number" id="yr-to" placeholder="종료" style="text-align:center;" inputmode="numeric">
+        <span class="year-sep" style="white-space:nowrap;">세</span>
+      </div>
+    </div>
+
+    <!-- 사건사고 유형 -->
+    <div class="section">
+      <div class="section-title">분석할 사건사고</div>
+      <div class="select-btns">
+        <button class="sel-btn" onclick="selectAll(true)">전체 선택</button>
+        <button class="sel-btn" onclick="selectAll(false)">전체 해제</button>
+      </div>
+      <div class="event-grid" id="event-grid"></div>
+    </div>
+
+    <!-- 분석 깊이 -->
+    <div class="section">
+      <div class="section-title">분석 깊이</div>
+      <div class="depth-grid" id="depth-grid"></div>
+    </div>
+
+    <!-- 특별 관심사 -->
+    <div class="section">
+      <div class="section-title">특별 관심사 (선택)</div>
+      <input class="inp" type="text" id="special" placeholder="예: 사업 위기, 건강 관리">
+    </div>
+
+    <button class="gen-btn" onclick="generate()">✦ 프롬프트 생성</button>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right">
+    <div class="right-header">
+      <h1>생성된 프롬프트</h1>
+      <span class="status-badge" id="status-badge">입력 후 생성하세요</span>
+    </div>
+
+    <div class="tab-bar">
+      <button class="tab active" onclick="showTab('prompt')" id="tab-prompt">📋 프롬프트</button>
+      <button class="tab" onclick="showTab('guide')" id="tab-guide">📖 사용법</button>
+      <button class="tab" onclick="showTab('preview')" id="tab-preview">🗓 나이별 미리보기</button>
+    </div>
+
+    <div class="output-area" id="output-area">
+      <div class="placeholder">
+        <div class="placeholder-icon">命</div>
+        <p>왼쪽에서 정보를 입력하고<br>프롬프트 생성 버튼을 누르세요</p>
+      </div>
+    </div>
+
+    <div class="copy-all-bar" id="copy-bar" style="display:none;">
+      <button class="copy-all-btn" onclick="copyAll()">① 1단계 복사 → Claude에 붙여넣기</button>
+      <button class="copy-all-btn" onclick="copyText(this,'step2')" style="background:var(--gold);color:var(--ink);">② 2단계 복사 → 분석 시작 후 전송</button>
+      <span class="copy-note">만세력 이미지와 함께<br>1단계 먼저, 명반 확인 후 2단계</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──
+const EVENTS = [
+  {id:'marriage', label:'결혼',     cat:'good'},
+  {id:'divorce',  label:'이혼/별거', cat:'danger'},
+  {id:'job',      label:'취업',     cat:'good'},
+  {id:'transfer', label:'이직/해고', cat:'warn'},
+  {id:'biz',      label:'사업 도전', cat:'good'},
+  {id:'bizfail',  label:'사업 실패', cat:'danger'},
+  {id:'money',    label:'재물 손실', cat:'danger'},
+  {id:'traffic',  label:'교통사고',  cat:'danger'},
+  {id:'injury',   label:'낙상/외상', cat:'danger'},
+  {id:'health',   label:'건강 이상', cat:'warn'},
+  {id:'death',    label:'사망/중병', cat:'danger'},
+  {id:'move',     label:'이사/이민', cat:'neutral'},
+  {id:'legal',    label:'구속/관재', cat:'danger'},
+  {id:'love',     label:'연애/이별', cat:'warn'},
+  {id:'birth',    label:'출산/임신', cat:'good'},
+  {id:'study',    label:'학업/시험', cat:'neutral'},
+  {id:'invest',   label:'투자 손실', cat:'danger'},
+  {id:'family',   label:'가족 변고', cat:'warn'},
+];
+
+const DEPTHS = [
+  {id:'기본',   sub:'핵심만 간략히'},
+  {id:'표준',   sub:'균형 잡힌 분석'},
+  {id:'심층',   sub:'살성·사화 포함'},
+  {id:'전문가', sub:'명반 전체 분석'},
+];
+
+const DEPTH_INSTRUCTIONS = {
+  '기본':
+`- 각 나이대별 핵심 사건 1~2개만 간략히 언급
+- 해당 대한의 명궁 주성과 기본 별자리 해석 제시`,
+
+  '표준':
+`- 나이대별 대한(大限) 궁위, 주성(主星), 화성(化星) 분석
+- 대한 명궁·재백궁·관록궁·질액궁·부처궁 등 관련 궁위 별자리 해석
+- 유년(流年) 연계 위험·기회 시점 도출
+- 사건의 발생 가능성과 강도 표현 (낮음 / 중간 / 높음)`,
+
+  '심층':
+`- 대한 주성 + 보성(輔星: 左輔·右弼·天魁·天鉞·文昌·文曲) 통합 해석
+- 살성(殺星: 擎羊·陀羅·火星·鈴星·地空·地劫) 개입 여부 및 영향도 분석
+- 삼합궁(三合宮)·대궁(對宮) 교호 작용 해석
+- 화기(化忌)·화록(化祿)·화권(化權)·화과(化科) 사화성 흐름 분석
+- 사건 발생 시점을 유년(流年) + 유월(流月)까지 좁혀서 제시
+- 흉사 예방 및 길운 활용 조언 포함`,
+
+  '전문가':
+`- 자미두수 명반 12궁 전체를 대한별로 순차 분석
+- 주성·보성·살성·사화성(四化星) 통합 판단
+- 살·파·랑·탐(殺破狼·貪) 특수 성계 결합 해석
+- 화기(化忌) 충돌 및 록존(祿存)·천마(天馬) 연동 분석
+- 각 대한 내 유년(流年) 흉길 시점 구체적으로 도출
+- 사건 강도·지속기간·회복 가능성 예측
+- 명반 구조적 취약점과 생애 전반 흐름 총평
+- 구체적인 처세 전략 및 시기별 주의 사항 제안`,
+};
+
+// ── AGE AUTO CALC ──
+function calcAge() {
+  const y = parseInt(document.getElementById('birth-year').value);
+  const m = parseInt(document.getElementById('birth-month').value);
+  const d = parseInt(document.getElementById('birth-day').value);
+  if (!y || !m || !d) return null;
+  const today = new Date();
+  let age = today.getFullYear() - y;
+  const monthDiff = today.getMonth() + 1 - m;
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < d)) age--;
+  return age >= 0 ? age : null;
+}
+
+function updateAgeDisplay() {
+  const age = calcAge();
+  const el = document.getElementById('age-display');
+  if (age !== null) {
+    el.style.color = '#e8c840';
+    el.innerHTML = '만 <strong>' + age + '</strong>세 <span style="color:#6e6c88;font-size:11px;">(자동 계산)</span>';
+  } else {
+    el.style.color = '#8886a0';
+    el.innerHTML = '생년월일을 입력하면 자동 계산됩니다';
+  }
+}
+
+// ── STATE ──
+let gender   = '남성';
+let calendar = '양력';
+let depth    = '표준';
+let currentTab = 'prompt';
+let generatedPrompt = '';
+
+// ── INIT ──
+function initEventGrid() {
+  const g = document.getElementById('event-grid');
+  g.innerHTML = EVENTS.map(e => `
+    <div class="evt-item ${e.cat}">
+      <input type="checkbox" id="ev-${e.id}" checked>
+      <label for="ev-${e.id}">${e.label}</label>
+    </div>`).join('');
+}
+
+function initDepthGrid() {
+  const g = document.getElementById('depth-grid');
+  g.innerHTML = DEPTHS.map(d => `
+    <button class="depth-btn${d.id===depth?' active':''}" data-d="${d.id}" onclick="setDepth(this)">
+      <span class="d-name">${d.id}</span>
+      <span class="d-sub">${d.sub}</span>
+    </button>`).join('');
+}
+
+initEventGrid();
+initDepthGrid();
+
+// ── DRAWER (mobile) ──
+function openDrawer() {
+  document.getElementById('panel-left').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('panel-left').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ── CONTROLS ──
+function setGender(g) {
+  gender = g;
+  document.getElementById('rb-male').classList.toggle('active', g==='남성');
+  document.getElementById('rb-female').classList.toggle('active', g==='여성');
+}
+
+function setCalendar(c) {
+  calendar = c;
+  document.getElementById('rb-solar').classList.toggle('active',      c==='양력');
+  document.getElementById('rb-lunar').classList.toggle('active',      c==='음력');
+  document.getElementById('rb-lunar-leap').classList.toggle('active', c==='음력윤달');
+}
+
+function setDepth(el) {
+  depth = el.dataset.d;
+  document.querySelectorAll('.depth-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function selectAll(v) {
+  EVENTS.forEach(e => {
+    const el = document.getElementById('ev-'+e.id);
+    if (el) el.checked = v;
+  });
+}
+
+function showTab(t) {
+  currentTab = t;
+  ['prompt','guide','preview'].forEach(x => {
+    document.getElementById('tab-'+x).classList.toggle('active', x===t);
+  });
+  if (generatedPrompt) renderOutput();
+  else renderPlaceholder();
+}
+
+function getCheckedEvents() {
+  return EVENTS.filter(e => document.getElementById('ev-'+e.id)?.checked).map(e => e.label);
+}
+
+// ── GENERATE ──
+function generate() {
+  const age         = calcAge(); // 만 나이 자동 계산
+  const yrFrom      = document.getElementById('yr-from').value.trim();
+  const yrTo        = document.getElementById('yr-to').value.trim();
+  const special     = document.getElementById('special').value.trim();
+  const events      = getCheckedEvents();
+
+  const birthYear   = document.getElementById('birth-year').value.trim();
+  const birthMonth  = document.getElementById('birth-month').value.trim();
+  const birthDay    = document.getElementById('birth-day').value.trim();
+  const birthHour   = document.getElementById('birth-hour').value.trim();
+  const birthMinute = document.getElementById('birth-minute').value.trim();
+
+
+  if (events.length === 0) {
+    alert('분석할 사건사고를 하나 이상 선택해주세요.');
+    return;
+  }
+  if (!birthYear || !birthMonth || !birthDay) {
+    alert('생년월일을 입력해주세요.');
+    return;
+  }
+
+  // 시간 표기
+  let timeStr = '';
+  if (birthHour !== '' && birthMinute !== '') {
+    const hh = String(birthHour).padStart(2,'0');
+    const mm = String(birthMinute).padStart(2,'0');
+    timeStr = `${hh}시 ${mm}분`;
+  } else if (birthHour !== '') {
+    timeStr = `${birthHour}시`;
+  } else {
+    timeStr = '시간 미입력';
+  }
+
+  // 시진(時辰) 자동 계산 (야자시 0시 처리 포함)
+  const SIKCHIN = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  let sikchinStr = '';
+  if (birthHour !== '') {
+    const h = parseInt(birthHour);
+    // 23:00~23:59 → 子시(야자시), 0:00~0:59 → 子시(정자시)
+    let idx;
+    if (h === 23) {
+      idx = 0; // 야자시 → 子
+    } else {
+      idx = Math.floor((h + 1) / 2) % 12;
+    }
+    sikchinStr = ` (${SIKCHIN[idx]}시)`;
+  }
+
+  // 생년 천간(天干) 자동 계산
+  const TIANGAN = ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己'];
+  const TIANGAN_KO = ['경','신','임','계','갑','을','병','정','무','기'];
+  let tianganStr = '';
+  let tianganKoStr = '';
+  if (birthYear) {
+    const tgIdx = parseInt(birthYear) % 10;
+    tianganStr   = TIANGAN[tgIdx];
+    tianganKoStr = TIANGAN_KO[tgIdx];
+  }
+
+  // 생년 천간별 사화(四化) 대응표
+  const SIHUA_TABLE = {
+    '甲': { rok:'廉貞(염정)', gwon:'破軍(파군)', gwa:'武曲(무곡)', gi:'太陽(태양)' },
+    '乙': { rok:'天機(천기)', gwon:'天梁(천량)', gwa:'紫微(자미)', gi:'太陰(태음)' },
+    '丙': { rok:'天同(천동)', gwon:'天機(천기)', gwa:'文昌(문창)', gi:'廉貞(염정)' },
+    '丁': { rok:'太陰(태음)', gwon:'天同(천동)', gwa:'天機(천기)', gi:'巨門(거문)' },
+    '戊': { rok:'貪狼(탐랑)', gwon:'太陰(태음)', gwa:'右弼(우필)', gi:'天機(천기)' },
+    '己': { rok:'武曲(무곡)', gwon:'貪狼(탐랑)', gwa:'天梁(천량)', gi:'文曲(문곡)' },
+    '庚': { rok:'太陽(태양)', gwon:'武曲(무곡)', gwa:'太陰(태음)', gi:'天同(천동)' },
+    '辛': { rok:'巨門(거문)', gwon:'太陽(태양)', gwa:'文曲(문곡)', gi:'文昌(문창)' },
+    '壬': { rok:'天梁(천량)', gwon:'紫微(자미)', gwa:'左輔(좌보)', gi:'武曲(무곡)' },
+    '癸': { rok:'破軍(파군)', gwon:'巨門(거문)', gwa:'太陰(태음)', gi:'貪狼(탐랑)' },
+  };
+  let sihuaBlock = '';
+  if (tianganStr && SIHUA_TABLE[tianganStr]) {
+    const s = SIHUA_TABLE[tianganStr];
+    sihuaBlock = `
+※ ${tianganStr}(${tianganKoStr})년생 사화(四化) — 자동 산출:
+  - 화록(化祿): ${s.rok}
+  - 화권(化權): ${s.gwon}
+  - 화과(化科): ${s.gwa}
+  - 화기(化忌): ${s.gi}`;
+  }
+
+  const calLabel = calendar === '음력윤달' ? '음력(윤달)' : calendar;
+
+  const birthBlock =
+`- 생년월일: ${calLabel} ${birthYear}년 ${birthMonth}월 ${birthDay}일${tianganStr ? ` (생년 천간: ${tianganStr} · ${tianganKoStr})` : ''}
+- 출생 시각: ${timeStr}${sikchinStr}
+- 성별: ${gender}`;
+
+  const ageRange = (yrFrom && yrTo)
+    ? `${yrFrom}세 ~ ${yrTo}세`
+    : (age ? `전 생애 (현재 ${age}세 기준 — 대운 시작 나이부터 말년까지 전 대한 분석)` : '전 생애 (대운 시작 나이부터 말년까지 전 대한 분석)');
+
+  const specialLine = special ? `\n- 특별 관심 영역: ${special}` : '';
+
+  // ── 1단계 프롬프트 (명반 산출 확인용)
+  const prompt1 = `【 자미두수 명반 산출 요청 — 1단계 】
+
+당신은 자미두수(紫微斗數) 전문 명리 분석가입니다.
+아래 정보를 바탕으로 자미두수 명반을 산출하고, 결과를 정확히 출력해 주세요.
+※ 사주팔자 교차 분석 없이, 자미두수 성계 해석만 진행합니다.
+
+【 명반 산출 기본 정보 】
+${birthBlock}
+- 현재 나이(만): ${age !== null ? age+'세' : '미입력'}
+- 분석 대상 기간: ${ageRange}${specialLine}
+
+【 명반 산출 시 유의사항 】
+- 위 생년월일은 ${calLabel} 기준입니다. 반드시 ${calLabel}을 기준으로 명반을 산출하세요.
+- 출생 시각(${timeStr}${sikchinStr})으로 시간(時干) 및 시궁(時宮)을 정확히 배정하세요.${sihuaBlock}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+【 명반 산출 결과를 아래 형식으로 출력해 주세요 】
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+● 오행국(五行局): ○○局
+● 명궁(命宮): 지지(地支) ○○궁 / 주성: ○○
+● 신궁(身宮): 지지(地支) ○○궁
+● 대운수(大運數): ○세 시작, 순행(順行) / 역행(逆行)
+● 생년 사화(四化) 확인:
+  - 화록(化祿): ○○성 → ○○궁 낙궁
+  - 화권(化權): ○○성 → ○○궁 낙궁
+  - 화과(化科): ○○성 → ○○궁 낙궁
+  - 화기(化忌): ○○성 → ○○궁 낙궁
+
+12궁 배치표 (실제 산출 결과로 채워주세요):
+각 칸에 해당 궁 이름, 좌성(主星), 보성(輔星), 살성(殺星), 사화 표기
+예시 형식 → [궁명] 주성: ○○ / 보성: ○○ / 살성: ○○ / 사화: ○○
+⚠️ 위 표는 형식 안내입니다. 이 사람의 실제 명반에 맞게 12궁 전체를 채워 출력하세요.
+⚠️ 명반의 지지(子~亥) 배치는 고정이지만, 어느 궁(명궁·재백궁 등)이 어느 지지에 위치하는지는 생년월일시에 따라 달라집니다. 반드시 정확히 배정하세요.
+
+─────────────────────────────────────────
+출력 후 반드시 아래 문장으로 마무리해 주세요:
+"위 명반이 맞으면 '분석 시작'이라고 입력해 주세요. 수정이 필요하면 알려주세요."
+─────────────────────────────────────────`;
+
+  // ── 2단계 프롬프트 (사건사고 분석용 — 명반 확인 후 별도 전송)
+  const prompt2 = `【 자미두수 사건사고 분석 요청 — 2단계 】
+
+위에서 확인한 명반을 바탕으로, 아래 사건사고 유형에 대해 나이대별(대한 단위) 분석을 진행해 주세요.
+
+【 분석 대상자 】
+${birthBlock}
+- 분석 대상 기간: ${ageRange}${specialLine}
+
+【 분석할 사건사고 유형 】
+${events.join(', ')}
+
+【 분석 지침 — 자미두수 별자리 기준 】
+${DEPTH_INSTRUCTIONS[depth]}
+
+【 출력 형식 — 대한(大限) 단위로 작성 】
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+▶ [나이대] 대한: ○○지지 궁(宮) / 대한 주성(主星): ○○
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. 대한 성계 개요 (주성·보성·살성·사화 낙궁 현황)
+2. 사건사고별 분석:
+   ○ [사건 유형] — 관련 궁위 및 성계 근거 / 발생 가능성(낮음·중간·높음) / 위험 유년(流年) / 세부 해석
+3. 특히 주의할 유년(流年) · 유월(流月) 시점
+4. 이 시기 핵심 조언 (성계 근거 명시)
+
+【 마지막: 전체 생애 요약 】
+- 가장 위험한 시기 TOP 3 — 해당 대한·성계 근거 명시
+- 가장 좋은 기회의 시기 TOP 3 — 해당 대한·성계 근거 명시
+- 전 생애에서 가장 주의할 살성 / 화기(化忌) 낙궁 영향
+
+※ 단정적 예언이 아닌 경향성·확률적 해석으로 표현해 주세요.
+※ 성계 근거 없는 막연한 서술은 지양하고, 반드시 어떤 성(星)이 어느 궁에 작용하는지 명시해 주세요.`;
+
+  generatedPrompt = prompt1 + '\n\n' + '═'.repeat(50) + '\n⬇ 명반 확인 후, 아래 2단계 프롬프트를 새 메시지로 전송하세요 ⬇\n' + '═'.repeat(50) + '\n\n' + prompt2;
+
+  document.getElementById('status-badge').textContent =
+    `${events.length}개 사건유형 · ${depth} · 자미두수 전용`;
+  document.getElementById('copy-bar').style.display = 'flex';
+
+  closeDrawer();
+  renderOutput();
+}
+
+// ── RENDER ──
+function renderPlaceholder() {
+  document.getElementById('output-area').innerHTML = `
+    <div class="placeholder">
+      <div class="placeholder-icon">命</div>
+      <p>왼쪽에서 정보를 입력하고<br>프롬프트 생성 버튼을 누르세요</p>
+    </div>`;
+}
+
+function renderOutput() {
+  const area = document.getElementById('output-area');
+
+  if (currentTab === 'prompt') {
+    // 1단계/2단계 분리
+    const sepMark = '═'.repeat(50);
+    const parts = generatedPrompt.split('\n' + sepMark + '\n');
+    const p1 = parts[0] || '';
+    // 2단계는 구분자 이후 마지막 덩어리
+    const p2 = parts.length >= 3 ? parts[parts.length - 1] : '';
+
+    area.innerHTML = `
+      <div class="tip-box">
+        <span class="tip-icon">💡</span>
+        <p><strong>2단계 순서로 사용하세요.</strong><br>
+        ① 1단계 복사 → Claude에 붙여넣기 (만세력 이미지 함께) → 명반 확인<br>
+        ② 명반이 맞으면 <strong>'분석 시작'</strong> 입력 후, 2단계 복사 → 새 메시지로 전송</p>
+      </div>
+
+      <div class="prompt-box" style="border-color:var(--jade-border);">
+        <div class="prompt-box-header">
+          <span class="prompt-box-title" style="color:var(--jade);">📋 1단계 — 명반 산출 확인용</span>
+          <button class="copy-btn" onclick="copyText(this, 'step1')">복사</button>
+        </div>
+        <div class="prompt-text" id="prompt-step1">${escHtml(p1)}</div>
+      </div>
+
+      <div class="prompt-box" style="border-color:var(--gold-border);margin-top:10px;">
+        <div class="prompt-box-header">
+          <span class="prompt-box-title" style="color:var(--gold);">📊 2단계 — 사건사고 분석용 (명반 확인 후)</span>
+          <button class="copy-btn" onclick="copyText(this, 'step2')">복사</button>
+        </div>
+        <div class="prompt-text" id="prompt-step2">${escHtml(p2)}</div>
+      </div>`;
+
+  } else if (currentTab === 'guide') {
+    area.innerHTML = `
+      <div class="guide-block">
+        <h3>사용 방법</h3>
+        <div class="guide-text"><strong>Step 1</strong> — 만세력 이미지 준비
+자미두수 앱 또는 만세력 사이트에서 명반 이미지를 캡처하세요.
+(이미지 없이도 생년월일시 텍스트만으로 분석 가능)
+
+<strong>Step 2</strong> — 프롬프트 복사
+생성된 프롬프트를 복사 버튼으로 복사합니다.
+
+<strong>Step 3</strong> — Claude에 붙여넣기
+claude.ai 대화창에서 만세력 이미지를 첨부하고,
+복사한 프롬프트를 붙여넣어 전송합니다.
+
+<strong>Step 4</strong> — 심층 질문 추가
+원하는 시기나 사건에 대해 추가 질문을 이어가면
+더욱 깊고 정밀한 분석을 얻을 수 있습니다.
+
+<strong>팁</strong> — 사건 유형별로 나눠서 질문하면
+각 영역별(건강, 재물, 관계 등) 집중 분석이 가능합니다.</div>
+      </div>
+      <div class="guide-block">
+        <h3>자미두수 대한(大限) 기준 안내</h3>
+        <div class="guide-text">자미두수는 12개 궁위(宮位)를 기반으로 약 10년 단위 대한으로 운세를 분석합니다.
+
+• 명궁(命宮) — 태어난 궁, 본성과 천부적 기운
+• 대한(大限) — 10년 주기 운세 흐름
+• 유년(流年) — 매년 운세
+• 유월(流月) — 매달 운세
+
+주요 분석 성계:
+• 주성(主星) — 자미·천기·태양·무곡·천동·염정·천부·태음·탐랑·거문·천상·천량·칠살·파군
+• 보성(輔星) — 좌보·우필·천괴·천월·문창·문곡
+• 살성(殺星) — 경양·타라·화성·영성·지공·지겁
+• 사화(四化) — 화록·화권·화과·화기
+
+사건사고 분석은 대한 + 유년이 교차하는 시점에서
+가장 정밀하게 드러납니다.</div>
+      </div>`;
+
+  } else if (currentTab === 'preview') {
+    const age    = parseInt(document.getElementById('cur-age').value) || 40;
+    const yrFrom = parseInt(document.getElementById('yr-from').value) || 10;
+    const yrTo   = parseInt(document.getElementById('yr-to').value)   || 70;
+    const events = getCheckedEvents();
+
+    const dangerSet  = new Set(['이혼/별거','사업 실패','재물 손실','교통사고','낙상/외상','사망/중병','구속/관재','투자 손실','가족 변고']);
+    const warnSet    = new Set(['이직/해고','건강 이상','연애/이별']);
+    const goodSet    = new Set(['결혼','취업','사업 도전','출산/임신']);
+    const neutralSet = new Set(['이사/이민','학업/시험']);
+
+    const dangerEvts  = events.filter(e => dangerSet.has(e));
+    const warnEvts    = events.filter(e => warnSet.has(e));
+    const goodEvts    = events.filter(e => goodSet.has(e));
+    const neutralEvts = events.filter(e => neutralSet.has(e));
+
+    const ranges = [];
+    const startDecade = Math.floor(yrFrom / 10) * 10;
+    for (let s = startDecade; s < yrTo; s += 10) {
+      const start = Math.max(s, yrFrom);
+      const end   = Math.min(s + 9, yrTo - 1);
+      if (start > yrTo - 1) break;
+      ranges.push({ start, end, isCurrent: age >= start && age <= end });
+    }
+
+    const tags = (arr, cat, max=3) =>
+      arr.slice(0, max).map(e => `<span class="tl-tag ${cat}">${e}</span>`).join('');
+
+    area.innerHTML = `
+      <div class="tip-box">
+        <span class="tip-icon">📌</span>
+        <p>선택하신 나이 범위의 분석 프레임 미리보기입니다.<br>
+        실제 별자리 분석은 생성된 프롬프트를 Claude에 전달하면 이루어집니다.</p>
+      </div>
+      <div class="timeline">
+        ${ranges.map(r => `
+          <div class="tl-item${r.isCurrent?' current':''}">
+            <div class="tl-age">${r.start}~${r.end}세${r.isCurrent?' ◀':''}</div>
+            <div style="flex:1;">
+              <div class="tl-tags">
+                ${tags(dangerEvts,'danger')}
+                ${tags(warnEvts,'warn',2)}
+                ${tags(goodEvts,'good',2)}
+                ${tags(neutralEvts,'neutral',1)}
+              </div>
+              <div class="tl-note">→ 자미두수 대한 별자리 분석 + 유년 시점 도출 예정</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  }
+}
+
+// ── COPY ──
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function getStepText(step) {
+  const sepMark = '═'.repeat(50);
+  const parts = generatedPrompt.split('\n' + sepMark + '\n');
+  if (step === 'step1') return parts[0] || '';
+  if (step === 'step2') return parts.length >= 3 ? parts[parts.length - 1] : '';
+  return generatedPrompt;
+}
+
+function copyText(btn, step) {
+  const text = getStepText(step);
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2200);
+  }).catch(() => fallbackCopy(text, btn));
+}
+
+function copyPrompt(btn) {
+  navigator.clipboard.writeText(generatedPrompt).then(() => {
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2200);
+  }).catch(() => fallbackCopy(generatedPrompt, btn));
+}
+
+function copyAll() {
+  const btn = document.querySelector('.copy-all-btn');
+  const text = getStepText('step1');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ 1단계 복사 완료!';
+    setTimeout(() => { btn.textContent = '1단계 복사 → Claude에 붙여넣기'; }, 2200);
+  }).catch(() => fallbackCopy(text, btn));
+}
+
+function fallbackCopy(text, btn) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0;';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  if (btn) {
+    const orig = btn.textContent;
+    btn.textContent = '✓ 복사됨';
+    setTimeout(() => { btn.textContent = orig; }, 2200);
+  }
+}
+</script>
+
+</body>
+</html>
