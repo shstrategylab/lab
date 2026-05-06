@@ -703,8 +703,9 @@ textarea.inp{resize:vertical;min-height:76px;line-height:1.7;}
     </div>
 
     <div class="copy-all-bar" id="copy-bar" style="display:none;">
-      <button class="copy-all-btn" onclick="copyAll()">전체 복사 → Claude에 붙여넣기</button>
-      <span class="copy-note">만세력 이미지와 함께<br>Claude 대화창에 붙여넣으세요</span>
+      <button class="copy-all-btn" onclick="copyAll()">① 1단계 복사 → Claude에 붙여넣기</button>
+      <button class="copy-all-btn" onclick="copyText(this,'step2')" style="background:var(--gold);color:var(--ink);">② 2단계 복사 → 분석 시작 후 전송</button>
+      <span class="copy-note">만세력 이미지와 함께<br>1단계 먼저, 명반 확인 후 2단계</span>
     </div>
   </div>
 
@@ -912,33 +913,75 @@ function generate() {
     timeStr = '시간 미입력';
   }
 
-  // 시진(時辰) 자동 계산
+  // 시진(時辰) 자동 계산 (야자시 0시 처리 포함)
   const SIKCHIN = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
   let sikchinStr = '';
   if (birthHour !== '') {
     const h = parseInt(birthHour);
-    const idx = Math.floor(((h + 1) % 24) / 2);
+    // 23:00~23:59 → 子시(야자시), 0:00~0:59 → 子시(정자시)
+    let idx;
+    if (h === 23) {
+      idx = 0; // 야자시 → 子
+    } else {
+      idx = Math.floor((h + 1) / 2) % 12;
+    }
     sikchinStr = ` (${SIKCHIN[idx]}시)`;
+  }
+
+  // 생년 천간(天干) 자동 계산
+  const TIANGAN = ['庚','辛','壬','癸','甲','乙','丙','丁','戊','己'];
+  const TIANGAN_KO = ['경','신','임','계','갑','을','병','정','무','기'];
+  let tianganStr = '';
+  let tianganKoStr = '';
+  if (birthYear) {
+    const tgIdx = parseInt(birthYear) % 10;
+    tianganStr   = TIANGAN[tgIdx];
+    tianganKoStr = TIANGAN_KO[tgIdx];
+  }
+
+  // 생년 천간별 사화(四化) 대응표
+  const SIHUA_TABLE = {
+    '甲': { rok:'廉貞(염정)', gwon:'破軍(파군)', gwa:'武曲(무곡)', gi:'太陽(태양)' },
+    '乙': { rok:'天機(천기)', gwon:'天梁(천량)', gwa:'紫微(자미)', gi:'太陰(태음)' },
+    '丙': { rok:'天同(천동)', gwon:'天機(천기)', gwa:'文昌(문창)', gi:'廉貞(염정)' },
+    '丁': { rok:'太陰(태음)', gwon:'天同(천동)', gwa:'天機(천기)', gi:'巨門(거문)' },
+    '戊': { rok:'貪狼(탐랑)', gwon:'太陰(태음)', gwa:'右弼(우필)', gi:'天機(천기)' },
+    '己': { rok:'武曲(무곡)', gwon:'貪狼(탐랑)', gwa:'天梁(천량)', gi:'文曲(문곡)' },
+    '庚': { rok:'太陽(태양)', gwon:'武曲(무곡)', gwa:'太陰(태음)', gi:'天同(천동)' },
+    '辛': { rok:'巨門(거문)', gwon:'太陽(태양)', gwa:'文曲(문곡)', gi:'文昌(문창)' },
+    '壬': { rok:'天梁(천량)', gwon:'紫微(자미)', gwa:'左輔(좌보)', gi:'武曲(무곡)' },
+    '癸': { rok:'破軍(파군)', gwon:'巨門(거문)', gwa:'太陰(태음)', gi:'貪狼(탐랑)' },
+  };
+  let sihuaBlock = '';
+  if (tianganStr && SIHUA_TABLE[tianganStr]) {
+    const s = SIHUA_TABLE[tianganStr];
+    sihuaBlock = `
+※ ${tianganStr}(${tianganKoStr})년생 사화(四化) — 자동 산출:
+  - 화록(化祿): ${s.rok}
+  - 화권(化權): ${s.gwon}
+  - 화과(化科): ${s.gwa}
+  - 화기(化忌): ${s.gi}`;
   }
 
   const calLabel = calendar === '음력윤달' ? '음력(윤달)' : calendar;
 
   const birthBlock =
-`- 생년월일: ${calLabel} ${birthYear}년 ${birthMonth}월 ${birthDay}일
+`- 생년월일: ${calLabel} ${birthYear}년 ${birthMonth}월 ${birthDay}일${tianganStr ? ` (생년 천간: ${tianganStr} · ${tianganKoStr})` : ''}
 - 출생 시각: ${timeStr}${sikchinStr}
 - 성별: ${gender}`;
 
   const ageRange = (yrFrom && yrTo)
     ? `${yrFrom}세 ~ ${yrTo}세`
-    : (age ? `현재 ${age}세 기준 전 생애` : '전 생애');
+    : (age ? `전 생애 (현재 ${age}세 기준 — 대운 시작 나이부터 말년까지 전 대한 분석)` : '전 생애 (대운 시작 나이부터 말년까지 전 대한 분석)');
 
   const specialLine = special ? `\n- 특별 관심 영역: ${special}` : '';
 
-  generatedPrompt = `【 자미두수 사건사고 나이대별 분석 요청 】
+  // ── 1단계 프롬프트 (명반 산출 확인용)
+  const prompt1 = `【 자미두수 명반 산출 요청 — 1단계 】
 
 당신은 자미두수(紫微斗數) 전문 명리 분석가입니다.
-아래의 생년월일시 정보를 바탕으로 자미두수 명반을 산출한 뒤, 반드시 아래의 2단계 절차를 순서대로 진행해 주십시오.
-※ 사주팔자 교차 분석은 포함하지 않습니다. 자미두수 별자리(성계) 해석에만 집중해 주세요.
+아래 정보를 바탕으로 자미두수 명반을 산출하고, 결과를 정확히 출력해 주세요.
+※ 사주팔자 교차 분석 없이, 자미두수 성계 해석만 진행합니다.
 
 【 명반 산출 기본 정보 】
 ${birthBlock}
@@ -947,46 +990,41 @@ ${birthBlock}
 
 【 명반 산출 시 유의사항 】
 - 위 생년월일은 ${calLabel} 기준입니다. 반드시 ${calLabel}을 기준으로 명반을 산출하세요.
-- 출생 시각(${timeStr}${sikchinStr})을 기준으로 시(時) 궁위를 정확히 배정하세요.
+- 출생 시각(${timeStr}${sikchinStr})으로 시간(時干) 및 시궁(時宮)을 정확히 배정하세요.${sihuaBlock}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【 1단계: 명반 산출 결과 먼저 출력 (분석 전 필수 확인) 】
+【 명반 산출 결과를 아래 형식으로 출력해 주세요 】
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-분석을 시작하기 전에, 산출된 명반을 아래 형식으로 먼저 출력해 주세요.
-사용자가 명반이 정확한지 확인한 후 분석을 진행합니다.
 
 ● 오행국(五行局): ○○局
-● 명궁(命宮): ○宮 / 주성: ○○
-● 신궁(身宮): ○宮
-● 대운수(大運數): ○세 시작, 순행/역행
-● 본인 생년 사화(四化):
-  - 화록(化祿): ○○
-  - 화권(化權): ○○
-  - 화과(化科): ○○
-  - 화기(化忌): ○○
+● 명궁(命宮): 지지(地支) ○○궁 / 주성: ○○
+● 신궁(身宮): 지지(地支) ○○궁
+● 대운수(大運數): ○세 시작, 순행(順行) / 역행(逆行)
+● 생년 사화(四化) 확인:
+  - 화록(化祿): ○○성 → ○○궁 낙궁
+  - 화권(化權): ○○성 → ○○궁 낙궁
+  - 화과(化科): ○○성 → ○○궁 낙궁
+  - 화기(化忌): ○○성 → ○○궁 낙궁
 
-12궁 별자리 배치표:
-┌─────────┬──────────┬─────────┬─────────┐
-│ 巳(관록) │ 午(노복) │ 未(천이) │ 申(질액) │
-│         │          │          │          │
-├─────────┼──────────┴──────────┼─────────┤
-│ 辰(전택) │    명반 주인공 정보   │ 酉(재백) │
-│         │  ${calLabel} ${birthYear || '○○○○'}년 ${birthMonth || '○○'}월 ${birthDay || '○○'}일  │          │
-├─────────┼──────────┬──────────┼─────────┤
-│ 卯(복덕) │ 寅(부모) │ 丑(명궁) │ 子(형제) │
-│         │          │          │          │
-└─────────┴──────────┴──────────┴─────────┘
-※ 위 표는 예시 형식입니다. 실제 궁위별 주성·보성·살성·사화를 채워서 출력해 주세요.
+12궁 배치표 (실제 산출 결과로 채워주세요):
+각 칸에 해당 궁 이름, 좌성(主星), 보성(輔星), 살성(殺星), 사화 표기
+예시 형식 → [궁명] 주성: ○○ / 보성: ○○ / 살성: ○○ / 사화: ○○
+⚠️ 위 표는 형식 안내입니다. 이 사람의 실제 명반에 맞게 12궁 전체를 채워 출력하세요.
+⚠️ 명반의 지지(子~亥) 배치는 고정이지만, 어느 궁(명궁·재백궁 등)이 어느 지지에 위치하는지는 생년월일시에 따라 달라집니다. 반드시 정확히 배정하세요.
 
-⚠️ 명반 출력 후 반드시 다음 문장을 포함해 주세요:
+─────────────────────────────────────────
+출력 후 반드시 아래 문장으로 마무리해 주세요:
 "위 명반이 맞으면 '분석 시작'이라고 입력해 주세요. 수정이 필요하면 알려주세요."
+─────────────────────────────────────────`;
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【 2단계: 사건사고 분석 (명반 확인 후 진행) 】
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  // ── 2단계 프롬프트 (사건사고 분석용 — 명반 확인 후 별도 전송)
+  const prompt2 = `【 자미두수 사건사고 분석 요청 — 2단계 】
 
-사용자가 명반을 확인한 후, 아래 지침에 따라 분석을 진행해 주세요.
+위에서 확인한 명반을 바탕으로, 아래 사건사고 유형에 대해 나이대별(대한 단위) 분석을 진행해 주세요.
+
+【 분석 대상자 】
+${birthBlock}
+- 분석 대상 기간: ${ageRange}${specialLine}
 
 【 분석할 사건사고 유형 】
 ${events.join(', ')}
@@ -994,26 +1032,27 @@ ${events.join(', ')}
 【 분석 지침 — 자미두수 별자리 기준 】
 ${DEPTH_INSTRUCTIONS[depth]}
 
-【 출력 형식 】
-아래 형식으로 나이대별(대한 단위, 통상 10년)로 정리해 주세요:
+【 출력 형식 — 대한(大限) 단위로 작성 】
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-▶ [나이대] 대한: X궁(宮) / 주성(主星): ○○
+▶ [나이대] 대한: ○○지지 궁(宮) / 대한 주성(主星): ○○
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-1. 대한 별자리 배치 개요 (주성·보성·살성)
+1. 대한 성계 개요 (주성·보성·살성·사화 낙궁 현황)
 2. 사건사고별 분석:
-   ○ [사건 유형] — 관련 궁위 및 성계 / 발생 가능성 / 예상 유년 / 세부 해석
-3. 주의해야 할 유년(流年) / 유월(流月)
-4. 이 시기 핵심 조언 (자미두수 별자리 기반)
+   ○ [사건 유형] — 관련 궁위 및 성계 근거 / 발생 가능성(낮음·중간·높음) / 위험 유년(流年) / 세부 해석
+3. 특히 주의할 유년(流年) · 유월(流月) 시점
+4. 이 시기 핵심 조언 (성계 근거 명시)
 
-마지막에 【 전체 생애 요약 】 섹션을 추가하여:
-- 가장 위험한 시기 TOP 3 (해당 성계 근거 명시)
-- 가장 좋은 기회의 시기 TOP 3 (해당 성계 근거 명시)
-- 특별히 주의해야 할 살성 또는 화기(化忌) 영향
-를 정리해 주세요.
+【 마지막: 전체 생애 요약 】
+- 가장 위험한 시기 TOP 3 — 해당 대한·성계 근거 명시
+- 가장 좋은 기회의 시기 TOP 3 — 해당 대한·성계 근거 명시
+- 전 생애에서 가장 주의할 살성 / 화기(化忌) 낙궁 영향
 
-※ 단정적 예언보다는 경향성과 확률적 해석으로 표현해 주세요.`;
+※ 단정적 예언이 아닌 경향성·확률적 해석으로 표현해 주세요.
+※ 성계 근거 없는 막연한 서술은 지양하고, 반드시 어떤 성(星)이 어느 궁에 작용하는지 명시해 주세요.`;
+
+  generatedPrompt = prompt1 + '\n\n' + '═'.repeat(50) + '\n⬇ 명반 확인 후, 아래 2단계 프롬프트를 새 메시지로 전송하세요 ⬇\n' + '═'.repeat(50) + '\n\n' + prompt2;
 
   document.getElementById('status-badge').textContent =
     `${events.length}개 사건유형 · ${depth} · 자미두수 전용`;
@@ -1036,18 +1075,35 @@ function renderOutput() {
   const area = document.getElementById('output-area');
 
   if (currentTab === 'prompt') {
+    // 1단계/2단계 분리
+    const sepMark = '═'.repeat(50);
+    const parts = generatedPrompt.split('\n' + sepMark + '\n');
+    const p1 = parts[0] || '';
+    // 2단계는 구분자 이후 마지막 덩어리
+    const p2 = parts.length >= 3 ? parts[parts.length - 1] : '';
+
     area.innerHTML = `
       <div class="tip-box">
         <span class="tip-icon">💡</span>
-        <p>사주팔자 교차 분석 없이 <strong>자미두수 별자리(성계) 해석만</strong>으로 분석합니다.<br>
-        프롬프트를 복사한 뒤 Claude 대화창에 <strong>만세력 이미지</strong>와 함께 붙여넣으세요.</p>
+        <p><strong>2단계 순서로 사용하세요.</strong><br>
+        ① 1단계 복사 → Claude에 붙여넣기 (만세력 이미지 함께) → 명반 확인<br>
+        ② 명반이 맞으면 <strong>'분석 시작'</strong> 입력 후, 2단계 복사 → 새 메시지로 전송</p>
       </div>
-      <div class="prompt-box">
+
+      <div class="prompt-box" style="border-color:var(--jade-border);">
         <div class="prompt-box-header">
-          <span class="prompt-box-title">생성된 프롬프트</span>
-          <button class="copy-btn" onclick="copyPrompt(this)">복사</button>
+          <span class="prompt-box-title" style="color:var(--jade);">📋 1단계 — 명반 산출 확인용</span>
+          <button class="copy-btn" onclick="copyText(this, 'step1')">복사</button>
         </div>
-        <div class="prompt-text">${escHtml(generatedPrompt)}</div>
+        <div class="prompt-text" id="prompt-step1">${escHtml(p1)}</div>
+      </div>
+
+      <div class="prompt-box" style="border-color:var(--gold-border);margin-top:10px;">
+        <div class="prompt-box-header">
+          <span class="prompt-box-title" style="color:var(--gold);">📊 2단계 — 사건사고 분석용 (명반 확인 후)</span>
+          <button class="copy-btn" onclick="copyText(this, 'step2')">복사</button>
+        </div>
+        <div class="prompt-text" id="prompt-step2">${escHtml(p2)}</div>
       </div>`;
 
   } else if (currentTab === 'guide') {
@@ -1148,6 +1204,23 @@ function escHtml(s) {
   return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
+function getStepText(step) {
+  const sepMark = '═'.repeat(50);
+  const parts = generatedPrompt.split('\n' + sepMark + '\n');
+  if (step === 'step1') return parts[0] || '';
+  if (step === 'step2') return parts.length >= 3 ? parts[parts.length - 1] : '';
+  return generatedPrompt;
+}
+
+function copyText(btn, step) {
+  const text = getStepText(step);
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ 복사됨';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2200);
+  }).catch(() => fallbackCopy(text, btn));
+}
+
 function copyPrompt(btn) {
   navigator.clipboard.writeText(generatedPrompt).then(() => {
     btn.textContent = '✓ 복사됨';
@@ -1158,10 +1231,11 @@ function copyPrompt(btn) {
 
 function copyAll() {
   const btn = document.querySelector('.copy-all-btn');
-  navigator.clipboard.writeText(generatedPrompt).then(() => {
-    btn.textContent = '✓ 복사 완료!';
-    setTimeout(() => { btn.textContent = '전체 복사 → Claude에 붙여넣기'; }, 2200);
-  }).catch(() => fallbackCopy(generatedPrompt, btn));
+  const text = getStepText('step1');
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = '✓ 1단계 복사 완료!';
+    setTimeout(() => { btn.textContent = '1단계 복사 → Claude에 붙여넣기'; }, 2200);
+  }).catch(() => fallbackCopy(text, btn));
 }
 
 function fallbackCopy(text, btn) {
