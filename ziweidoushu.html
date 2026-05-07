@@ -350,6 +350,99 @@
     .card-grid { grid-template-columns: 1fr; }
     .star-grid { grid-template-columns: 1fr 1fr; }
   }
+
+  /* ── 보성·살성 카드 ── */
+  .supp-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px; margin-top: 20px;
+  }
+  .supp-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 18px;
+    transition: border-color 0.25s, background 0.25s;
+  }
+  .supp-card:hover { border-color: var(--gold); background: var(--panel2); }
+  .supp-card .sc-name {
+    font-family: 'Noto Serif KR', serif; font-size: 14px; font-weight: 600;
+    color: var(--star); margin-bottom: 4px;
+  }
+  .supp-card .sc-tag {
+    display: inline-block; font-size: 10px; padding: 2px 8px; border-radius: 10px;
+    margin-bottom: 8px; font-weight: 500;
+  }
+  .sc-tag.fuksei { background: rgba(42,122,122,0.3); color: var(--teal2); border: 1px solid rgba(42,122,122,0.4); }
+  .sc-tag.satsei { background: rgba(155,35,53,0.35); color: #e06a7a; border: 1px solid rgba(155,35,53,0.45); }
+  .supp-card .sc-desc { font-size: 12px; color: var(--text3); line-height: 1.7; }
+
+  .section-sub-title {
+    font-family: 'Noto Serif KR', serif; font-size: 16px; font-weight: 600;
+    color: var(--gold2); margin: 36px 0 14px;
+    padding-bottom: 8px; border-bottom: 1px solid var(--border);
+  }
+  .section-sub-title span { font-size: 12px; color: var(--text3); margin-left: 10px; font-weight: 400; }
+
+  /* ── 사화(四化) 표 ── */
+  .sihua-table-wrap { overflow-x: auto; margin-top: 20px; }
+  .sihua-table {
+    width: 100%; border-collapse: collapse; font-size: 13px;
+    min-width: 560px;
+  }
+  .sihua-table th {
+    background: rgba(201,168,76,0.12); color: var(--gold2);
+    font-family: 'Noto Serif KR', serif; font-weight: 600;
+    padding: 10px 12px; border: 1px solid var(--border);
+    text-align: center; white-space: nowrap;
+  }
+  .sihua-table td {
+    padding: 9px 12px; border: 1px solid var(--border);
+    color: var(--text2); text-align: center; white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .sihua-table tr:hover td { background: var(--panel2); }
+  .sihua-table td.tg { color: var(--gold); font-weight: 600; font-family: 'Noto Serif KR', serif; font-size: 15px; }
+  .sihua-table td.rok  { color: #6ecf9a; }
+  .sihua-table td.gwon { color: #7ab8e8; }
+  .sihua-table td.gwa  { color: #c0a0e8; }
+  .sihua-table td.gi   { color: #e06a7a; }
+  .sihua-legend {
+    display: flex; gap: 20px; flex-wrap: wrap; margin-top: 14px; font-size: 12px;
+  }
+  .sihua-legend span { display: flex; align-items: center; gap: 6px; }
+  .sihua-legend .dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+
+  /* ── 대운 기산 다이어그램 ── */
+  .daun-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;
+  }
+  @media (max-width: 600px) { .daun-grid { grid-template-columns: 1fr; } }
+  .daun-card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .daun-card h4 {
+    font-family: 'Noto Serif KR', serif; font-size: 14px; color: var(--gold2);
+    margin-bottom: 10px; font-weight: 600;
+  }
+  .daun-card p { font-size: 13px; color: var(--text3); line-height: 1.8; margin: 0; }
+  .daun-flow {
+    display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+    margin-top: 20px; padding: 16px 18px;
+    background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  }
+  .daun-flow .df-step {
+    font-size: 12px; color: var(--text2); padding: 5px 10px;
+    background: var(--panel2); border-radius: 6px; border: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  .daun-flow .df-arrow { color: var(--gold); font-size: 14px; }
+  .daun-example {
+    margin-top: 20px; padding: 16px 18px;
+    background: rgba(42,122,122,0.07); border: 1px solid rgba(42,122,122,0.25);
+    border-radius: 10px; font-size: 13px; color: var(--text2); line-height: 1.9;
+  }
+  .daun-example strong { color: var(--teal2); }
 </style>
 </head>
 <body>
@@ -371,9 +464,12 @@
   <a href="#part02">② 명반 구조</a>
   <a href="#part03">③ 12궁 탐구</a>
   <a href="#part04">④ 주요 별</a>
-  <a href="#part05">⑤ 해석 절차</a>
-  <a href="#part06">⑥ 운세 분석</a>
-  <a href="#part07">⑦ 복습 퀴즈</a>
+  <a href="#part04b">⑤ 보성·살성</a>
+  <a href="#part05">⑥ 해석 절차</a>
+  <a href="#part06">⑦ 운세 분석</a>
+  <a href="#part06b">⑧ 사화표</a>
+  <a href="#part06c">⑨ 대운 기산</a>
+  <a href="#part07">⑩ 복습 퀴즈</a>
 </nav>
 
 <!-- TOOLTIP -->
@@ -476,6 +572,25 @@
   <p class="section-desc">자미두수의 핵심 14개 정성(正星). 어떤 별이 명궁에 위치하느냐에 따라 타고난 성향과 운의 방향이 달라진다.</p>
 
   <div class="star-grid" id="star-grid"></div>
+</section>
+
+<!-- PART 04b -->
+<section id="part04b">
+  <p class="part-label">Part 04 — 보충</p>
+  <h2>보성(輔星) · 살성(殺星) — <em>길흉을 결정하는 조력자와 장애물</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">14주성만큼 중요한 두 그룹. 보성은 주성의 힘을 증폭·보완하고, 살성은 해당 궁의 기운을 교란하거나 사건사고를 촉발한다. 심층·전문가 분석에서 핵심 변수다.</p>
+
+  <p class="section-sub-title">보성(輔星) — 6종 <span>주성의 힘을 조력하는 길성(吉星)</span></p>
+  <div class="supp-grid" id="fuksei-grid"></div>
+
+  <p class="section-sub-title">살성(殺星) — 6종 <span>사건사고를 유발하는 흉성(凶星)</span></p>
+  <div class="supp-grid" id="satsei-grid"></div>
+
+  <div class="quote-box" style="margin-top:32px;">
+    살성이 많다고 무조건 흉하지 않다. 주성이 강하고 보성의 조력이 있으면 살성도 추진력으로 전환될 수 있다.<br>
+    반대로 살성 2개 이상이 같은 궁에 집중되거나 화기(化忌)와 동궁하면 그 궁의 사안은 강한 위험 신호로 본다.
+  </div>
 </section>
 
 <!-- PART 05 -->
@@ -601,6 +716,83 @@
   </div>
 </section>
 
+<!-- PART 06b -->
+<section id="part06b">
+  <p class="part-label">Part 06 — 보충 ①</p>
+  <h2>생년 천간별 사화표(四化表) — <em>내 별의 변환을 읽다</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">사화(四化)는 생년 천간(天干)에 따라 고정 배정된다. 이 표를 외우거나 참고하면 명반 분석의 핵심 변수를 즉시 파악할 수 있다. 화기(化忌)가 어느 별에 붙느냐가 인생 약점의 핵심이다.</p>
+
+  <div class="sihua-table-wrap">
+    <table class="sihua-table" id="sihua-table">
+      <thead>
+        <tr>
+          <th>생년 천간</th>
+          <th>연도 끝자리</th>
+          <th class="rok">화록(化祿)<br><small style="font-weight:400;color:var(--text3)">재물·인연 유입</small></th>
+          <th class="gwon">화권(化權)<br><small style="font-weight:400;color:var(--text3)">권력·결단력 강화</small></th>
+          <th class="gwa">화과(化科)<br><small style="font-weight:400;color:var(--text3)">명예·학문 발전</small></th>
+          <th class="gi">화기(化忌)<br><small style="font-weight:400;color:var(--text3)">막힘·손실·주의</small></th>
+        </tr>
+      </thead>
+      <tbody id="sihua-tbody"></tbody>
+    </table>
+  </div>
+  <div class="sihua-legend">
+    <span><span class="dot" style="background:#6ecf9a;"></span>화록 — 해당 별이 들어간 궁에 재물·인연의 기운이 유입된다</span>
+    <span><span class="dot" style="background:#7ab8e8;"></span>화권 — 권력·결단·강함이 증폭된다</span>
+    <span><span class="dot" style="background:#c0a0e8;"></span>화과 — 명예·시험·학문 인연이 열린다</span>
+    <span><span class="dot" style="background:#e06a7a;"></span>화기 — 막힘·갈등·손실. 해당 궁의 사안을 가장 주의해야 한다</span>
+  </div>
+
+  <div class="quote-box" style="margin-top:28px;">
+    화기(化忌)가 재백궁(財帛宮)에 들어오면 재물 손실, 부처궁(夫妻宮)에 들어오면 배우자 갈등, 관록궁(官祿宮)에 들어오면 직업 정체를 경계한다.<br>
+    대운(大運)의 화기와 유년(流年)의 화기가 같은 궁에 겹칠 때가 가장 강한 위험 신호다.
+  </div>
+</section>
+
+<!-- PART 06c -->
+<section id="part06c">
+  <p class="part-label">Part 06 — 보충 ②</p>
+  <h2>대운 기산법(大運 起算法) — <em>왜 사람마다 대운 시작이 다른가</em></h2>
+  <div class="divider"></div>
+  <p class="section-desc">대운은 단순히 10년 단위가 아니다. 사람마다 첫 대운이 시작되는 나이(기산점)가 다르며, 이것이 틀리면 전체 생애 분석이 틀어진다. 오행국(五行局)과 순역행(順逆行)이 핵심이다.</p>
+
+  <div class="daun-grid">
+    <div class="daun-card">
+      <h4>① 오행국(五行局) — 대운 보폭 결정</h4>
+      <p>명반의 오행국은 수2국·목3국·금4국·토5국·화6국 다섯 가지다. 숫자가 대운 1칸의 보폭(步幅)이 된다. 목3국이면 대운 1칸 = 3년, 금4국이면 4년이다. 단, 실전에서는 관례적으로 10년 단위로 통칭한다.</p>
+    </div>
+    <div class="daun-card">
+      <h4>② 순행·역행 — 대운 방향 결정</h4>
+      <p>남성은 생년 천간이 양간(甲·丙·戊·庚·壬)이면 순행(順行), 음간(乙·丁·己·辛·癸)이면 역행(逆行). 여성은 반대. 순행은 명궁 다음 궁으로, 역행은 명궁 이전 궁으로 대운이 진행된다.</p>
+    </div>
+    <div class="daun-card">
+      <h4>③ 기산점(起算點) — 첫 대운 시작 나이</h4>
+      <p>생일로부터 가장 가까운 절기(節氣)까지의 날 수를 오행국 숫자로 나눠 첫 대운 시작 나이를 구한다. 이 값이 2세~8세 사이에 형성되는 것이 일반적이다. 기산점이 다르면 30대·40대 대운 궁이 완전히 달라진다.</p>
+    </div>
+    <div class="daun-card">
+      <h4>④ 실전 적용 포인트</h4>
+      <p>전문 프로그램(만세력 앱)에서 명반을 뽑으면 기산점과 순역행이 자동 표시된다. Claude에 분석을 요청할 때 반드시 이 정보를 함께 전달해야 대한별 분석이 정확해진다.</p>
+    </div>
+  </div>
+
+  <div class="daun-flow">
+    <div class="df-step">생년 천간 확인</div><div class="df-arrow">→</div>
+    <div class="df-step">성별로 순행/역행 결정</div><div class="df-arrow">→</div>
+    <div class="df-step">오행국 확인</div><div class="df-arrow">→</div>
+    <div class="df-step">절기까지 날수 ÷ 오행국 = 기산 나이</div><div class="df-arrow">→</div>
+    <div class="df-step">기산 나이부터 10년씩 대한 배정</div>
+  </div>
+
+  <div class="daun-example">
+    <strong>예시</strong> — 1990년 甲(갑)년생 남성, 목3국, 순행<br>
+    甲은 양간 → 남성 순행 → 명궁 다음 궁부터 대운 시작<br>
+    절기까지 날수 9일 ÷ 3 = <strong>3세</strong>에 첫 대운 시작<br>
+    → 3~12세: 제2대한 / 13~22세: 제3대한 / 23~32세: 제4대한 …
+  </div>
+</section>
+
 <!-- PART 07 -->
 <section id="part07">
   <p class="part-label">Part 07</p>
@@ -660,18 +852,18 @@ window.addEventListener('scroll',()=>{
 
 /* ── 12궁 DATA ── */
 const gungData = [
-  { id:'myeong', name:'命宮', ko:'명궁', en:'본인', stars:'자미·천기', desc:'명반의 핵심. 타고난 성향, 기질, 인생 전반의 틀을 결정. 자미두수 해석의 출발점.', pos:[1,1] },
-  { id:'hyeongje', name:'兄弟宮', ko:'형제궁', en:'형제·친구', stars:'태양·태음', desc:'형제자매 및 친밀한 동료와의 관계, 협력 여부를 나타낸다.', pos:[1,2] },
-  { id:'bucheo', name:'夫妻宮', ko:'부처궁', en:'배우자', stars:'천동·거문', desc:'배우자의 성향, 인연 시기, 부부 갈등 요인을 분석한다.', pos:[1,3] },
-  { id:'janyeo', name:'子女宮', ko:'자녀궁', en:'자녀', stars:'천기·탐랑', desc:'자녀와의 인연, 자녀의 기질, 출산 시기를 나타낸다.', pos:[1,4] },
-  { id:'jaebak', name:'財帛宮', ko:'재백궁', en:'재물', stars:'무곡·천상', desc:'금전운, 자산 형성 방식, 재물 소모 패턴을 분석하는 궁.', pos:[2,4] },
-  { id:'jilak', name:'疾厄宮', ko:'질액궁', en:'건강', stars:'태양·파군', desc:'선천적 건강 취약 부위, 주의 시기, 체질을 나타낸다.', pos:[3,4] },
-  { id:'chunyi', name:'遷移宮', ko:'천이궁', en:'이동·대외', stars:'자미·탐랑', desc:'이사·여행·해외 인연, 외부 환경과의 관계를 분석.', pos:[4,4] },
-  { id:'nojok', name:'奴僕宮', ko:'노복궁', en:'직원·부하', stars:'천부·무곡', desc:'아랫사람, 직원, 부하와의 관계 및 협력 여부를 나타낸다.', pos:[4,3] },
-  { id:'gwallog', name:'官祿宮', ko:'관록궁', en:'직업·명예', stars:'천기·천량', desc:'직업 적성, 사회적 성취, 명예와 권위를 분석하는 핵심 궁.', pos:[4,2] },
-  { id:'jeonjak', name:'田宅宮', ko:'전택궁', en:'부동산', stars:'태양·태음', desc:'부동산, 거주 환경, 가업 계승 여부를 나타낸다.', pos:[4,1] },
-  { id:'bokdeok', name:'福德宮', ko:'복덕궁', en:'정신·복', stars:'천동·천기', desc:'내면의 행복감, 정신적 풍요, 종교·철학적 성향을 담는다.', pos:[3,1] },
-  { id:'buma', name:'父母宮', ko:'부모궁', en:'부모', stars:'태양·천량', desc:'부모와의 인연, 윗사람과의 관계, 가정 배경을 분석한다.', pos:[2,1] },
+  { id:'myeong',    name:'命宮',  ko:'명궁',  en:'본인·기질',   stars:'★ 핵심궁',  desc:'명반의 핵심. 타고난 성향, 기질, 인생 전반의 틀을 결정. 자미두수 해석의 출발점. 어떤 주성이 들어오느냐는 사람마다 다르다.' },
+  { id:'hyeongje',  name:'兄弟宮', ko:'형제궁', en:'형제·친구',   stars:'인간관계',  desc:'형제자매 및 친밀한 동료와의 관계, 협력 여부를 나타낸다.' },
+  { id:'bucheo',    name:'夫妻宮', ko:'부처궁', en:'배우자',      stars:'결혼·이성', desc:'배우자의 성향, 인연 시기, 부부 갈등 요인을 분석한다.' },
+  { id:'janyeo',    name:'子女宮', ko:'자녀궁', en:'자녀',        stars:'출산·자녀', desc:'자녀와의 인연, 자녀의 기질, 출산 시기를 나타낸다.' },
+  { id:'jaebak',    name:'財帛宮', ko:'재백궁', en:'재물·금전',   stars:'★ 핵심궁', desc:'금전운, 자산 형성 방식, 재물 소모 패턴을 분석하는 궁.' },
+  { id:'jilak',     name:'疾厄宮', ko:'질액궁', en:'건강·신체',   stars:'건강·사고', desc:'선천적 건강 취약 부위, 주의 시기, 체질을 나타낸다.' },
+  { id:'chunyi',    name:'遷移宮', ko:'천이궁', en:'이동·대외',   stars:'★ 핵심궁', desc:'이사·여행·해외 인연, 외부 환경과의 관계를 분석.' },
+  { id:'nojok',     name:'奴僕宮', ko:'노복궁', en:'직원·부하',   stars:'아랫사람', desc:'아랫사람, 직원, 부하와의 관계 및 협력 여부를 나타낸다.' },
+  { id:'gwallog',   name:'官祿宮', ko:'관록궁', en:'직업·명예',   stars:'★ 핵심궁', desc:'직업 적성, 사회적 성취, 명예와 권위를 분석하는 핵심 궁.' },
+  { id:'jeonjak',   name:'田宅宮', ko:'전택궁', en:'부동산·가업', stars:'부동산',  desc:'부동산, 거주 환경, 가업 계승 여부를 나타낸다.' },
+  { id:'bokdeok',   name:'福德宮', ko:'복덕궁', en:'정신·복록',   stars:'내면행복', desc:'내면의 행복감, 정신적 풍요, 종교·철학적 성향을 담는다.' },
+  { id:'buma',      name:'父母宮', ko:'부모궁', en:'부모·윗사람', stars:'가정환경', desc:'부모와의 인연, 윗사람과의 관계, 가정 배경을 분석한다.' },
 ];
 
 /* 명반 배치 순서 (12칸: 상단→우측→하단역→좌측역) */
@@ -775,6 +967,10 @@ const quizData=[
   {q:'대운(大運)은 몇 년 단위로 운세를 구분하는가?', opts:['5년','10년','12년','60년'], ans:1, explain:'대운은 인생을 10년 단위로 나누어 큰 흐름의 운세를 분석하는 개념이다.'},
   {q:'삼방사정(三方四正)에서 명궁과 함께 보는 3개 궁이 아닌 것은?', opts:['관록궁','재백궁','천이궁','부처궁'], ans:3, explain:'삼방사정은 명궁·관록궁·재백궁·천이궁의 4개 궁을 함께 분석하는 방법이다. 부처궁은 포함되지 않는다.'},
   {q:'화록·화권·화과·화기를 통틀어 무엇이라 부르는가?', opts:['삼합','사화','팔괘','오행'], ans:1, explain:'사화(四化)는 화록·화권·화과·화기의 4가지 별의 변환 작용을 말한다.'},
+  {q:'다음 중 보성(輔星)에 해당하지 않는 것은?', opts:['좌보성','문창성','경양성','천괴성'], ans:2, explain:'경양성(擎羊星)은 대표적인 살성(殺星)이다. 좌보·문창·천괴는 모두 보성이다.'},
+  {q:'살성 중 "느린 방해·만성적 걸림돌"을 상징하는 별은?', opts:['화성','경양성','타라성','지공성'], ans:2, explain:'타라성(陀羅星)은 반복되는 장애와 수렁 같은 어려움을 암시하는 살성이다. 경양이 급작스럽다면 타라는 서서히 작용한다.'},
+  {q:'甲(갑)년생의 화기(化忌)는 어느 별에 붙는가?', opts:['太陰(태음)','武曲(무곡)','太陽(태양)','天機(천기)'], ans:2, explain:'甲년생의 사화: 화록-廉貞, 화권-破軍, 화과-武曲, 화기-太陽. 태양성이 화기를 받는다.'},
+  {q:'대운의 순행·역행을 결정하는 요소는?', opts:['출생 월','생년 천간과 성별','오행국','출생 시각'], ans:1, explain:'남성은 생년 천간이 양간(甲·丙·戊·庚·壬)이면 순행, 음간이면 역행. 여성은 반대로 적용된다.'},
 ];
 
 let answered=[];
@@ -829,9 +1025,81 @@ function updateScore(){
 
 function resetQuiz(){ buildQuiz(); }
 
+/* ── 보성(輔星) 데이터 ── */
+const fuksei = [
+  { name:'좌보성(左輔星)', tag:'fuksei', tagLabel:'보성', desc:'가장 대표적인 보좌성. 명궁·관록궁에 있으면 귀인의 조력, 사회적 지원을 받는다. 주성의 힘을 증폭시키는 핵심 보성.' },
+  { name:'우필성(右弼星)', tag:'fuksei', tagLabel:'보성', desc:'좌보와 짝을 이루는 보좌성. 인덕(人德)과 협력을 상징. 재백궁·부처궁에 있으면 재물과 배우자 인연이 좋아진다.' },
+  { name:'천괴성(天魁星)', tag:'fuksei', tagLabel:'보성', desc:'귀인(貴人)의 별. 시험·면접·청탁 등 인생의 고비에서 윗사람의 도움을 받는다. 명궁에 있으면 평생 귀인 덕이 있다.' },
+  { name:'천월성(天鉞星)', tag:'fuksei', tagLabel:'보성', desc:'천괴와 짝을 이루는 귀인성. 대인관계에서 연하 또는 이성 귀인의 조력. 부처궁에 있으면 배우자 덕이 크다.' },
+  { name:'문창성(文昌星)', tag:'fuksei', tagLabel:'보성', desc:'문서·계약·학문의 별. 시험 합격, 문서 작업에 유리. 화기(化忌)가 붙으면 반대로 문서 분쟁, 시험 낙방의 암시.' },
+  { name:'문곡성(文曲星)', tag:'fuksei', tagLabel:'보성', desc:'예술·언어·음악 재능의 별. 문창성과 함께 있으면 학문·예술 분야 크게 발전. 화기가 붙으면 구설수 주의.' },
+];
+
+/* ── 살성(殺星) 데이터 ── */
+const satsei = [
+  { name:'경양성(擎羊星)', tag:'satsei', tagLabel:'살성', desc:'가장 강력한 살성. 수술·부상·쟁투·소송을 암시. 명궁에 있으면 평생 굴곡이 많지만, 주성이 강하면 추진력으로 전환 가능.' },
+  { name:'타라성(陀羅星)', tag:'satsei', tagLabel:'살성', desc:'경양과 짝을 이루는 살성. 느린 장애·반복되는 방해·수렁 같은 어려움을 암시. 경양이 급작스러운 흉이라면 타라는 만성적 걸림돌.' },
+  { name:'화성(火星)',     tag:'satsei', tagLabel:'살성', desc:'급변·화재·분쟁·충동적 행동을 암시. 빠른 변화와 충돌. 재백궁에 있으면 재물의 급격한 등락, 관록궁이면 직업 변동이 잦다.' },
+  { name:'영성(鈴星)',     tag:'satsei', tagLabel:'살성', desc:'화성과 짝이 되는 살성. 은밀한 방해·소문·중상모략을 암시. 화성이 외부 충격이라면 영성은 내부·음지에서의 손상.' },
+  { name:'지공성(地空星)', tag:'satsei', tagLabel:'살성', desc:'허(虛)와 공(空)의 별. 재물이 손에 들어와도 새어나가는 형상. 재백궁·전택궁에 있으면 자산 축적이 어렵다. 명궁이면 허무감이 강하다.' },
+  { name:'지겁성(地劫星)', tag:'satsei', tagLabel:'살성', desc:'지공과 짝을 이루는 살성. 예상치 못한 손실·빼앗김을 암시. 지공이 서서히 새는 것이라면 지겁은 갑작스러운 박탈. 동궁 시 더욱 강력.' },
+];
+
+/* ── 사화(四化) 표 데이터 ── */
+const sihuaData = [
+  { tg:'甲', tgKo:'갑', year:'4', rok:'廉貞', gwon:'破軍', gwa:'武曲', gi:'太陽' },
+  { tg:'乙', tgKo:'을', year:'5', rok:'天機', gwon:'天梁', gwa:'紫微', gi:'太陰' },
+  { tg:'丙', tgKo:'병', year:'6', rok:'天同', gwon:'天機', gwa:'文昌', gi:'廉貞' },
+  { tg:'丁', tgKo:'정', year:'7', rok:'太陰', gwon:'天同', gwa:'天機', gi:'巨門' },
+  { tg:'戊', tgKo:'무', year:'8', rok:'貪狼', gwon:'太陰', gwa:'右弼', gi:'天機' },
+  { tg:'己', tgKo:'기', year:'9', rok:'武曲', gwon:'貪狼', gwa:'天梁', gi:'文曲' },
+  { tg:'庚', tgKo:'경', year:'0', rok:'太陽', gwon:'武曲', gwa:'太陰', gi:'天同' },
+  { tg:'辛', tgKo:'신', year:'1', rok:'巨門', gwon:'太陽', gwa:'文曲', gi:'文昌' },
+  { tg:'壬', tgKo:'임', year:'2', rok:'天梁', gwon:'紫微', gwa:'左輔', gi:'武曲' },
+  { tg:'癸', tgKo:'계', year:'3', rok:'破軍', gwon:'巨門', gwa:'太陰', gi:'貪狼' },
+];
+
+function buildFukseiGrid() {
+  const g = document.getElementById('fuksei-grid');
+  fuksei.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'supp-card';
+    d.innerHTML = `<div class="sc-name">${s.name}</div><span class="sc-tag ${s.tag}">${s.tagLabel}</span><div class="sc-desc">${s.desc}</div>`;
+    g.appendChild(d);
+  });
+}
+
+function buildSatseiGrid() {
+  const g = document.getElementById('satsei-grid');
+  satsei.forEach(s => {
+    const d = document.createElement('div');
+    d.className = 'supp-card';
+    d.innerHTML = `<div class="sc-name">${s.name}</div><span class="sc-tag ${s.tag}">${s.tagLabel}</span><div class="sc-desc">${s.desc}</div>`;
+    g.appendChild(d);
+  });
+}
+
+function buildSihuaTable() {
+  const tbody = document.getElementById('sihua-tbody');
+  sihuaData.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="tg">${r.tg}(${r.tgKo})</td>
+      <td style="color:var(--text3);">…${r.year}년</td>
+      <td class="rok">${r.rok}</td>
+      <td class="gwon">${r.gwon}</td>
+      <td class="gwa">${r.gwa}</td>
+      <td class="gi">${r.gi}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
 /* ── INIT ── */
 buildMungban();
 buildStars();
+buildFukseiGrid();
+buildSatseiGrid();
+buildSihuaTable();
 buildQuiz();
 </script>
 </body>
