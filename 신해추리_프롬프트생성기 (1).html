@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>신해추리 — 사주풀이 프롬프트 생성기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #14110e;
+    --paper: #f6f1e9;
+    --paper-mid: #ede5d4;
+    --paper-dark: #e3d9c4;
+    --vermillion: #be3a2a;
+    --gold: #a97c20;
+    --gold-lt: #c9960e;
+    --ash: #6a5f52;
+    --mist: #9c9088;
+    --border: #cbbfa6;
+    --glow: rgba(169,124,32,0.13);
+    --teal: #2a6b6b;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--ink);
+    min-height: 100vh;
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--ink);
+  }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background-image:
+      repeating-linear-gradient(0deg,transparent,transparent 56px,rgba(169,124,32,.035) 56px,rgba(169,124,32,.035) 57px),
+      repeating-linear-gradient(90deg,transparent,transparent 56px,rgba(169,124,32,.035) 56px,rgba(169,124,32,.035) 57px);
+    pointer-events:none; z-index:0;
+  }
+  .wrap { max-width:720px; margin:0 auto; padding:44px 20px 80px; position:relative; z-index:1; }
+
+  /* 헤더 */
+  .hd { text-align:center; margin-bottom:40px; animation:fU .7s ease both; }
+  .hd-badge {
+    display:inline-block; font-family:'Noto Serif KR',serif;
+    font-size:10px; letter-spacing:4px; color:var(--gold);
+    border:1px solid var(--gold); padding:4px 14px; margin-bottom:18px;
+  }
+  .hd h1 {
+    font-family:'Noto Serif KR',serif; font-size:clamp(30px,6vw,50px);
+    font-weight:700; color:var(--paper); letter-spacing:-1px; line-height:1.1; margin-bottom:10px;
+  }
+  .hd h1 em { color:var(--gold-lt); font-style:normal; }
+  .hd p { font-size:12px; color:var(--mist); letter-spacing:.8px; line-height:1.9; }
+  .hd-line { width:48px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:16px auto 0; }
+
+  /* 카드 */
+  .card {
+    background:var(--paper); border:1px solid var(--border);
+    margin-bottom:16px; position:relative; overflow:hidden;
+    animation:fU .65s ease both;
+  }
+  .card::after {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,var(--gold),transparent);
+  }
+  .card:nth-child(1){animation-delay:.05s} .card:nth-child(2){animation-delay:.10s}
+  .card:nth-child(3){animation-delay:.15s} .card:nth-child(4){animation-delay:.20s}
+  .card:nth-child(5){animation-delay:.25s}
+
+  .card-head {
+    display:flex; align-items:center; gap:10px; padding:13px 18px;
+    background:var(--paper-dark); border-bottom:1px solid var(--border);
+    cursor:pointer; user-select:none; transition:background .2s;
+  }
+  .card-head:hover { background:#dbd0b8; }
+
+  .badge {
+    font-family:'Noto Serif KR',serif; font-size:11px; font-weight:700;
+    color:var(--paper); width:26px; height:26px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    background:var(--vermillion);
+  }
+  .badge.g { background:var(--gold); }
+  .badge.t { background:var(--teal); }
+  .badge.d { background:var(--ash); }
+
+  .card-title { flex:1; }
+  .card-title h3 { font-family:'Noto Serif KR',serif; font-size:14px; font-weight:600; color:var(--ink); margin-bottom:1px; }
+  .card-title p { font-size:11px; color:var(--mist); }
+
+  .tag { font-size:9px; letter-spacing:1px; font-weight:500; padding:3px 7px; border:1px solid; }
+  .tag.r { color:var(--vermillion); border-color:rgba(190,58,42,.25); background:rgba(190,58,42,.06); }
+  .tag.g { color:var(--gold); border-color:rgba(169,124,32,.25); background:rgba(169,124,32,.06); }
+  .tag.b { color:var(--ash); border-color:rgba(106,95,82,.25); background:rgba(106,95,82,.06); }
+  .tag.t { color:var(--teal); border-color:rgba(42,107,107,.25); background:rgba(42,107,107,.06); }
+
+  .arr { font-size:11px; color:var(--mist); transition:transform .3s; }
+  .card-body { padding:18px; display:none; }
+  .card-body.open { display:block; animation:sD .28s ease; }
+
+  /* 폼 */
+  .fg { margin-bottom:14px; }
+  .fg:last-child { margin-bottom:0; }
+  label { display:block; font-size:11px; font-weight:500; color:var(--ash); margin-bottom:5px; letter-spacing:.4px; }
+  label .r { color:var(--vermillion); margin-left:2px; }
+  label .h { font-weight:300; color:var(--mist); font-size:10px; margin-left:5px; }
+
+  input[type=text], input[type=number], select, textarea {
+    width:100%; background:white; border:1px solid var(--border);
+    padding:9px 12px; font-family:'Noto Sans KR',sans-serif;
+    font-size:13px; color:var(--ink); outline:none;
+    transition:border-color .2s, box-shadow .2s; -webkit-appearance:none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color:var(--gold); box-shadow:0 0 0 3px var(--glow);
+  }
+  textarea { resize:vertical; min-height:76px; line-height:1.75; }
+
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .date-row { display:grid; grid-template-columns:2fr 1fr 1fr; gap:8px; }
+
+  .radio-group { display:flex; gap:8px; }
+  .radio-group label {
+    flex:1; margin-bottom:0; display:flex; align-items:center; justify-content:center;
+    gap:6px; cursor:pointer; border:1px solid var(--border); padding:8px 10px;
+    font-size:12px; font-weight:400; color:var(--ash);
+    transition:all .2s; background:white; letter-spacing:0;
+  }
+  .radio-group input[type=radio] { display:none; }
+  .radio-group input[type=radio]:checked + label {
+    border-color:var(--gold); background:rgba(169,124,32,.08); color:var(--gold); font-weight:500;
+  }
+
+  /* 운세 체크박스 */
+  .check-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .check-item input[type=checkbox] { display:none; }
+  .check-item label {
+    display:flex; align-items:center; justify-content:center;
+    padding:9px 8px; border:1px solid var(--border);
+    background:white; font-size:12px; color:var(--ash);
+    cursor:pointer; transition:all .2s; letter-spacing:0;
+    margin-bottom:0; font-weight:400; text-align:center;
+  }
+  .check-item input[type=checkbox]:checked + label {
+    border-color:var(--teal); background:rgba(42,107,107,.08);
+    color:var(--teal); font-weight:500;
+  }
+
+  .q-num {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:18px; height:18px; background:var(--vermillion); color:white;
+    font-size:9px; font-weight:700; flex-shrink:0; margin-right:3px; vertical-align:middle;
+  }
+
+  /* 안내 박스 */
+  .info-box {
+    background:rgba(42,107,107,.07); border:1px solid rgba(42,107,107,.2);
+    border-left:3px solid var(--teal); padding:11px 14px;
+    font-size:11px; color:var(--ash); line-height:1.8; margin-bottom:14px;
+  }
+  .info-box strong { color:var(--teal); }
+
+  /* 생성 버튼 */
+  .gen-wrap { margin-top:28px; text-align:center; animation:fU .7s .5s ease both; }
+  .btn-gen {
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--vermillion); color:white; border:none;
+    padding:15px 38px; font-family:'Noto Serif KR',serif;
+    font-size:14px; font-weight:600; letter-spacing:2px;
+    cursor:pointer; transition:all .22s;
+  }
+  .btn-gen:hover { background:#a12f21; transform:translateY(-2px); box-shadow:0 8px 24px rgba(190,58,42,.38); }
+  .btn-gen:active { transform:translateY(0); }
+
+  /* 결과 */
+  .result { margin-top:28px; display:none; animation:fU .4s ease both; }
+  .result.on { display:block; }
+  .res-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:12px 18px; background:var(--ink);
+    border:1px solid rgba(169,124,32,.3); border-bottom:none;
+  }
+  .res-head h3 { font-family:'Noto Serif KR',serif; font-size:12px; color:var(--gold); letter-spacing:2px; }
+  .btn-copy {
+    background:transparent; border:1px solid var(--gold); color:var(--gold);
+    padding:4px 12px; font-family:'Noto Sans KR',sans-serif; font-size:10px;
+    cursor:pointer; transition:all .2s; letter-spacing:1px;
+  }
+  .btn-copy:hover { background:var(--gold); color:var(--ink); }
+  .res-box {
+    background:#0d0b08; border:1px solid rgba(169,124,32,.3);
+    padding:22px; font-family:'Noto Sans KR',sans-serif; font-size:12.5px;
+    color:#c4b49a; line-height:2; white-space:pre-wrap; word-break:break-all;
+    max-height:560px; overflow-y:auto;
+  }
+  .res-box::-webkit-scrollbar { width:3px; }
+  .res-box::-webkit-scrollbar-thumb { background:var(--gold); }
+
+  .toast {
+    position:fixed; bottom:28px; left:50%;
+    transform:translateX(-50%) translateY(16px);
+    background:var(--gold); color:var(--ink);
+    padding:9px 22px; font-size:12px; font-weight:500;
+    opacity:0; transition:all .3s; pointer-events:none; z-index:999;
+  }
+  .toast.on { opacity:1; transform:translateX(-50%) translateY(0); }
+
+  .pbar { position:fixed; top:0; left:0; height:2px; background:linear-gradient(90deg,var(--vermillion),var(--gold)); transition:width .35s; z-index:100; }
+
+  @keyframes fU { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes sD { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:translateY(0)} }
+
+  @media(max-width:480px) {
+    .row2 { grid-template-columns:1fr; }
+    .date-row { grid-template-columns:1fr 1fr; }
+    .check-grid { grid-template-columns:repeat(2,1fr); }
+    .radio-group { flex-wrap:wrap; }
+    .radio-group label { flex:1 1 40%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="pbar" id="pbar" style="width:0"></div>
+
+<div class="wrap">
+
+  <div class="hd">
+    <div class="hd-badge">추리형 사주 분석 시스템</div>
+    <h1>신해<em>추리</em></h1>
+    <p>과거는 현재를 반영하고, 현재는 미래를 투영한다<br>추리는 차갑게 · 시선은 따뜻하게</p>
+    <div class="hd-line"></div>
+  </div>
+
+  <!-- ① 기본 정보 -->
+  <div class="card">
+    <div class="card-head" onclick="tog(this)">
+      <div class="badge g">基</div>
+      <div class="card-title">
+        <h3>기본 정보</h3>
+        <p>생년월일시 · 양/음력 · 성별</p>
+      </div>
+      <span class="tag b">기본</span>
+      <span class="arr" style="transform:rotate(180deg)">▼</span>
+    </div>
+    <div class="card-body open">
+      <div class="fg">
+        <label>생년월일 <span class="r">*</span></label>
+        <div class="date-row">
+          <input type="number" id="year" placeholder="년 (예: 1988)" min="1900" max="2025">
+          <input type="number" id="month" placeholder="월" min="1" max="12">
+          <input type="number" id="day" placeholder="일" min="1" max="31">
+        </div>
+      </div>
+      <div class="fg">
+        <label>태어난 시간 <span class="h">모르면 비워도 됩니다</span></label>
+        <div class="row2">
+          <input type="number" id="hour" placeholder="시 (0~23)" min="0" max="23">
+          <input type="number" id="minute" placeholder="분 (0~59)" min="0" max="59">
+        </div>
+      </div>
+      <div class="fg">
+        <label>양력 / 음력 <span class="r">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="cal" id="solar" value="양력" checked>
+          <label for="solar">☀ 양력</label>
+          <input type="radio" name="cal" id="lunar" value="음력">
+          <label for="lunar">🌙 음력</label>
+          <input type="radio" name="cal" id="lunarLeap" value="음력(윤달)">
+          <label for="lunarLeap">🌙 음력 윤달</label>
+        </div>
+      </div>
+      <div class="fg">
+        <label>성별 <span class="r">*</span></label>
+        <div class="radio-group">
+          <input type="radio" name="gender" id="male" value="남성" checked>
+          <label for="male">남성</label>
+          <input type="radio" name="gender" id="female" value="여성">
+          <label for="female">여성</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ② 과거 -->
+  <div class="card">
+    <div class="card-head" onclick="tog(this)">
+      <div class="badge">過</div>
+      <div class="card-title">
+        <h3>과거 — 패턴의 뿌리</h3>
+        <p>어떤 상처와 자원이 형성됐는가</p>
+      </div>
+      <span class="tag r">A·B축</span>
+      <span class="arr">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="fg">
+        <label><span class="q-num">A</span> 지금까지 가장 힘들었던 경험 <span class="r">*</span></label>
+        <textarea id="pastWound" placeholder="어떤 일이 가장 힘들었는지 간략히&#10;예) 사업 실패로 수년간 경제적 어려움을 겪었다"></textarea>
+      </div>
+      <div class="fg">
+        <label><span class="q-num" style="background:var(--gold)">B</span> 그 시절을 버티게 해준 것 <span class="h">선택</span></label>
+        <textarea id="pastResource" placeholder="사람, 신념, 습관 무엇이든&#10;예) 아이들 / 종교 / 특별히 없었다" style="min-height:60px"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ③ 현재 -->
+  <div class="card">
+    <div class="card-head" onclick="tog(this)">
+      <div class="badge">現</div>
+      <div class="card-title">
+        <h3>현재 — 임계점 측정</h3>
+        <p>지금 압박과 강점의 상태</p>
+      </div>
+      <span class="tag r">A·B축</span>
+      <span class="arr">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="fg">
+        <label><span class="q-num">A</span> 지금 가장 무거운 것 <span class="r">*</span></label>
+        <textarea id="currentBurden" placeholder="구체적일수록 추리가 정확해집니다&#10;예) 직장 상사와의 갈등 / 빚 / 남편과의 관계"></textarea>
+      </div>
+      <div class="fg">
+        <label><span class="q-num" style="background:var(--gold)">B</span> 지금 그나마 버티게 하는 것 <span class="h">선택</span></label>
+        <textarea id="currentStrength" placeholder="예) 친한 친구가 옆에 있다 / 운동을 시작했다 / 딱히 없다" style="min-height:60px"></textarea>
+      </div>
+      <div class="fg">
+        <label>의지할 수 있는 사람·관계 <span class="h">선택</span></label>
+        <input type="text" id="support" placeholder="예) 배우자 / 친한 친구 1명 / 거의 없음">
+      </div>
+    </div>
+  </div>
+
+  <!-- ④ 질문 + 운세 연결 -->
+  <div class="card">
+    <div class="card-head" onclick="tog(this)">
+      <div class="badge g">問</div>
+      <div class="card-title">
+        <h3>질문 — 미래 투영</h3>
+        <p>구체적일수록 추리가 깊어집니다</p>
+      </div>
+      <span class="tag g">미래</span>
+      <span class="arr">▼</span>
+    </div>
+    <div class="card-body">
+      <div class="fg">
+        <label>
+          <span class="q-num">1</span>
+          첫 번째 질문 <span class="r">*</span>
+          <span class="h">— 두려움이나 바라는 것까지 함께 적어주세요</span>
+        </label>
+        <textarea id="q1" placeholder="예) 올해 이직을 해도 될까요? 지금 직장이 너무 힘든데 나가면 더 나빠질까봐 두렵습니다"></textarea>
+      </div>
+      <div class="fg">
+        <label>
+          <span class="q-num">2</span>
+          두 번째 질문 <span class="h">선택</span>
+        </label>
+        <textarea id="q2" placeholder="예) 지금 사귀는 사람과 결혼해도 괜찮을까요?" style="min-height:60px"></textarea>
+      </div>
+      <div class="fg">
+        <label>특별히 고려해줬으면 하는 것 <span class="h">선택</span></label>
+        <input type="text" id="extra" placeholder="예) 아이가 둘 있어서 안정이 최우선입니다">
+      </div>
+    </div>
+  </div>
+
+  <!-- ⑤ 운세 연결 (신규) -->
+  <div class="card">
+    <div class="card-head" onclick="tog(this)">
+      <div class="badge t">運</div>
+      <div class="card-title">
+        <h3>운세 연결 — 사주원국 기반</h3>
+        <p>타고난 운과 질문을 연결합니다</p>
+      </div>
+      <span class="tag t">원국</span>
+      <span class="arr">▼</span>
+    </div>
+    <div class="card-body">
+
+      <div class="info-box">
+        <strong>신해추리 핵심</strong> — 있는 운은 근거 있는 희망으로, 없는 운은 빠른 자기객관화로.<br>
+        사주원국에 근거해 현실적인 방향을 제시합니다.
+      </div>
+
+      <div class="fg">
+        <label>풀이에 연결할 운 <span class="h">해당되는 것 모두 선택</span></label>
+        <div class="check-grid">
+          <div class="check-item">
+            <input type="checkbox" id="c1" value="재물운">
+            <label for="c1">💰 재물운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c2" value="연애·결혼운">
+            <label for="c2">❤ 연애·결혼운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c3" value="직업·직장운">
+            <label for="c3">💼 직업·직장운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c4" value="건강운">
+            <label for="c4">🌿 건강운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c5" value="자녀운">
+            <label for="c5">👶 자녀운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c6" value="대인관계운">
+            <label for="c6">🤝 대인관계운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c7" value="사업운">
+            <label for="c7">📈 사업운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c8" value="이동·이사운">
+            <label for="c8">🏠 이동·이사운</label>
+          </div>
+          <div class="check-item">
+            <input type="checkbox" id="c9" value="학업·시험운">
+            <label for="c9">📚 학업·시험운</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="fg">
+        <label>지금 가장 바라는 것 <span class="h">한 문장으로</span></label>
+        <input type="text" id="wish" placeholder="예) 올해 안에 경제적으로 숨통이 트였으면 합니다">
+      </div>
+
+    </div>
+  </div>
+
+  <div class="gen-wrap">
+    <button class="btn-gen" onclick="generate()">⊹ 신해추리 프롬프트 생성 ⊹</button>
+  </div>
+
+  <div class="result" id="result">
+    <div class="res-head">
+      <h3>✦ 생성된 프롬프트 — Claude 대화창에 붙여넣으세요</h3>
+      <button class="btn-copy" onclick="copyIt()">복사</button>
+    </div>
+    <div class="res-box" id="resBox"></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">클립보드에 복사됐습니다</div>
+
+<script>
+  function tog(head) {
+    const body = head.nextElementSibling;
+    const arr  = head.querySelector('.arr');
+    const open = body.classList.toggle('open');
+    arr.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
+    bar();
+  }
+
+  const reqIds = ['year','month','day','pastWound','currentBurden','q1'];
+  function bar() {
+    let n = reqIds.filter(id => (document.getElementById(id)||{}).value?.trim()).length;
+    document.getElementById('pbar').style.width = Math.min(n/reqIds.length*100,100)+'%';
+  }
+  document.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', bar));
+
+  const g     = id   => (document.getElementById(id)||{}).value?.trim() || '';
+  const radio = name => (document.querySelector('input[name='+name+']:checked')||{}).value || '';
+  const checks = () => [...document.querySelectorAll('.check-item input:checked')].map(el=>el.value);
+
+  function generate() {
+    if(!g('year')||!g('month')||!g('day')) { alert('생년월일을 입력해주세요.'); return; }
+    if(!g('pastWound'))     { alert('과거 힘들었던 경험을 입력해주세요.\n(과거 섹션을 열어서 입력)'); return; }
+    if(!g('currentBurden')) { alert('현재 가장 무거운 것을 입력해주세요.\n(현재 섹션을 열어서 입력)'); return; }
+    if(!g('q1'))            { alert('질문을 최소 1개 입력해주세요.\n(질문 섹션을 열어서 입력)'); return; }
+
+    const cal    = radio('cal')    || '양력';
+    const gender = radio('gender') || '';
+    const h = g('hour'), min = g('minute');
+
+    let birth = `${g('year')}년 ${g('month')}월 ${g('day')}일`;
+    if(h)   birth += ` ${h}시`;
+    if(min) birth += ` ${min}분`;
+    birth += ` (${cal})`;
+
+    const pastRes  = g('pastResource')    ? `\n  버팀목: ${g('pastResource')}`        : '';
+    const strength = g('currentStrength') ? `\n  현재 강점: ${g('currentStrength')}` : '';
+    const support  = g('support')         ? `\n  의지할 관계: ${g('support')}`        : '';
+    const q2line   = g('q2')              ? `\n  ② ${g('q2')}`                        : '';
+    const extra    = g('extra')           ? `\n\n[특별 고려 사항]\n${g('extra')}`      : '';
+    const wish     = g('wish')            ? `\n[가장 바라는 것]\n  ${g('wish')}`       : '';
+
+    const selectedRuns = checks();
+    const runLine = selectedRuns.length
+      ? selectedRuns.join(', ')
+      : '(선택 없음 — 사주원국 전반을 종합 판단)';
+
+    const txt =
+`───────────────────────────────────
+✦ 신해추리 사주풀이 요청
+───────────────────────────────────
+※ 만세력 자료는 첨부 파일을 함께 참고해 주세요.
+
+【기본 정보】
+생년월일시: ${birth}
+성별: ${gender}
+
+───────────────────────────────────
+【신해추리 핵심 원칙】
+───────────────────────────────────
+"과거는 현재를 반영하고, 현재는 미래를 투영한다"
+사람은 패턴을 반복한다. 미래는 예언이 아니라 패턴의 연장선이다.
+추리는 차갑게, 시선은 따뜻하게.
+
+───────────────────────────────────
+【A축 — 위기 추적】
+───────────────────────────────────
+[과거 상처 — 패턴의 뿌리]
+  ${g('pastWound')}${pastRes}
+
+[현재 압박 — 임계점 측정]
+  ${g('currentBurden')}${support}
+
+───────────────────────────────────
+【B축 — 생존 추적】
+───────────────────────────────────
+[과거 자원 — 어떻게 살아남았는가]
+  ${g('pastResource') || '(입력 없음)'}
+
+[현재 강점 — 전환 가능성]${strength || '\n  (입력 없음)'}
+
+───────────────────────────────────
+【질문 — 미래 투영】
+───────────────────────────────────
+  ① ${g('q1')}${q2line}
+${extra}
+───────────────────────────────────
+【운세 연결 — 사주원국 기반 분석 요청】
+───────────────────────────────────
+연결 요청 운: ${runLine}
+${wish}
+
+───────────────────────────────────
+【신해추리 분석 지침】
+───────────────────────────────────
+
+■ STEP 0. 생존 방식 파악
+→ 이 사람이 지금까지 어떻게 살아남았는가
+→ 버텨온 방식이 강점인가, 상처인가
+→ 그 삶을 먼저 인정하고 존중하는 것에서 시작할 것
+
+■ STEP 1. 질문 해체
+→ 표면 질문 / 실제 질문 / 숨은 두려움 / 숨은 바람을 분리
+→ 왜 지금 이 질문을 하는가
+
+■ STEP 2. 사주원국 전체 읽기 (첨부 만세력 기반)
+→ 이 사람이 타고난 강한 운과 약한 운을 먼저 파악할 것
+→ 과거(년주·월주): 어떤 환경과 성격·자원이 형성됐는가
+→ 현재(일주·대운·세운): 그 성격이 지금 어떻게 작동하는가
+→ 미래: 이 패턴이 연장되면 위기는 어디, 가능성은 어디인가
+
+■ STEP 3. 모순 포착
+→ 상담자가 말하는 것 vs 명식 구조의 불일치를 찾을 것
+→ 불일치 지점 = 진짜 핵심 문제 + 진짜 핵심 욕구
+
+■ STEP 4. 임계점 분석
+→ 외부 압박 / 내부 자원 / 탈출구 / 성격 변수를 종합
+→ 같은 상황도 성격 변수에 따라 결과가 갈린다
+→ 이 사람은 이 상황에서 어떤 선택을 할 수밖에 없는가
+→ 위기 시점(임계점)과 기회 시점(전환점)을 함께 제시
+
+■ STEP 5. 운세 연결 — 핵심
+→ 요청된 운(${runLine})을 사주원국과 연결할 것
+→ 희망운이 원국에 있을 때:
+   - 명식의 어느 부분에서 그 운이 보이는지 근거를 제시하고
+   - 언제, 어떤 조건에서 열리는지 구체적으로 제시할 것
+   - "잘 될 것이다"가 아니라 "이 이유로 이 시기에 이 운이 열린다"
+→ 희망운이 원국에 없을 때:
+   - 없는 운을 있다고 하지 말 것 (그것은 위로가 아니라 기만이다)
+   - 왜 그 방향이 이 사주에 맞지 않는지 원국의 근거를 제시할 것
+   - 빠른 자기객관화를 도울 것
+   - 원국에 실제로 있는 강한 운으로 대안 방향을 제시할 것
+   - "없는 것을 바라느라 있는 것을 못 쓰고 있다"는 관점으로 접근
+
+■ STEP 6. 역산 검증
+→ 예측한 위기·가능성·대안이 명식에서 실제로 확인되는지 검증
+
+───────────────────────────────────
+【풀이 출력 순서】
+───────────────────────────────────
+1. 이 사람이 버텨온 방식 먼저 인정
+2. 지금 왜 이 질문을 하는지 짚어줌
+3. 사주원국에서 타고난 강한 운 · 약한 운을 명확히 제시
+4. 요청된 운을 원국과 연결
+   → 있으면: 근거 있는 희망 + 구체적 시기와 조건
+   → 없으면: 원국 근거 제시 + 자기객관화 + 대안 운 제시
+5. 숨겨진 핵심 문제 + 숨겨진 핵심 바람 동시에 제시
+6. 위기 지점 + 전환 가능 지점 함께 제시
+7. 이 사람의 사주와 성격에 맞는 가장 현실적인 방향 제안
+
+[풀이의 목적]
+위로가 목적이 아니다.
+있는 것은 살리고, 없는 것은 빨리 내려놓게 해서
+이 사람이 자기 사주 안에서 가장 잘 살 수 있는 경로를 찾아주는 것.
+그것이 진짜 심리적 안정감의 원천이다.
+───────────────────────────────────`;
+
+    document.getElementById('resBox').textContent = txt;
+    const el = document.getElementById('result');
+    el.classList.add('on');
+    setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),100);
+  }
+
+  function copyIt() {
+    navigator.clipboard.writeText(document.getElementById('resBox').textContent).then(()=>{
+      const t = document.getElementById('toast');
+      t.classList.add('on');
+      setTimeout(()=>t.classList.remove('on'),2400);
+    });
+  }
+</script>
+</body>
+</html>
