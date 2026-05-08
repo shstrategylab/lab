@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>사주 프롬프트 생성기</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+  :root {
+    --ink: #1a1208;
+    --paper: #f5f0e8;
+    --paper2: #ede7d5;
+    --gold: #b8922a;
+    --gold-light: #d4af60;
+    --red: #8b2020;
+    --muted: #6b5e45;
+    --border: #c9b98a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 0%, rgba(184,146,42,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 100%, rgba(139,32,32,0.06) 0%, transparent 60%);
+  }
+
+  header {
+    text-align: center;
+    padding: 48px 24px 32px;
+    border-bottom: 2px solid var(--border);
+    position: relative;
+  }
+
+  header::before {
+    content: '命';
+    position: absolute;
+    top: 20px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Noto Serif KR', serif;
+    font-size: 80px;
+    color: rgba(184,146,42,0.07);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  header h1 {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    position: relative;
+    z-index: 1;
+  }
+
+  header p {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+
+  .section {
+    background: #fff9f0;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 28px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .section::before {
+    content: attr(data-num);
+    position: absolute;
+    top: -12px; left: 20px;
+    background: var(--gold);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 2px;
+    letter-spacing: 0.1em;
+  }
+
+  .section-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--border);
+  }
+
+  .row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  input[type="number"], input[type="text"], select {
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 9px 12px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  input:focus, select:focus {
+    border-color: var(--gold);
+    background: white;
+  }
+
+  .chip-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .chip {
+    padding: 7px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--paper);
+    color: var(--muted);
+    transition: all 0.18s;
+    user-select: none;
+  }
+
+  .chip:hover { border-color: var(--gold); color: var(--gold); }
+
+  .chip.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: white;
+    font-weight: 500;
+  }
+
+  .chip.multi.active {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .generate-btn {
+    width: 100%;
+    padding: 16px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 4px;
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-top: 8px;
+  }
+
+  .generate-btn:hover { background: var(--gold); }
+  .generate-btn:active { transform: scale(0.99); }
+
+  /* OUTPUT */
+  #output-section {
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+
+  .output-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .copy-btn {
+    padding: 7px 16px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+
+  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .copy-btn.copied { background: var(--gold); color: white; border-color: var(--gold); }
+
+  #prompt-box {
+    background: #1a1208;
+    color: #e8dfc8;
+    border-radius: 4px;
+    padding: 24px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 13px;
+    line-height: 1.9;
+    white-space: pre-wrap;
+    word-break: keep-all;
+    max-height: 600px;
+    overflow-y: auto;
+  }
+
+  #prompt-box::-webkit-scrollbar { width: 4px; }
+  #prompt-box::-webkit-scrollbar-track { background: transparent; }
+  #prompt-box::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
+
+  .hint {
+    margin-top: 12px;
+    padding: 12px 16px;
+    background: rgba(184,146,42,0.08);
+    border-left: 3px solid var(--gold);
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.7;
+    border-radius: 0 3px 3px 0;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 0 20px;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 500px) {
+    .row { flex-direction: column; }
+    header h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>사주 맞춤 프롬프트 생성기</h1>
+  <p>생년월일시 · 성별 · 관심사를 입력하면 최적화된 Claude 프롬프트를 생성합니다</p>
+</header>
+
+<div class="container">
+
+  <!-- 1. 생년월일시 -->
+  <div class="section" data-num="STEP 1">
+    <div class="section-title">생년월일시 입력</div>
+    <div class="row">
+      <div class="field" style="min-width:100px;flex:0 0 auto">
+        <label>양력 / 음력</label>
+        <div class="chip-group" id="cal-group" style="margin-top:4px">
+          <span class="chip active" data-val="양력">양력</span>
+          <span class="chip" data-val="음력">음력</span>
+          <span class="chip" data-val="음력(윤달)">음력 윤달</span>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>출생연도</label>
+        <input type="number" id="year" placeholder="예: 1985" min="1900" max="2025">
+      </div>
+      <div class="field">
+        <label>월</label>
+        <select id="month">
+          <option value="">월 선택</option>
+          <option>1월</option><option>2월</option><option>3월</option>
+          <option>4월</option><option>5월</option><option>6월</option>
+          <option>7월</option><option>8월</option><option>9월</option>
+          <option>10월</option><option>11월</option><option>12월</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>일</label>
+        <input type="number" id="day" placeholder="예: 15" min="1" max="31">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>출생시간</label>
+        <select id="hour">
+          <option value="">시간 선택</option>
+          <option value="자시(23~01시)">자시 (23~01시)</option>
+          <option value="축시(01~03시)">축시 (01~03시)</option>
+          <option value="인시(03~05시)">인시 (03~05시)</option>
+          <option value="묘시(05~07시)">묘시 (05~07시)</option>
+          <option value="진시(07~09시)">진시 (07~09시)</option>
+          <option value="사시(09~11시)">사시 (09~11시)</option>
+          <option value="오시(11~13시)">오시 (11~13시)</option>
+          <option value="미시(13~15시)">미시 (13~15시)</option>
+          <option value="신시(15~17시)">신시 (15~17시)</option>
+          <option value="유시(17~19시)">유시 (17~19시)</option>
+          <option value="술시(19~21시)">술시 (19~21시)</option>
+          <option value="해시(21~23시)">해시 (21~23시)</option>
+          <option value="시간모름">시간 모름</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>성별</label>
+        <div class="chip-group" id="gender-group" style="margin-top:4px">
+          <span class="chip" data-val="남성">남성</span>
+          <span class="chip" data-val="여성">여성</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 나이대 -->
+  <div class="section" data-num="STEP 2">
+    <div class="section-title">나이대 선택</div>
+    <div class="chip-group" id="age-group">
+      <span class="chip" data-val="20대">20대</span>
+      <span class="chip" data-val="30대">30대</span>
+      <span class="chip" data-val="40대">40대</span>
+      <span class="chip" data-val="50대">50대</span>
+      <span class="chip" data-val="60대이상">60대 이상</span>
+    </div>
+  </div>
+
+  <!-- 3. 관심사 -->
+  <div class="section" data-num="STEP 3">
+    <div class="section-title">주요 관심사 선택 <span style="font-size:11px;color:var(--muted);font-weight:400">(복수 선택 가능)</span></div>
+    <div class="chip-group" id="interest-group">
+      <span class="chip multi" data-val="자기이해·성격분석">자기이해 · 성격분석</span>
+      <span class="chip multi" data-val="취업·직장운">취업 · 직장운</span>
+      <span class="chip multi" data-val="이직·사업전환">이직 · 사업전환</span>
+      <span class="chip multi" data-val="연애·궁합">연애 · 궁합</span>
+      <span class="chip multi" data-val="결혼운">결혼운</span>
+      <span class="chip multi" data-val="재물·금전운">재물 · 금전운</span>
+      <span class="chip multi" data-val="가족·자녀운">가족 · 자녀운</span>
+      <span class="chip multi" data-val="건강운">건강운</span>
+      <span class="chip multi" data-val="인생 전체 흐름·말년운">인생 전체 흐름 · 말년운</span>
+      <span class="chip multi" data-val="현재 대운·세운 타이밍">현재 대운 · 세운 타이밍</span>
+    </div>
+  </div>
+
+  <!-- 4. 만세력 입력 -->
+  <div class="section" data-num="STEP 4">
+    <div class="section-title">만세력 정보 입력 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택 — 있으면 더 정확한 프롬프트)</span></div>
+    <div class="row">
+      <div class="field" style="min-width:200px">
+        <label>년주 (年柱)</label>
+        <input type="text" id="yearPillar" placeholder="예: 乙丑 (을축)">
+      </div>
+      <div class="field" style="min-width:200px">
+        <label>월주 (月柱)</label>
+        <input type="text" id="monthPillar" placeholder="예: 壬子 (임자)">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field" style="min-width:200px">
+        <label>일주 (日柱)</label>
+        <input type="text" id="dayPillar" placeholder="예: 甲午 (갑오)">
+      </div>
+      <div class="field" style="min-width:200px">
+        <label>시주 (時柱)</label>
+        <input type="text" id="hourPillar" placeholder="예: 丙申 (병신)">
+      </div>
+    </div>
+    <div class="row">
+      <div class="field">
+        <label>현재 대운 (선택)</label>
+        <input type="text" id="daewoon" placeholder="예: 庚辰 대운 (만 35세~)">
+      </div>
+      <div class="field">
+        <label>현재 세운 (선택)</label>
+        <input type="text" id="seewoon" placeholder="예: 丙午년">
+      </div>
+    </div>
+  </div>
+
+  <button class="generate-btn" onclick="generatePrompt()">✦ 맞춤 프롬프트 생성하기 ✦</button>
+
+  <!-- OUTPUT -->
+  <div id="output-section" style="margin-top:28px">
+    <div class="section" data-num="OUTPUT" style="padding:24px">
+      <div class="output-header">
+        <div class="output-title">생성된 Claude 프롬프트</div>
+        <button class="copy-btn" onclick="copyPrompt()">📋 복사하기</button>
+      </div>
+      <div id="prompt-box"></div>
+      <div class="hint">
+        💡 <strong>사용법</strong> : 위 프롬프트를 복사 → Claude 대화창에 붙여넣기 → 전송<br>
+        만세력 정보를 STEP 4에서 입력하면 프롬프트 안에 자동으로 포함됩니다.<br>
+        만세력 없이 생성하면 Claude가 생년월일시로 직접 계산하도록 지시합니다.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ---- chip 선택 로직 ----
+function initSingleChips(groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => {
+      document.getElementById(groupId).querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+      c.classList.add('active');
+    });
+  });
+}
+function initMultiChips(groupId) {
+  document.getElementById(groupId).querySelectorAll('.chip').forEach(c => {
+    c.addEventListener('click', () => c.classList.toggle('active'));
+  });
+}
+
+initSingleChips('cal-group');
+initSingleChips('gender-group');
+initSingleChips('age-group');
+initMultiChips('interest-group');
+
+function getSelected(groupId) {
+  return [...document.getElementById(groupId).querySelectorAll('.chip.active')].map(c => c.dataset.val);
+}
+
+// ---- 나이대별 전략 ----
+function getStrategy(age, interests, gender) {
+  const isMale = gender === '남성';
+  if (age === '50대' || age === '60대이상') return {
+    order: '3→2→1',
+    desc: '현재 대운·세운의 흐름을 먼저 짚고, 사회·가족 관계 배치를 살핀 뒤, 일간의 타고난 기질과 에너지로 마무리합니다.',
+    focus: '말년운·인생 회고·자녀 및 가족운·건강 관리 시기'
+  };
+  if (age === '40대') return {
+    order: '2→3→1',
+    desc: '현재 사회적 환경(월지)과 관계 배치를 먼저 보고, 대운 전환 타이밍을 분석한 뒤, 일간 에너지로 근본적 방향성을 확인합니다.',
+    focus: '이직·사업전환·재물운·부부관계·중년 위기 돌파구'
+  };
+  if (!isMale && (interests.includes('연애·궁합') || interests.includes('결혼운') || interests.includes('자기이해·성격분석'))) return {
+    order: '1→2→3',
+    desc: '십성 에너지로 본인의 성격과 관계 패턴을 먼저 이해하고, 현재 환경과의 관계를 살핀 뒤, 앞으로의 흐름으로 이어집니다.',
+    focus: '자기이해·연애 패턴·궁합·결혼 타이밍'
+  };
+  if (interests.includes('취업·직장운') || interests.includes('이직·사업전환')) return {
+    order: '2→3→1',
+    desc: '사회적 환경(월지)과 관직운을 먼저 분석하고, 현재 대운의 타이밍을 확인한 뒤, 일간의 강점·약점으로 전략을 세웁니다.',
+    focus: '직장운·관성·재성 분석·최적 이직 타이밍'
+  };
+  if (interests.includes('가족·자녀운')) return {
+    order: '2→1→3',
+    desc: '가족 관계 배치(월지·일지·시주)를 먼저 보고, 각 가족의 에너지 특성을 분석한 뒤, 시기별 흐름을 확인합니다.',
+    focus: '자녀운·배우자운·가족 내 에너지 균형'
+  };
+  return {
+    order: '1→2→3',
+    desc: '일간의 타고난 에너지와 성격을 먼저 파악하고, 현재 환경과의 조화를 살핀 뒤, 대운·세운 흐름으로 마무리합니다.',
+    focus: '종합적 자기이해와 현재~미래 흐름'
+  };
+}
+
+// ---- 십성 관심사 매핑 ----
+function getStarFocus(interests) {
+  const map = {
+    '자기이해·성격분석': '비겁(比劫) — 자아·주체성·경쟁 에너지',
+    '취업·직장운': '관성(官星) — 사회적 역할·직업·권위와의 관계',
+    '이직·사업전환': '재성(財星)+관성(官星) — 재물 생산 방식과 사회적 포지셔닝',
+    '연애·궁합': '관성/재성(이성운) — 만남의 패턴과 관계 에너지',
+    '결혼운': '관성/재성 + 일지(日支) — 배우자 자리와 결혼 타이밍',
+    '재물·금전운': '재성(財星) — 재물 획득 방식과 소비 패턴',
+    '가족·자녀운': '인성(印星)+식상(食傷) — 부모·자녀와의 에너지 흐름',
+    '건강운': '비겁(比劫)+인성(印星) — 기운의 강약과 소모 패턴',
+    '인생 전체 흐름·말년운': '전체 십성 균형 — 용신·기신 파악 중심',
+    '현재 대운·세운 타이밍': '대운 천간지지와 사주 원국의 충·합·형·파 관계'
+  };
+  return interests.map(i => map[i] || i).join('\n   · ');
+}
+
+// ---- 단계별 세부 분석 항목 생성 ----
+function getStepDetail(stepType, interests) {
+  const interestStr = interests.join(', ');
+  if (stepType === '1') return `
+  [근거 도출 — 십성(十星) 에너지 분석]
+  1-A. 원국(原局) 구성 확인
+      · 8자(년·월·일·시 천간·지지) 나열 및 음양오행 분류
+      · 천간·지지별 오행(木火土金水) 개수와 세력 비교
+      · 일간(日干) 오행의 강약 판단 (득령·득지·득세 여부)
+
+  1-B. 십성(十星) 분포 분석
+      · 비겁(比劫)·식상(食傷)·재성(財星)·관성(官星)·인성(印星) 각 위치와 개수
+      · 과다·과소 십성이 만드는 성격적 편향과 삶의 패턴
+      · 용신(用神)과 기신(忌神) 도출 근거 명시
+
+  1-C. 지장간(支藏干) 투출 분석
+      · 각 지지에 내재된 지장간(여기·중기·정기) 확인
+      · 천간에 투출(透出)된 글자가 무엇인지, 십성에 미치는 영향
+      · 숨겨진 에너지(암장)가 관심사(${interestStr})에 어떻게 작용하는지
+
+  1-D. 성격·강점·약점·욕구 패턴 해석
+      · 위 근거(오행 세력·십성 분포·지장간 투출)를 바탕으로
+        "${interestStr}"와 연결된 구체적 기질과 행동 패턴 서술`;
+
+  if (stepType === '2') return `
+  [근거 도출 — 공간 배치(宮位) 분석]
+  2-A. 사궁(四宮) 배치 확인
+      · 년주(年柱): 조상·사회적 뿌리·어린 시절 환경
+      · 월주(月柱): 부모·직장·사회 환경 — 특히 월지(月支)는 사주의 핵심 기후
+      · 일주(日柱): 나 자신·배우자 자리(일지)·몸과 건강
+      · 시주(時柱): 자녀·부하·미래 결실
+
+  2-B. 합·충·형·파·해(合沖刑破害) 분석
+      · 천간합(甲己合·乙庚合 등) — 에너지 결합과 변질
+      · 지지삼합(三合)·육합(六合) — 세력 형성과 강화
+      · 충(沖): 자오충·묘유충 등 — 갈등·이동·변화의 트리거
+      · 형(刑): 인사신삼형·자묘형 등 — 반복되는 갈등 패턴
+      · 파(破)·해(害) — 관계와 결실의 손상 지점
+      → 위 합충형파해가 관심사(${interestStr})의 궁위에서 일어나는지 확인
+
+  2-C. 신살(神煞) 적용
+      · 관심사와 관련된 주요 신살 확인
+        (도화살·역마살·화개살·천을귀인·백호대살·원진살 등)
+      · 신살은 보조 근거로만 활용하고 과잉 해석 금지
+
+  2-D. 궁위(宮位)와 십성의 교차 해석
+      · 해당 궁위의 십성이 관심사에 유리한가 불리한가
+      · 월지 십성 vs. 일지 십성의 상호작용`;
+
+  if (stepType === '3') return `
+  [근거 도출 — 시간 흐름(大運·歲運) 분석]
+  3-A. 대운(大運) 분석
+      · 현재 대운 천간·지지의 오행과 십성 확인
+      · 대운 지지가 원국과 형성하는 합·충·형·파·해 관계
+      · 대운이 용신을 돕는가(길운) vs. 기신을 강화하는가(흉운)
+      · 대운 지장간의 투출 여부 → 어떤 에너지가 표면화되는가
+
+  3-B. 세운(歲運) 분석
+      · 현재 및 향후 3~5년 세운 천간·지지 순서 나열
+      · 세운이 대운·원국과 중첩 형성하는 합충형파해 확인
+      · 삼재(三災) 해당 여부 및 영향도 평가
+
+  3-C. 관심사(${interestStr})와의 타이밍 연결
+      · 관심 영역의 핵심 십성이 대운·세운에서 생(生)·극(剋)·합(合)되는 시점
+      · 구체적 길운 시기와 주의 시기를 연도로 명시
+      · 대운과 세운이 동시에 작용할 때의 중첩 효과 설명`;
+
+  return '';
+}
+
+// ---- 프롬프트 생성 ----
+function generatePrompt() {
+  const year  = document.getElementById('year').value.trim();
+  const month = document.getElementById('month').value;
+  const day   = document.getElementById('day').value.trim();
+  const hour  = document.getElementById('hour').value;
+  const cal    = getSelected('cal-group')[0] || '양력';
+  const gender = getSelected('gender-group')[0] || '';
+  const age    = getSelected('age-group')[0] || '';
+  const interests = getSelected('interest-group');
+
+  const yp = document.getElementById('yearPillar').value.trim();
+  const mp = document.getElementById('monthPillar').value.trim();
+  const dp = document.getElementById('dayPillar').value.trim();
+  const hp = document.getElementById('hourPillar').value.trim();
+  const dw = document.getElementById('daewoon').value.trim();
+  const sw = document.getElementById('seewoon').value.trim();
+
+  if (!year || !month || !day || !gender || !age || interests.length === 0) {
+    alert('생년월일, 성별, 나이대, 관심사를 모두 입력/선택해주세요.');
+    return;
+  }
+
+  const hasManse = yp || mp || dp || hp;
+  const strategy = getStrategy(age, interests, gender);
+  const starFocus = getStarFocus(interests);
+  const steps = strategy.order.split('→'); // e.g. ['3','2','1']
+
+  // --- 기본 정보 블록 (중복 없이 한 번만) ---
+  const birthInfo = `${year}년 ${month} ${day}일 (${cal}) / ${hour || '시간 미상'} / ${gender} / ${age}`;
+
+  // --- 만세력 블록 ---
+  let manseBlock = '';
+  if (hasManse) {
+    manseBlock = `
+## 📋 사주 원국 (만세력 입력값)
+| 구분 | 천간·지지 |
+|------|----------|
+| 년주(年柱) | ${yp || '미입력'} |
+| 월주(月柱) | ${mp || '미입력'} |
+| 일주(日柱) | ${dp || '미입력'} |
+| 시주(時柱) | ${hp || '미입력'} |
+${dw ? `| 현재 대운 | ${dw} |` : ''}
+${sw ? `| 현재 세운 | ${sw} |` : ''}
+
+※ 입력된 원국 데이터를 기준으로 분석하세요. 누락된 주(柱)는 생년월일시로 계산 보완하세요.`;
+  } else {
+    manseBlock = `
+## 📋 생년월일시 (만세력 직접 계산)
+- 생년월일 : ${year}년 ${month} ${day}일 (${cal})
+- 출생시간 : ${hour || '시간 미상'}
+- 성별 : ${gender}
+
+※ 만세력 첨부파일이 있는 경우 첨부파일의 원국 데이터를 최우선으로 사용하세요.
+  첨부파일이 없을 경우에만 위 생년월일시를 절기(節氣) 기준으로 직접 계산하여 년·월·일·시주를 구성하세요.
+  음력인 경우 양력으로 먼저 변환한 후 사주를 세우세요.`;
+  }
+
+  // --- 단계 제목 헬퍼 ---
+  const stepTitle = t => t === '1' ? '십성(十星) 에너지 분석 — 나는 어떤 사람인가'
+                        : t === '2' ? '공간 배치(宮位) 분석 — 나는 어떤 환경에 있는가'
+                        :             '시간 흐름(大運·歲運) 분석 — 나는 어디로 가는가';
+
+  // --- 리포트 출력 섹션 ---
+  const reportSections = interests.map((it, i) =>
+    `**${'①②③④⑤'[i+1] || (i+2)+'.'} ${it} 분석** — 위 근거(오행·십성·지장간·합충형파해·궁위·살)를 직접 인용하며 서술`
+  ).join('\n');
+
+  const prompt =
+`# 사주명리 맞춤 풀이 요청
+
+## 👤 의뢰인 정보
+- 생년월일시 : ${birthInfo}
+- 관심사 : ${interests.join(', ')}
+${manseBlock}
+
+---
+
+## 🎯 풀이 목적 및 집중 분석 영역
+
+이 의뢰인(${age} ${gender})은 **${interests.join(', ')}**에 대한 명리학적 답을 원합니다.
+
+집중 분석할 십성 에너지:
+   · ${starFocus}
+
+---
+
+## 📐 풀이 방법론 및 근거 기반 분석 순서
+
+**적용 전략 : ${strategy.order} 방식**
+${strategy.desc}
+
+> ⚡ 핵심 원칙 : 모든 해석은 반드시 아래 근거 항목에서 도출된 구체적 글자(천간·지지)와
+>   논리적 연결고리를 명시해야 합니다. "~한 경향이 있습니다" 같은 막연한 서술 금지.
+>   예시) "월지 午(오)가 일간 壬(임)水를 극하므로 직장 환경에서 압박을 받는 구조입니다."
+
+---
+
+### [${steps[0]}단계] ${stepTitle(steps[0])}
+${getStepDetail(steps[0], interests)}
+
+---
+
+### [${steps[1]}단계] ${stepTitle(steps[1])}
+${getStepDetail(steps[1], interests)}
+
+---
+
+### [${steps[2]}단계] ${stepTitle(steps[2])}
+${getStepDetail(steps[2], interests)}
+
+---
+
+## 📝 최종 리포트 출력 형식
+
+아래 구조로 리포트를 작성하세요. 각 섹션은 반드시 분석 근거(글자·신살·합충 등)를 명시합니다.
+
+**① 원국 요약**
+  - 사주팔자 8자 나열 (천간 4자 + 지지 4자)
+  - 오행 분포표 (木·火·土·金·水 각 개수)
+  - 일간 특성 및 강약 판단 (득령/실령·득지/실지·득세/실세 근거 포함)
+  - 용신(用神)·기신(忌神) 한 줄 요약
+
+${reportSections}
+
+**⑤ 현재 대운·세운 에너지**
+  - 현재 대운·세운 글자 명시 → 원국과의 합충형파해 관계
+  - 지금 이 시기가 의뢰인에게 어떤 에너지 국면인지 (길/흉·변화/안정)
+
+**⑥ 실용 조언** (${age} ${gender} 맥락에 맞게)
+  - ✅ 지금 해야 할 것 (용신 활용 방향)
+  - ⛔ 피해야 할 것 (기신 자극 행동)
+  - 📅 주목할 시기 (연도 명시)
+
+**⑦ 한 줄 핵심 메시지**
+  - 이 사람의 사주를 한 문장으로 압축한 명리학적 핵심
+
+---
+
+## ⚠️ 풀이 시 준수 사항
+- 모든 해석은 원국·대운·세운의 구체적 글자와 연결하여 서술 (근거 없는 일반론 금지)
+- 합충형파해·신살은 해당할 때만 언급, 없으면 "해당 없음"으로 명시
+- 단정적 예언 대신 "~하는 에너지 구조" "~가 활성화되는 시기" 등 경향성 표현 사용
+- 전문 용어는 처음 등장 시 괄호 안에 간단 설명 병기
+- 부정적 내용은 반드시 극복 방향·활용법과 함께 제시
+- 시간 모름인 경우 시주 없이 7자 분석임을 명시하고 시주 관련 해석은 유보`;
+
+  document.getElementById('prompt-box').textContent = prompt;
+  document.getElementById('output-section').style.display = 'block';
+  document.getElementById('output-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function copyPrompt() {
+  const text = document.getElementById('prompt-box').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ 복사됨!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 복사하기'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
