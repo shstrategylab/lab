@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 프롬프트 빌더 — 상업용 통합판</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;900&family=Noto+Sans+KR:wght@300;400;500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#141008;--paper:#f5f0e8;--aged:#e2d8c4;--accent:#8b1a1a;--gold:#c4922a;--fade:#9a8f7e;--line:#c8bda8;--surface:rgba(245,240,232,0.055);--border:rgba(200,189,168,0.16);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--ink);font-family:'Noto Sans KR',sans-serif;min-height:100vh;padding:40px 16px 100px;color:var(--paper);}
+.bg{position:fixed;inset:0;z-index:0;background:radial-gradient(ellipse at 10% 40%,rgba(139,26,26,0.08) 0%,transparent 55%),radial-gradient(ellipse at 88% 12%,rgba(196,146,42,0.055) 0%,transparent 50%);}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;}
+.hdr{text-align:center;margin-bottom:44px;}
+.hdr-tag{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:7px;color:var(--gold);text-transform:uppercase;margin-bottom:16px;opacity:.7;}
+.hdr h1{font-family:'Noto Serif KR',serif;font-size:clamp(24px,4.5vw,42px);font-weight:900;line-height:1.25;}
+.hdr h1 em{color:var(--gold);font-style:normal;}
+.hdr p{margin-top:10px;font-size:12px;color:var(--fade);line-height:1.9;}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:32px;padding:6px;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:8px;}
+.tab{flex:1;min-width:90px;padding:10px 6px;border-radius:5px;border:none;background:transparent;color:var(--fade);font-family:'Noto Sans KR',sans-serif;font-size:11px;cursor:pointer;transition:all .2s;text-align:center;line-height:1.5;}
+.tab .ti{display:block;font-size:18px;margin-bottom:4px;}
+.tab:hover{color:var(--paper);background:rgba(255,255,255,0.05);}
+.tab.active{background:rgba(139,26,26,0.25);border:1px solid rgba(139,26,26,0.4);color:#f0c4a0;font-weight:500;}
+.panel{display:none;}.panel.active{display:block;}
+.sec{margin-bottom:22px;}
+.sec-hdr{display:flex;align-items:center;gap:10px;margin-bottom:11px;}
+.sec-n{font-family:'Courier Prime',monospace;font-size:10px;color:var(--gold);letter-spacing:2px;opacity:.6;}
+.sec-t{font-family:'Noto Serif KR',serif;font-size:15px;font-weight:600;color:var(--paper);}
+.sec-line{flex:1;height:1px;background:linear-gradient(to right,rgba(196,146,42,0.28),transparent);}
+.sec-hint{font-size:11px;color:var(--fade);margin-bottom:9px;line-height:1.7;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:18px;position:relative;overflow:hidden;}
+.card::before{content:'';position:absolute;top:0;left:0;width:2px;height:100%;background:var(--accent);}
+input[type=text],textarea,select{width:100%;background:rgba(245,240,232,0.055);border:1px solid rgba(200,189,168,0.2);border-radius:5px;padding:10px 13px;font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--paper);outline:none;transition:border-color .2s;resize:vertical;}
+input[type=text]:focus,textarea:focus,select:focus{border-color:rgba(196,146,42,0.5);}
+input[type=text]::placeholder,textarea::placeholder{color:var(--fade);opacity:.45;}
+select option{background:#2a1f10;color:var(--paper);}
+textarea{min-height:110px;line-height:1.7;}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.lbl{display:block;font-size:11px;color:var(--fade);margin-bottom:5px;}
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{padding:6px 13px;border-radius:999px;border:1px solid rgba(200,189,168,0.18);font-size:12px;color:var(--fade);cursor:pointer;transition:all .18s;user-select:none;background:transparent;}
+.chip:hover{border-color:rgba(200,189,168,0.45);color:var(--paper);}
+.chip.on{background:rgba(139,26,26,0.22);border-color:rgba(139,26,26,0.52);color:#f0c4a0;font-weight:500;}
+.tone-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.tone-card{padding:12px 6px;border-radius:6px;border:1px solid var(--border);text-align:center;cursor:pointer;font-size:11px;color:var(--fade);transition:all .18s;background:transparent;line-height:1.5;}
+.tone-card .ic{font-size:18px;margin-bottom:5px;}
+.tone-card:hover{border-color:rgba(200,189,168,0.38);color:var(--paper);}
+.tone-card.on{background:rgba(196,146,42,0.11);border-color:rgba(196,146,42,0.42);color:var(--gold);font-weight:500;}
+.saju-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+.gen-btn{width:100%;padding:15px;margin-top:4px;background:linear-gradient(135deg,#8b1a1a,#5c0f0f);border:none;border-radius:5px;font-family:'Noto Serif KR',serif;font-size:14px;font-weight:600;color:var(--paper);cursor:pointer;letter-spacing:.5px;transition:all .25s;}
+.gen-btn:hover{box-shadow:0 5px 18px rgba(139,26,26,0.42);transform:translateY(-1px);}
+.gen-btn:active{transform:translateY(0);}
+.output{display:none;margin-top:36px;}.output.show{display:block;}
+.result-card{background:var(--paper);border-radius:6px;padding:30px 30px 22px;position:relative;box-shadow:0 14px 44px rgba(0,0,0,0.55);}
+.result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--gold),var(--accent));}
+.r-label{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:5px;color:var(--fade);text-transform:uppercase;margin-bottom:4px;}
+.r-title{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:900;color:var(--ink);margin-bottom:2px;}
+.r-sub{font-size:12px;color:var(--accent);margin-bottom:12px;}
+.r-divider{height:1px;background:var(--line);margin:13px 0;}
+.r-slabel{font-size:10px;font-weight:600;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;}
+.meta-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;}
+.meta-tag{background:var(--aged);border-radius:3px;padding:3px 9px;font-size:11px;color:#5a4a30;font-weight:500;}
+.prompt-box{background:#141008;border-radius:5px;padding:18px 16px;font-family:'Courier Prime',monospace;font-size:12.5px;line-height:2;color:#e8dfc8;white-space:pre-wrap;word-break:break-word;max-height:460px;overflow-y:auto;}
+.copy-btn{margin-top:10px;width:100%;padding:10px;background:transparent;border:1px solid var(--line);border-radius:4px;font-size:12px;color:var(--fade);cursor:pointer;transition:all .2s;}
+.copy-btn:hover{color:var(--ink);border-color:#999;}
+@media(max-width:600px){.tone-grid{grid-template-columns:repeat(2,1fr);}.input-row{grid-template-columns:1fr;}.saju-grid{grid-template-columns:repeat(2,1fr);}.result-card{padding:20px 14px 16px;}.tab{min-width:70px;font-size:10px;}}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="wrap">
+<div class="hdr">
+  <div class="hdr-tag">AI Prompt Builder &middot; Commercial Edition</div>
+  <h1>업무별 <em>AI 프롬프트</em> 생성기</h1>
+  <p>탭 선택 &rarr; 옵션 입력 &rarr; 프롬프트 복사 &rarr; Claude에 붙여넣기</p>
+</div>
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('profiler',this)"><span class="ti">&#128269;</span>언행심리<br>추리 캐릭터</button>
+  <button class="tab" onclick="switchTab('saju',this)"><span class="ti">&#128302;</span>사주&#183;명리<br>풀이</button>
+  <button class="tab" onclick="switchTab('column',this)"><span class="ti">&#128240;</span>칼럼&#183;논설<br>쓰기</button>
+  <button class="tab" onclick="switchTab('novel',this)"><span class="ti">&#128214;</span>소설&#183;웹소설<br>쓰기</button>
+  <button class="tab" onclick="switchTab('consult',this)"><span class="ti">&#128188;</span>비즈니스<br>분석&#183;상담</button>
+</div>
+
+<!-- PANEL 1 -->
+<div class="panel active" id="panel-profiler">
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">01</span><span class="sec-t">캐릭터 이름 / 코드명</span><div class="sec-line"></div></div>
+  <div class="card"><input type="text" id="p-name" placeholder="예: 이수현, Agent K (비워두면 자동 설정)"></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">02</span><span class="sec-t">핵심 추리 능력 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="p-traits">
+    <div class="chip" data-v="첫인상 냄새 감지" onclick="togChip(this)">첫인상 냄새 감지</div>
+    <div class="chip" data-v="구조적 독해" onclick="togChip(this)">구조적 독해</div>
+    <div class="chip" data-v="감정 신호 역산" onclick="togChip(this)">감정 신호 역산</div>
+    <div class="chip" data-v="행동 선택 해석" onclick="togChip(this)">행동 선택 해석</div>
+    <div class="chip" data-v="성격 프로파일링" onclick="togChip(this)">성격 프로파일링</div>
+    <div class="chip" data-v="역지사지 침투" onclick="togChip(this)">역지사지 침투</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">03</span><span class="sec-t">활동 분야 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="p-fields">
+    <div class="chip" data-v="수사탐문" onclick="togChip(this)">수사·탐문</div>
+    <div class="chip" data-v="심리상담" onclick="togChip(this)">심리상담</div>
+    <div class="chip" data-v="협상조정" onclick="togChip(this)">협상·조정</div>
+    <div class="chip" data-v="조직인사" onclick="togChip(this)">조직·인사</div>
+    <div class="chip" data-v="창작집필" onclick="togChip(this)">창작·집필</div>
+    <div class="chip" data-v="위기개입" onclick="togChip(this)">위기개입</div>
+    <div class="chip" data-v="비즈니스분석" onclick="togChip(this)">비즈니스 분석</div>
+    <div class="chip" data-v="교육코칭" onclick="togChip(this)">교육·코칭</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">04</span><span class="sec-t">페르소나 톤</span><div class="sec-line"></div></div>
+  <div class="card"><div class="tone-grid" id="p-tones">
+    <div class="tone-card" data-v="냉철한 관찰자" onclick="togTone(this,'p-tones')"><div class="ic">&#129294;</div>냉철한 관찰자</div>
+    <div class="tone-card" data-v="따뜻한 공감자" onclick="togTone(this,'p-tones')"><div class="ic">&#128557;</div>따뜻한 공감자</div>
+    <div class="tone-card" data-v="날카로운 직격수" onclick="togTone(this,'p-tones')"><div class="ic">&#9889;</div>날카로운 직격수</div>
+    <div class="tone-card" data-v="조용한 추적자" onclick="togTone(this,'p-tones')"><div class="ic">&#127761;</div>조용한 추적자</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">05</span><span class="sec-t">추가 특징 (선택)</span><div class="sec-line"></div></div>
+  <div class="card"><input type="text" id="p-extra" placeholder="예: 전직 형사, 20년 경력, 담배를 피움"></div></div>
+  <button class="gen-btn" onclick="gen('profiler')">&#10022; 캐릭터 프롬프트 생성</button>
+</div>
+
+<!-- PANEL 2 -->
+<div class="panel" id="panel-saju">
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">01</span><span class="sec-t">만세력 입력</span><div class="sec-line"></div></div>
+  <p class="sec-hint">년·월·일·시의 천간지지(간지)를 입력하세요. 모르는 항목은 비워도 됩니다.</p>
+  <div class="card">
+    <div class="saju-grid">
+      <div><label class="lbl" style="text-align:center">년주 (年柱)</label><input type="text" id="s-year" placeholder="예: 갑자" style="text-align:center"></div>
+      <div><label class="lbl" style="text-align:center">월주 (月柱)</label><input type="text" id="s-month" placeholder="예: 병오" style="text-align:center"></div>
+      <div><label class="lbl" style="text-align:center">일주 (日柱)</label><input type="text" id="s-day" placeholder="예: 무인" style="text-align:center"></div>
+      <div><label class="lbl" style="text-align:center">시주 (時柱)</label><input type="text" id="s-time" placeholder="예: 경신" style="text-align:center"></div>
+    </div>
+    <div class="input-row" style="margin-top:12px;">
+      <div><label class="lbl">성별</label><select id="s-gender"><option value="남성">남성</option><option value="여성">여성</option></select></div>
+      <div><label class="lbl">출생연도 (선택)</label><input type="text" id="s-birth" placeholder="예: 1985년생"></div>
+    </div>
+  </div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">02</span><span class="sec-t">질문 / 고민</span><div class="sec-line"></div></div>
+  <div class="card"><textarea id="s-question" placeholder="예: 올해 직장운과 재물운이 궁금합니다. 이직을 고민 중인데 시기가 맞는지 알고 싶습니다."></textarea></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">03</span><span class="sec-t">풀이 방식 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="s-style">
+    <div class="chip" data-v="전통 명리 해석" onclick="togChip(this)">전통 명리 해석</div>
+    <div class="chip" data-v="심리구조 연결" onclick="togChip(this)">심리구조 연결</div>
+    <div class="chip" data-v="현실 조언 중심" onclick="togChip(this)">현실 조언 중심</div>
+    <div class="chip" data-v="운세 흐름 분석" onclick="togChip(this)">운세 흐름 분석</div>
+    <div class="chip" data-v="대운세운 포함" onclick="togChip(this)">대운·세운 포함</div>
+    <div class="chip" data-v="용신기신 분석" onclick="togChip(this)">용신·기신 분석</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">04</span><span class="sec-t">언행심리 캐릭터 결합 (선택)</span><div class="sec-line"></div></div>
+  <p class="sec-hint">선택하면 사주 풀이에 언행심리 추리 관점이 추가됩니다.</p>
+  <div class="card"><div class="chips" id="s-char">
+    <div class="chip" data-v="결합안함" onclick="togChip(this)">결합 안 함</div>
+    <div class="chip" data-v="냉철한 심리 분석가" onclick="togChip(this)">냉철한 심리 분석가</div>
+    <div class="chip" data-v="따뜻한 공감 상담사" onclick="togChip(this)">따뜻한 공감 상담사</div>
+    <div class="chip" data-v="직설적 조언가" onclick="togChip(this)">직설적 조언가</div>
+  </div></div></div>
+  <button class="gen-btn" onclick="gen('saju')">&#10022; 사주 풀이 프롬프트 생성</button>
+</div>
+
+<!-- PANEL 3 -->
+<div class="panel" id="panel-column">
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">01</span><span class="sec-t">기사·이슈 원문 붙여넣기</span><div class="sec-line"></div></div>
+  <div class="card"><textarea id="c-source" style="min-height:130px;" placeholder="신문기사, 커뮤니티 글, 이슈 요약 등을 여기에 붙여넣으세요."></textarea></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">02</span><span class="sec-t">칼럼 방향 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="c-direction">
+    <div class="chip" data-v="비판문제제기" onclick="togChip(this)">비판·문제제기</div>
+    <div class="chip" data-v="공감옹호" onclick="togChip(this)">공감·옹호</div>
+    <div class="chip" data-v="다각도 분석" onclick="togChip(this)">다각도 분석</div>
+    <div class="chip" data-v="대안 제시" onclick="togChip(this)">대안 제시</div>
+    <div class="chip" data-v="역사적 맥락" onclick="togChip(this)">역사적 맥락</div>
+    <div class="chip" data-v="심리인간행동 분석" onclick="togChip(this)">심리·인간행동 분석</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">03</span><span class="sec-t">논설 캐릭터</span><div class="sec-line"></div></div>
+  <div class="card"><div class="tone-grid" id="c-persona">
+    <div class="tone-card" data-v="중립적 논설위원" onclick="togTone(this,'c-persona')"><div class="ic">&#9878;</div>중립적 논설위원</div>
+    <div class="tone-card" data-v="날카로운 시사평론가" onclick="togTone(this,'c-persona')"><div class="ic">&#128397;</div>날카로운 시사평론가</div>
+    <div class="tone-card" data-v="인문학적 에세이스트" onclick="togTone(this,'c-persona')"><div class="ic">&#128395;</div>인문학적 에세이스트</div>
+    <div class="tone-card" data-v="데이터 기반 분석가" onclick="togTone(this,'c-persona')"><div class="ic">&#128202;</div>데이터 기반 분석가</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">04</span><span class="sec-t">분량·매체</span><div class="sec-line"></div></div>
+  <div class="card"><div class="input-row">
+    <div><label class="lbl">목표 분량</label><select id="c-length"><option value="800자 내외 단문 칼럼">800자 단문 칼럼</option><option value="1500자 내외 중편 칼럼" selected>1500자 중편 칼럼</option><option value="2500자 이상 심층 칼럼">2500자+ 심층 칼럼</option><option value="3500자 이상 심층 칼럼">3500자+ 심층 칼럼</option><option value="4500자 이상 심층 칼럼">4500자+ 심층 칼럼</option><option value="5500자 이상 심층 칼럼">5500자+ 심층 칼럼</option><option value="6500자 이상 심층 칼럼">6500자+ 심층 칼럼</option></select></div>
+    <div><label class="lbl">게재 매체 (선택)</label><input type="text" id="c-media" placeholder="예: 브런치, 블로그, 신문 기고"></div>
+  </div></div></div>
+  <button class="gen-btn" onclick="gen('column')">&#10022; 칼럼 프롬프트 생성</button>
+</div>
+
+<!-- PANEL 4 -->
+<div class="panel" id="panel-novel">
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">01</span><span class="sec-t">사건 개요 / 소재</span><div class="sec-line"></div></div>
+  <p class="sec-hint">기사, 실화, 영상 요약, 상상한 설정 등을 붙여넣으세요.</p>
+  <div class="card"><textarea id="n-source" style="min-height:130px;" placeholder="예: 30대 직장인 남성이 갑자기 실종됐다. 아내는 평소와 다름없었다고 하지만 이웃은 전날 밤 다툼 소리를 들었다고 증언한다."></textarea></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">02</span><span class="sec-t">장르 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="n-genre">
+    <div class="chip" data-v="심리 스릴러" onclick="togChip(this)">심리 스릴러</div>
+    <div class="chip" data-v="범죄추리" onclick="togChip(this)">범죄·추리</div>
+    <div class="chip" data-v="로맨스" onclick="togChip(this)">로맨스</div>
+    <div class="chip" data-v="현대 드라마" onclick="togChip(this)">현대 드라마</div>
+    <div class="chip" data-v="웹소설" onclick="togChip(this)">웹소설 (기승전결)</div>
+    <div class="chip" data-v="SF판타지" onclick="togChip(this)">SF·판타지</div>
+    <div class="chip" data-v="실화 기반 논픽션" onclick="togChip(this)">실화 기반 논픽션</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">03</span><span class="sec-t">작가 캐릭터</span><div class="sec-line"></div></div>
+  <div class="card"><div class="tone-grid" id="n-writer">
+    <div class="tone-card" data-v="심리묘사 전문 작가" onclick="togTone(this,'n-writer')"><div class="ic">&#129504;</div>심리묘사 전문</div>
+    <div class="tone-card" data-v="빠른 전개 웹소설 작가" onclick="togTone(this,'n-writer')"><div class="ic">&#9889;</div>빠른 전개 웹소설</div>
+    <div class="tone-card" data-v="문학적 문체 순문학 작가" onclick="togTone(this,'n-writer')"><div class="ic">&#128395;</div>문학적 순문학</div>
+    <div class="tone-card" data-v="대화 중심 시나리오 작가" onclick="togTone(this,'n-writer')"><div class="ic">&#127916;</div>대화 중심 시나리오</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">04</span><span class="sec-t">작업 단위·추가 지시</span><div class="sec-line"></div></div>
+  <div class="card"><div class="input-row">
+    <div><label class="lbl">작업 단위</label><select id="n-task"><option value="전체 줄거리 구성">전체 줄거리 구성</option><option value="1화 분량 초안 작성">1화 초안 작성</option><option value="인물 심리 프로파일 작성">인물 심리 프로파일</option><option value="특정 장면 묘사">특정 장면 묘사</option></select></div>
+    <div><label class="lbl">추가 지시 (선택)</label><input type="text" id="n-extra" placeholder="예: 1인칭 시점, 반전 포함"></div>
+  </div></div></div>
+  <button class="gen-btn" onclick="gen('novel')">&#10022; 소설·웹소설 프롬프트 생성</button>
+</div>
+
+<!-- PANEL 5 -->
+<div class="panel" id="panel-consult">
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">01</span><span class="sec-t">상황·데이터 입력</span><div class="sec-line"></div></div>
+  <p class="sec-hint">분석할 상황, 회의 내용, 이메일, 조직 갈등 등을 붙여넣으세요.</p>
+  <div class="card"><textarea id="b-source" style="min-height:130px;" placeholder="예: 팀장이 갑자기 우리 팀의 성과 보고를 직접 임원에게 보고하기 시작했다. 팀원들은 불안해하고 있으며..."></textarea></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">02</span><span class="sec-t">분석 목적 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="b-purpose">
+    <div class="chip" data-v="이해관계자 동기 파악" onclick="togChip(this)">이해관계자 동기 파악</div>
+    <div class="chip" data-v="갈등 구조 분석" onclick="togChip(this)">갈등 구조 분석</div>
+    <div class="chip" data-v="협상 전략 수립" onclick="togChip(this)">협상 전략 수립</div>
+    <div class="chip" data-v="의사결정 지원" onclick="togChip(this)">의사결정 지원</div>
+    <div class="chip" data-v="리스크 감지" onclick="togChip(this)">리스크 감지</div>
+    <div class="chip" data-v="커뮤니케이션 개선" onclick="togChip(this)">커뮤니케이션 개선</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">03</span><span class="sec-t">분석가 캐릭터</span><div class="sec-line"></div></div>
+  <div class="card"><div class="tone-grid" id="b-analyst">
+    <div class="tone-card" data-v="행동경제학 분석가" onclick="togTone(this,'b-analyst')"><div class="ic">&#128200;</div>행동경제학 분석가</div>
+    <div class="tone-card" data-v="조직심리 컨설턴트" onclick="togTone(this,'b-analyst')"><div class="ic">&#127970;</div>조직심리 컨설턴트</div>
+    <div class="tone-card" data-v="협상 전문가" onclick="togTone(this,'b-analyst')"><div class="ic">&#129309;</div>협상 전문가</div>
+    <div class="tone-card" data-v="언행심리 추리 전문가" onclick="togTone(this,'b-analyst')"><div class="ic">&#128269;</div>언행심리 추리</div>
+  </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">04</span><span class="sec-t">결과물 형식 (복수 선택)</span><div class="sec-line"></div></div>
+  <div class="card"><div class="chips" id="b-format">
+    <div class="chip" data-v="구조화 보고서" onclick="togChip(this)">구조화 보고서</div>
+    <div class="chip" data-v="핵심 인사이트 3가지" onclick="togChip(this)">핵심 인사이트 3가지</div>
+    <div class="chip" data-v="실행 가능한 액션플랜" onclick="togChip(this)">실행 가능한 액션플랜</div>
+    <div class="chip" data-v="리스크기회 매트릭스" onclick="togChip(this)">리스크·기회 매트릭스</div>
+  </div></div></div>
+  <button class="gen-btn" onclick="gen('consult')">&#10022; 비즈니스 분석 프롬프트 생성</button>
+</div>
+
+<!-- OUTPUT -->
+<div class="output" id="output">
+  <div class="result-card">
+    <div class="r-label">Generated Prompt</div>
+    <div class="r-title" id="r-title"></div>
+    <div class="r-sub" id="r-sub"></div>
+    <div class="meta-row" id="r-meta"></div>
+    <div class="r-divider"></div>
+    <div class="r-slabel">Claude에 붙여넣을 프롬프트</div>
+    <div class="prompt-box" id="r-prompt"></div>
+    <button class="copy-btn" id="copy-btn" onclick="copyPrompt()">&#128203; 프롬프트 전체 복사</button>
+  </div>
+</div>
+</div>
+<script>
+function switchTab(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('output').classList.remove('show');
+}
+function togChip(el){el.classList.toggle('on');}
+function togTone(el,gid){
+  document.querySelectorAll('#'+gid+' .tone-card').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+}
+function getChips(id){return[...document.querySelectorAll('#'+id+' .chip.on')].map(c=>c.dataset.v);}
+function getTone(id){const e=document.querySelector('#'+id+' .tone-card.on');return e?e.dataset.v:'';}
+function v(id){return(document.getElementById(id)||{}).value?document.getElementById(id).value.trim():'';}
+const NAMES=['이수현','박진우','김서연','최민재','정하은','오태양','한다솔','임지후'];
+function rn(){return NAMES[Math.floor(Math.random()*NAMES.length)];}
+
+function buildProfiler(){
+  const name=v('p-name')||rn();
+  const traits=getChips('p-traits'),fields=getChips('p-fields'),tone=getTone('p-tones'),extra=v('p-extra');
+  const TD={'첫인상 냄새 감지':'처음 마주치는 순간 상대의 긴장과 숨김을 포착한다.','구조적 독해':'겉으로 드러난 이유 뒤에 숨은 진짜 구조를 파악한다.','감정 신호 역산':'눈물의 부재, 과잉 반응에서 타이밍을 역산한다.','행동 선택 해석':'장소, 방식, 타이밍에서 숨겨진 의도를 읽는다.','성격 프로파일링':'성격 유형이 압박 상황에서 어떻게 반응하는지 예측한다.','역지사지 침투':'삶의 논리를 내부에서 먼저 이해한다. 판단 전에 그 사람이 된다.'};
+  const FD={'수사탐문':'진술 일관성을 추적하고 말하지 않은 부분에서 단서를 찾는다.','심리상담':'말하지 못하는 진짜 문제를 감지하고 수면 위로 올린다.','협상조정':'상대의 공식 요구 뒤에 숨은 두려움과 욕구를 파악한다.','조직인사':'이탈 징후와 권력 갈등을 언행 변화에서 조기 감지한다.','창작집필':'인물의 행동이 심리적으로 설득력 있도록 내면 구조를 설계한다.','위기개입':'표면적 안정 뒤의 위험 신호를 포착하고 개입 공간을 만든다.','비즈니스분석':'이해관계자 언행에서 숨겨진 동기와 동맹 구조를 파악한다.','교육코칭':'저항, 두려움, 잠재력을 언행에서 읽고 맞춤 접근법을 설계한다.'};
+  const TON={'냉철한 관찰자':'감정을 배제하고 사실과 패턴만으로 판단한다. 불필요한 위로 없이 담담하게 전달한다.','따뜻한 공감자':'상대의 고통을 이해하면서도 진실을 놓치지 않는다.','날카로운 직격수':'돌려 말하지 않는다. 불편함을 감수하더라도 진실을 먼저 말한다.','조용한 추적자':'말보다 침묵으로 압박한다. 결정적인 순간에만 입을 연다.'};
+  const tl=traits.length?traits.map(t=>'  - ['+t+'] '+(TD[t]||'')).join('\n'):'  - 언행심리 전 영역에 걸쳐 추리한다.';
+  const fl=fields.length?fields.map(f=>'  - ['+f+'] '+(FD[f]||'')).join('\n'):'  - 분야를 가리지 않고 언행 패턴 분석을 수행한다.';
+  const tt=TON[tone]||'상황에 따라 유연하게 톤을 조절한다.';
+  const ex=extra?'\n[추가 특징]\n  '+extra:'';
+  return{title:name,sub:'언행심리 추리 전문가 캐릭터',meta:[...traits,...fields,tone].filter(Boolean),
+  prompt:'당신은 '+name+'입니다.\n인간의 언행과 행동 패턴에서 진실을 추리하는 언행심리 전문가입니다.\n\n'+'='.repeat(31)+'\n[핵심 추리 능력]\n'+tl+'\n\n[활동 분야]\n'+fl+'\n\n[페르소나 & 말투]\n  '+tt+ex+'\n'+'='.repeat(31)+'\n\n[추리 프로세스 — 항상 이 순서를 따른다]\n  01. 관찰   : 언어·비언어·맥락을 동시에 수집한다. 판단을 보류한다.\n  02. 구조화 : 표면적 이유 뒤의 진짜 구조를 파악한다.\n  03. 가설   : "왜 이 사람은 이렇게 행동할 수밖에 없었는가"를 설정한다.\n  04. 검증   : 가설에 반하는 증거를 먼저 찾는다.\n  05. 전달   : 결론을 상대가 소화할 수 있는 방식으로 제시한다.\n\n[절대 원칙]\n  - 겉으로 드러난 이유를 그대로 믿지 않는다.\n  - 가장 조용한 신호가 가장 큰 단서다.\n  - 판단은 근거가 쌓인 뒤에 한다.\n  - 사람을 악하게 보기 전에, 먼저 그 사람이 될 이유를 찾는다.\n\n지금부터 '+name+'으로서 대화하거나 사건·상황을 분석해주세요.'};
+}
+
+function buildSaju(){
+  const year=v('s-year'),month=v('s-month'),day=v('s-day'),time=v('s-time');
+  const gender=v('s-gender')||'남성',birth=v('s-birth'),question=v('s-question');
+  const styles=getChips('s-style');
+  const char=getChips('s-char').filter(c=>c!=='결합안함');
+  const saju=[year&&'년주: '+year,month&&'월주: '+month,day&&'일주: '+day,time&&'시주: '+time].filter(Boolean).join(' / ')||'(만세력 미입력)';
+  const st=styles.length?styles.join(', '):'종합 풀이';
+  const ct=char.length?'\n\n[캐릭터 설정]\n당신은 '+char[0]+'입니다.\n사주 풀이에 언행심리 추리 관점을 더해, 이 사람이 왜 그런 선택을 하는지 심리 구조까지 함께 해석합니다.':'';
+  return{title:'사주·명리 풀이',sub:gender+' · '+(birth||''),meta:[st,...char].filter(Boolean),
+  prompt:'당신은 20년 이상 경력의 명리학 전문가입니다.\n사주의 오행, 일간, 십성, 용신·기신, 대운·세운을 종합하여 실용적인 풀이를 제공합니다.'+ct+'\n\n'+'='.repeat(31)+'\n[의뢰인 정보]\n  성별    : '+gender+(birth?'\n  출생연도 : '+birth:'')+'\n  만세력  : '+saju+'\n\n[풀이 방식]\n  '+st+'\n\n[질문·고민]\n  '+(question||'종합적인 운세와 현재 시기 분석을 부탁드립니다.')+'\n'+'='.repeat(31)+'\n\n[풀이 지침]\n  - 사주 원국의 일간과 오행 균형을 먼저 분석한다.\n  - 현재 대운·세운이 원국에 미치는 영향을 설명한다.\n  - 질문한 분야에 집중해서 구체적인 시기와 방향을 제시한다.\n  - 긍정과 주의점을 균형 있게 전달한다.\n\n위 만세력과 질문을 바탕으로 풀이를 시작해주세요.'};
+}
+
+function buildColumn(){
+  const source=v('c-source'),dir=getChips('c-direction'),persona=getTone('c-persona');
+  const length=v('c-length')||'1500자 내외 중편 칼럼',media=v('c-media');
+  const dt=dir.length?dir.join(', '):'다각도 분석';
+  return{title:'칼럼·논설 쓰기',sub:(persona||'논설위원')+' · '+length,meta:[dt,persona,length].filter(Boolean),
+  prompt:'당신은 '+(persona||'중립적 논설위원')+'입니다.\n깊은 통찰과 명확한 논리로 독자를 설득하는 칼럼을 씁니다.'+(media?'\n게재 매체: '+media:'')+'\n\n'+'='.repeat(31)+'\n[원문 자료]\n'+(source||'(원문을 여기에 붙여넣으세요)')+'\n\n[칼럼 방향]\n  '+dt+'\n\n[목표 분량]\n  '+length+'\n'+'='.repeat(31)+'\n\n[작성 지침]\n  - 첫 문장은 독자를 즉시 사로잡는 훅으로 시작한다.\n  - 주장은 하나의 핵심 메시지를 중심으로 구성한다.\n  - 구체적인 사례와 논거로 설득력을 강화한다.\n  - 반대 입장을 인정한 뒤 논리적으로 넘어선다.\n  - 마지막 문단은 여운이 남는 문장으로 마무리한다.\n\n위 자료를 바탕으로 칼럼을 작성해주세요.'};
+}
+
+function buildNovel(){
+  const source=v('n-source'),genre=getChips('n-genre'),writer=getTone('n-writer');
+  const task=v('n-task')||'전체 줄거리 구성',extra=v('n-extra');
+  const gt=genre.length?genre.join(', '):'장르 미지정';
+  return{title:'소설·웹소설 쓰기',sub:(writer||'작가')+' · '+gt,meta:[gt,writer,task].filter(Boolean),
+  prompt:'당신은 '+(writer||'심리묘사 전문 작가')+'입니다.\n인물의 내면 심리와 행동 동기를 정교하게 구성하여 독자를 서사 안으로 끌어당기는 글을 씁니다.\n\n'+'='.repeat(31)+'\n[소재 / 사건 개요]\n'+(source||'(소재를 여기에 붙여넣으세요)')+'\n\n[장르]\n  '+gt+'\n\n[작업 단위]\n  '+task+(extra?'\n\n[추가 지시]\n  '+extra:'')+'\n'+'='.repeat(31)+'\n\n[작성 지침]\n  - 인물의 행동에는 반드시 심리적 필연성이 있어야 한다.\n  - 독자가 인물을 이해하기 전에 먼저 느끼게 만든다.\n  - 대화는 인물의 성격과 관계 역학을 드러내는 도구다.\n  - 사건보다 인물의 반응과 내면 변화에 무게를 둔다.\n  - '+gt+' 장르 특유의 긴장감과 리듬을 유지한다.\n\n위 소재를 바탕으로 '+task+'을 시작해주세요.'};
+}
+
+function buildConsult(){
+  const source=v('b-source'),purpose=getChips('b-purpose'),analyst=getTone('b-analyst');
+  const format=getChips('b-format');
+  const pt=purpose.length?purpose.join(', '):'종합 분석';
+  const ft=format.length?format.join(', '):'구조화 보고서';
+  return{title:'비즈니스 분석·상담',sub:(analyst||'분석가')+' · '+ft,meta:[pt,analyst,ft].filter(Boolean),
+  prompt:'당신은 '+(analyst||'언행심리 추리 전문가')+'입니다.\n조직과 인간의 행동 패턴을 분석하여 비즈니스 현장의 숨겨진 역학과 최적 전략을 도출합니다.\n\n'+'='.repeat(31)+'\n[상황·데이터]\n'+(source||'(분석할 내용을 여기에 붙여넣으세요)')+'\n\n[분석 목적]\n  '+pt+'\n\n[결과물 형식]\n  '+ft+'\n'+'='.repeat(31)+'\n\n[분석 지침]\n  01. 표면에 드러난 사실을 먼저 정리한다.\n  02. 각 이해관계자의 실제 동기와 두려움을 추론한다.\n  03. 숨겨진 권력 구조와 동맹 관계를 파악한다.\n  04. 가장 가능성 높은 시나리오를 3가지 이내로 제시한다.\n  05. 각 시나리오별 대응 전략과 우선순위를 명시한다.\n  06. 결론은 즉시 실행 가능한 액션으로 마무리한다.\n\n[절대 원칙]\n  - 공식 발언보다 행동 패턴을 더 신뢰한다.\n  - 갈등의 원인을 성격 문제로 환원하지 않는다. 구조에서 찾는다.\n\n위 상황을 분석하고 '+ft+' 형식으로 보고해주세요.'};
+}
+
+function gen(type){
+  let r;
+  if(type==='profiler')r=buildProfiler();
+  else if(type==='saju')r=buildSaju();
+  else if(type==='column')r=buildColumn();
+  else if(type==='novel')r=buildNovel();
+  else if(type==='consult')r=buildConsult();
+  document.getElementById('r-title').textContent=r.title;
+  document.getElementById('r-sub').textContent=r.sub;
+  document.getElementById('r-meta').innerHTML=r.meta.filter(Boolean).map(t=>'<span class="meta-tag">'+t+'</span>').join('');
+  document.getElementById('r-prompt').textContent=r.prompt;
+  window._prompt=r.prompt;
+  const out=document.getElementById('output');
+  out.classList.add('show');
+  setTimeout(()=>out.scrollIntoView({behavior:'smooth',block:'start'}),60);
+}
+function copyPrompt(){
+  if(!window._prompt)return;
+  navigator.clipboard.writeText(window._prompt).then(()=>{
+    const b=document.getElementById('copy-btn');
+    b.textContent='✓ 복사 완료!';
+    setTimeout(()=>{b.textContent='📋 프롬프트 전체 복사';},2000);
+  });
+}
+</script>
+</body>
+</html>
