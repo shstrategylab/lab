@@ -1293,64 +1293,91 @@ const ZiWei = (() => {
     return null; // 해당 월/윤달 없음
   }
 
-  // ── 시지 → 실제 시각(사주용) 변환 ──
-  // 입력값은 이미 각 지지의 대표 시각(홀수)이므로 그대로 사용
-  // 자시(23), 축시(1), 인시(3)...
+  // ── 12지지 선택값 → manseryok.js getPillars용 hour(0~23) 변환 ──
+  // manseryok.js getSiju: hour===23 → 지지0(자), floor((hour+1)/2) → 지지
+  // 각 지지 대표 시각 (select value → manseryok hour 파라미터)
+  // 자시=23→23, 축시=1→1, 인시=3→3, 묘시=5→5, 진시=7→7, 사시=9→9
+  // 오시=11→11, 미시=13→13, 신시=15→15, 유시=17→17, 술시=19→19, 해시=21→21
+  // 즉 select value를 그대로 hour로 쓰면 됨 — manseryok가 알아서 지지로 변환
   function jizhiToHour(v) {
     if (v < 0) return -1;
-    return v; // 이미 대표 시각으로 들어옴
+    return v; // select value = manseryok hour 파라미터 (자시만 23)
   }
+
+  // ── 12지지 시각값 → 지지 인덱스 (자미두수 내부 계산용) ──
+  // manseryok와 독립적으로 사용
+  const JIZHI_BRANCH = {
+    23: 0,  // 자시(子)
+     1: 1,  // 축시(丑)
+     3: 2,  // 인시(寅)
+     5: 3,  // 묘시(卯)
+     7: 4,  // 진시(辰)
+     9: 5,  // 사시(巳)
+    11: 6,  // 오시(午)
+    13: 7,  // 미시(未)
+    15: 8,  // 신시(申)
+    17: 9,  // 유시(酉)
+    19:10,  // 술시(戌)
+    21:11,  // 해시(亥)
+  };
 
   // ── 메인 계산 ──
   function calculate(year, month, day, hourVal, gender, isLunarInput, isLeapMonth) {
-    // 입력이 음력인 경우 양력으로 변환
+    // 1. 음력→양력 변환 (필요시)
     let solarYear = year, solarMonth = month, solarDay = day;
     let lunarYear = year, lunarMonth = month, lunarDay = day;
     let lunarIsLeap = isLeapMonth || false;
 
     if (isLunarInput) {
       const sol = lunarToSolar(year, month, day, isLeapMonth);
-      if (!sol) throw new Error('음력 변환 실패: 범위를 확인하세요.');
+      if (!sol) throw new Error('음력 변환 실패: 범위(1900~2050)를 확인하세요.');
       solarYear = sol.year; solarMonth = sol.month; solarDay = sol.day;
+      // 음력입력이면 입력값이 곧 음력
+      lunarYear = year; lunarMonth = month; lunarDay = day;
     } else {
+      // 양력입력이면 음력을 역산
       const lun = solarToLunar(year, month, day);
-      lunarYear = lun.lunarYear; lunarMonth = lun.lunarMonth; lunarDay = lun.lunarDay;
-      lunarIsLeap = lun.isLeap;
+      lunarYear = lun.lunarYear; lunarMonth = lun.lunarMonth;
+      lunarDay = lun.lunarDay; lunarIsLeap = lun.isLeap;
     }
 
-    // 시각 처리 (12지지 대표값)
+    // 2. manseryok.js에 넘길 hour (0~23 실제 시각)
+    //    자시=23, 축시=1, 인시=3 … 해시=21, 모름=-1
     const hour = jizhiToHour(hourVal);
 
-    // 1. 만세력으로 사주 계산 (양력 기준)
+    // 3. 만세력으로 사주 계산 (반드시 양력 기준)
     const pillars = Manseryok.getPillars(solarYear, solarMonth, solarDay, hour);
     const { yeonju, wolju, ilju, siju } = pillars;
 
-    // 3. 오행국 결정
+    // 4. 시주의 지지 인덱스 (자미두수 내부 계산용)
+    //    manseryok siju.branchIdx 를 직접 활용
+    const hourBranch = siju ? siju.branchIdx : (JIZHI_BRANCH[hourVal] ?? 0);
+
+    // 5. 오행국
     const ju = getNayinJu(yeonju.stemIdx, yeonju.branchIdx);
     const juNum = WU_XING_JU[ju] || 2;
 
-    // 4. 자미 위치
+    // 6. 자미 위치 (음력 생일 기준)
     const ziweiPos = getZiweiPalace(lunarDay, ju);
 
-    // 5. 주요성 배치
+    // 7. 주요성
     const mainStars = calcMainStars(ziweiPos);
 
-    // 6. 조력성
-    const assists = calcAssistStars(yeonju.stemIdx, yeonju.branchIdx, lunarMonth, hour);
+    // 8. 조력성 (음력 월 기준)
+    const assists = calcAssistStars(yeonju.stemIdx, yeonju.branchIdx, lunarMonth, hourBranch);
     const allStars = { ...mainStars, ...assists };
 
-    // 7. 사화
+    // 9. 사화
     const sihua = calcSihua(yeonju.stemIdx, allStars);
 
-    // 8. 명궁
-    const hourBranch = getHourBranch(hour);
+    // 10. 명궁 (음력 월 + 시지 기준)
     const mingGong = getMingGong(lunarMonth, hourBranch);
 
-    // 9. 대운
+    // 11. 대운
     const daYunInfo = getDaYunStartAge(yeonju.stemIdx, gender);
     const daYunPalaces = getDaYunPalaces(mingGong, daYunInfo.forward);
 
-    // 10. 12궁에 별 배분
+    // 12. 12궁에 별 배분
     const palaceStars = Array.from({length:12}, () => ({ main:[], lucky:[], bad:[], sihua:[] }));
     const mainStarNames = ['자미','천기','태양','무곡','천동','염정','천부','태음','탐랑','거문','천상','천량','칠살','파군'];
     const luckyStarNames = ['문창','문곡','록존','좌보','우필','천마'];
@@ -1376,7 +1403,7 @@ const ZiWei = (() => {
       palaceStars, daYunInfo, daYunPalaces,
       gender,
       inputYear: year, inputMonth: month, inputDay: day,
-      isLunarInput, hour,
+      isLunarInput, hourVal,
     };
   }
 
@@ -1691,14 +1718,20 @@ function renderProfile(data) {
   const { yeonju, wolju, ilju, siju, ju, gender,
           lunarYear, lunarMonth, lunarDay, lunarIsLeap,
           solarYear, solarMonth, solarDay,
-          isLunarInput, inputYear, inputMonth, inputDay, hour } = data;
+          isLunarInput, hourVal, hourBranch } = data;
   const juNames = ['수이국(水二局)','목삼국(木三局)','금사국(金四局)','토오국(土五局)','화육국(火六局)'];
   const bar = document.getElementById('profile-bar');
 
-  // 시지 이름
-  const jizhiNames = ['자시(子)','축시(丑)','인시(寅)','묘시(卯)','진시(辰)','사시(巳)',
-                       '오시(午)','미시(未)','신시(申)','유시(酉)','술시(戌)','해시(亥)'];
-  const hourBranchName = hour < 0 ? '미상' : jizhiNames[data.hourBranch] || '미상';
+  // 시지 이름 (12지지 순서: 자=0~해=11)
+  const jizhiKo  = ['자(子)','축(丑)','인(寅)','묘(卯)','진(辰)','사(巳)',
+                     '오(午)','미(未)','신(申)','유(酉)','술(戌)','해(亥)'];
+  const jizhiTime = ['23~01시','01~03시','03~05시','05~07시','07~09시','09~11시',
+                     '11~13시','13~15시','15~17시','17~19시','19~21시','21~23시'];
+
+  // siju가 있으면 manseryok가 계산한 branchIdx 사용 (정확)
+  const hbIdx = siju ? siju.branchIdx : hourBranch;
+  const hourBranchName = hourVal < 0 ? '시각 미입력' :
+    jizhiKo[hbIdx] + '시 (' + jizhiTime[hbIdx] + ')';
 
   const lunarStr = `${lunarYear}년 ${lunarMonth}월${lunarIsLeap ? ' 【윤】' : ''} ${lunarDay}일`;
   const solarStr = `${solarYear}년 ${solarMonth}월 ${solarDay}일`;
@@ -1710,8 +1743,8 @@ function renderProfile(data) {
     { label: '연주 年柱', value: `${yeonju.ganHJ}${yeonju.jiHJ} (${yeonju.label})` },
     { label: '월주 月柱', value: `${wolju.ganHJ}${wolju.jiHJ} (${wolju.label})` },
     { label: '일주 日柱', value: `${ilju.ganHJ}${ilju.jiHJ} (${ilju.label})` },
-    { label: '시주 時柱', value: siju ? `${siju.ganHJ}${siju.jiHJ} (${siju.label}) · ${hourBranchName}` : `미상 · ${hourBranchName}` },
-    { label: '오행국', value: juNames[ju] || '수이국' },
+    { label: '시주 時柱', value: siju ? `${siju.ganHJ}${siju.jiHJ} · ${hourBranchName}` : `미산출 · ${hourBranchName}` },
+    { label: '오행국', value: juNames[ju] ?? '수이국' },
   ];
 
   bar.innerHTML = items.map((it, i) =>
