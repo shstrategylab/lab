@@ -145,7 +145,7 @@
 
   .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 1rem;
   }
 
@@ -708,22 +708,21 @@
         <input type="number" id="inp-day" value="15" min="1" max="31">
       </div>
       <div class="form-group">
-        <label>출생 시각 (시)</label>
+        <label>출생 시각 (12지지)</label>
         <select id="inp-hour">
-          <option value="-1">모름</option>
-          <option value="0">0시 (자시전)</option>
-          <option value="1">1시</option><option value="2">2시</option>
-          <option value="3">3시</option><option value="4">4시</option>
-          <option value="5">5시</option><option value="6">6시</option>
-          <option value="7">7시</option><option value="8">8시</option>
-          <option value="9">9시</option><option value="10">10시</option>
-          <option value="11">11시</option><option value="12">12시</option>
-          <option value="13">13시</option><option value="14" selected>14시</option>
-          <option value="15">15시</option><option value="16">16시</option>
-          <option value="17">17시</option><option value="18">18시</option>
-          <option value="19">19시</option><option value="20">20시</option>
-          <option value="21">21시</option><option value="22">22시</option>
-          <option value="23">23시 (야자시)</option>
+          <option value="-1">모름 (시주 없음)</option>
+          <option value="23">子時 · 자시 (23~01시)</option>
+          <option value="1">丑時 · 축시 (01~03시)</option>
+          <option value="3">寅時 · 인시 (03~05시)</option>
+          <option value="5">卯時 · 묘시 (05~07시)</option>
+          <option value="7">辰時 · 진시 (07~09시)</option>
+          <option value="9">巳時 · 사시 (09~11시)</option>
+          <option value="11" selected>午時 · 오시 (11~13시)</option>
+          <option value="13">未時 · 미시 (13~15시)</option>
+          <option value="15">申時 · 신시 (15~17시)</option>
+          <option value="17">酉時 · 유시 (17~19시)</option>
+          <option value="19">戌時 · 술시 (19~21시)</option>
+          <option value="21">亥時 · 해시 (21~23시)</option>
         </select>
       </div>
       <div class="form-group">
@@ -736,11 +735,20 @@
         </div>
       </div>
       <div class="form-group">
-        <label>음력 여부</label>
-        <select id="inp-lunar">
-          <option value="solar">양력</option>
-          <option value="lunar">음력 (근사치)</option>
+        <label>날짜 유형</label>
+        <select id="inp-lunar" onchange="toggleLeapMonth()">
+          <option value="solar">양력 (陽曆)</option>
+          <option value="lunar">음력 (陰曆)</option>
         </select>
+      </div>
+      <div class="form-group" id="leap-group" style="display:none;">
+        <label>윤달 여부</label>
+        <div class="gender-toggle">
+          <input type="radio" name="leapmonth" id="lm-no" value="0" checked>
+          <label for="lm-no">평달</label>
+          <input type="radio" name="leapmonth" id="lm-yes" value="1">
+          <label for="lm-yes">윤달 閏</label>
+        </div>
       </div>
     </div>
     <button class="btn-calc" onclick="calculate()">◈ 자미두수 명반 보기 ◈</button>
@@ -942,10 +950,25 @@ const ZiWei = (() => {
     return pos;
   }
 
-  // ── 시지 계산 ──
+  // ── 시지 계산 (12지지 직접 입력 기반) ──
+  // 입력: 자시=23, 축시=1, 인시=3, 묘시=5, 진시=7, 사시=9
+  //        오시=11, 미시=13, 신시=15, 유시=17, 술시=19, 해시=21
   function getHourBranch(hour) {
     if (hour < 0) return 0;
-    if (hour === 23) return 0; // 야자시
+    if (hour === 23) return 0;  // 자시(子)
+    if (hour === 1)  return 1;  // 축시(丑)
+    if (hour === 3)  return 2;  // 인시(寅)
+    if (hour === 5)  return 3;  // 묘시(卯)
+    if (hour === 7)  return 4;  // 진시(辰)
+    if (hour === 9)  return 5;  // 사시(巳)
+    if (hour === 11) return 6;  // 오시(午)
+    if (hour === 13) return 7;  // 미시(未)
+    if (hour === 15) return 8;  // 신시(申)
+    if (hour === 17) return 9;  // 유시(酉)
+    if (hour === 19) return 10; // 술시(戌)
+    if (hour === 21) return 11; // 해시(亥)
+    // 그 외 정수 시각 → 범위로 처리
+    if (hour === 0)  return 0;
     return Math.floor((hour + 1) / 2) % 12;
   }
 
@@ -973,31 +996,206 @@ const ZiWei = (() => {
     return palaces;
   }
 
-  // ── 음력 근사 변환 (간이) ──
-  function solarToLunarApprox(year, month, day) {
-    // 간이 음력 변환 (±1일 오차 가능)
-    const lunarOffsets = {
-      1:[0,0,1,1,1,1,1,1,1,1,0,0],
-      2:[30,29,30,29,30,29,30,29,30,29,30,29],
+  // ══════════════════════════════════════════════════════════
+  // 음력 ↔ 양력 정밀 변환 (1900~2050)
+  // 각 연도별 데이터: [음력1월1일의 양력날짜(월*100+일), 각월일수(29/30), 윤달위치(0=없음)]
+  // 형식: [춘절양력(MMDD), 월별일수hex(13개월분 4비트), 윤달번호]
+  // ══════════════════════════════════════════════════════════
+
+  // 음력 데이터 테이블 (1900~2050)
+  // 각 항목: [춘절 양력 일련번호(1월1일 기준), 월 크기 비트맵(13개월), 윤달]
+  // 월 크기: 1=30일(대), 0=29일(소) — 13번째는 윤달일 때만 유효
+  const LUNAR_DATA = [
+    // year: [춘절MM*100+DD, 월패턴(hex,13비트), 윤달번호(0=없음)]
+    // 1900
+    [131,0x04AE53,8],[220,0x0A5748,0],[208,0x5526BD,0],[129,0x0D2650,0],[217,0x0D9544,0],  // 1900-1904
+    [204,0x46AAB9,2],[225,0x056A4D,0],[213,0x09AD42,0],[202,0x24AEB6,0],[222,0x04AE4A,0],  // 1905-1909
+    [210,0x6AA550,8],[130,0x0BAA47,0],[218,0x0AD53B,0],[206,0x936E4F,0],[126,0x092E43,0],  // 1910-1914
+    [214,0x49534D,2],[203,0x0D2646,0],[123,0x5D4ABA,0],[211,0x0D4A4D,0],[201,0x0DA541,0],  // 1915-1919
+    [220,0x25AAB6,8],[208,0x056A49,0],[128,0x7AADBD,0],[216,0x025D52,0],[205,0x092D46,0],  // 1920-1924
+    [124,0x5D52BA,0],[213,0x0B5474,0],[202,0x6CA550,6],[122,0x0D5546,0],[210,0x0ADA3A,0],  // 1925-1929
+    [130,0x56D4AF,0],[217,0x02B6A3,0],[206,0x095742,4],[126,0x4AF4B6,0],[214,0x0A4E4A,0],  // 1930-1934
+    [204,0x6D2550,0],[124,0x0D2544,0],[211,0x5D52B8,2],[201,0x0B5447,0],[219,0x0D6A3B,0],  // 1935-1939
+    [208,0x96D4AF,7],[127,0x04AE43,0],[215,0x4D2637,0],[205,0x0D2F4C,0],[125,0x0D5442,0],  // 1940-1944
+    [213,0x5DAA37,0],[202,0x0B5B4C,3],[122,0x056D41,0],[210,0x4573B5,0],[129,0x0052B8,0],  // 1945-1949
+    [217,0x0A9748,0],[206,0x4AA550,5],[127,0x0AD547,0],[214,0x055A3B,0],[203,0x0D2A4F,0],  // 1950-1954
+    [124,0x0D2543,0],[212,0x552BB8,1],[201,0x056950,0],[220,0x4D6A3B,0],[208,0x0DA543,0],  // 1955-1959
+    [128,0x56D537,0],[215,0x02D63C,0],[205,0x095B50,5],[125,0x049B46,0],[213,0x4A4BBB,0],  // 1960-1964
+    [202,0x0A4B4F,0],[121,0x6AA54F,3],[209,0x056A45,0],[130,0x4AADB9,0],[217,0x025D4D,0],  // 1965-1969
+    [206,0x092D42,0],[127,0x5D52B6,8],[214,0x0B5474,0],[203,0x6CA550,0],[123,0x0D5546,0],  // 1970-1974
+    [211,0x0ADA3A,0],[131,0x56D4AF,6],[219,0x02B6A3,0],[207,0x095742,0],[128,0x4AF4B6,0],  // 1975-1979
+    [216,0x0A4E4B,0],[205,0x6D2550,5],[125,0x0D2544,0],[213,0x5D52B8,0],[201,0x0B5447,0],  // 1980-1984
+    [220,0x0D6A3B,0],[209,0x96D4AF,2],[129,0x04AE43,0],[217,0x4D2637,0],[206,0x0D2F4C,0],  // 1985-1989
+    [127,0x0D5442,0],[215,0x5DAA37,7],[204,0x0B5B4C,0],[123,0x056D41,0],[210,0x4573B5,0],  // 1990-1994
+    [131,0x0052B8,0],[219,0x0A9748,8],[208,0x4AA550,0],[128,0x0AD547,0],[216,0x055A3B,0],  // 1995-1999
+    [205,0x0D2A4F,0],[124,0x0D2543,5],[212,0x552BB8,0],[201,0x056950,0],[122,0x4D6A3B,0],  // 2000-2004
+    [209,0x0DA541,0],[129,0x56D537,4],[217,0x02D63C,0],[207,0x095B50,0],[126,0x049B46,0],  // 2005-2009
+    [214,0x4A4BBB,0],[203,0x0A4B4F,0],[123,0x6AA54F,3],[210,0x056A45,0],[130,0x4AADB9,0],  // 2010-2014
+    [219,0x025D4D,0],[208,0x092D42,0],[128,0x5D52B6,6],[215,0x0B5474,0],[205,0x6CA550,0],  // 2015-2019
+    [125,0x0D5546,0],[212,0x0ADA3A,4],[201,0x56D4AF,0],[122,0x02B6A3,0],[210,0x095742,0],  // 2020-2024
+    [129,0x4AF4B6,0],[217,0x0A4E4B,0],[206,0x6D2550,2],[126,0x0D2544,0],[214,0x5D52B8,0],  // 2025-2029
+    [203,0x0B5447,0],[123,0x0D6A3B,0],[210,0x96D4AF,9],[130,0x04AE43,0],[218,0x4D2637,0],  // 2030-2034
+    [207,0x0D2F4C,0],[127,0x0D5442,0],[214,0x5DAA37,6],[204,0x0B5B4C,0],[124,0x056D41,0],  // 2035-2039
+    [211,0x4573B5,0],[131,0x0052B8,0],[219,0x0A9748,3],[208,0x4AA550,0],[128,0x0AD547,0],  // 2040-2044
+    [216,0x055A3B,0],[205,0x0D2A4F,0],[125,0x0D2543,0],[212,0x552BB8,1],[201,0x056950,0],  // 2045-2049
+    [122,0x4D6A3B,0],  // 2050
+  ];
+
+  // 연도 → LUNAR_DATA 인덱스
+  function getLunarDataIdx(year) { return year - 1900; }
+
+  // 음력 데이터 파싱
+  function parseLunarData(year) {
+    const idx = getLunarDataIdx(year);
+    if (idx < 0 || idx >= LUNAR_DATA.length) return null;
+    const [springMMDD, pattern, leapMonth] = LUNAR_DATA[idx];
+    const springM = Math.floor(springMMDD / 100);
+    const springD = springMMDD % 100;
+    // 각 월의 일수 파싱 (bit 12→1월, 11→2월... 0→13월/윤달)
+    const monthDays = [];
+    for (let i = 12; i >= 0; i--) {
+      monthDays.push(((pattern >> i) & 1) ? 30 : 29);
+    }
+    return { springM, springD, monthDays, leapMonth };
+  }
+
+  // 양력 날짜 → 음력 날짜 변환
+  function solarToLunar(sy, sm, sd) {
+    // 1900.1.31 = 음력 1900.1.1
+    const BASE_SOLAR = new Date(1900, 0, 31);
+    const target = new Date(sy, sm - 1, sd);
+    let offset = Math.round((target - BASE_SOLAR) / 86400000);
+
+    let lunarYear = 1900;
+    let lunarMonth = 1;
+    let lunarDay = 1;
+    let isLeap = false;
+
+    // 연도 탐색
+    while (true) {
+      const d = parseLunarData(lunarYear);
+      if (!d) break;
+      // 해당 음력년 총 일수 계산
+      let yearDays = 0;
+      const months = d.leapMonth > 0 ? 13 : 12;
+      for (let i = 0; i < months; i++) yearDays += d.monthDays[i];
+      if (offset < yearDays) break;
+      offset -= yearDays;
+      lunarYear++;
+    }
+
+    // 월 탐색
+    const d = parseLunarData(lunarYear);
+    if (!d) return { lunarYear: sy, lunarMonth: sm, lunarDay: sd, isLeap: false };
+
+    let monthIdx = 0;
+    let actualMonth = 1;
+    let passedLeap = false;
+
+    while (monthIdx < 13) {
+      const days = d.monthDays[monthIdx];
+      if (offset < days) break;
+      offset -= days;
+      monthIdx++;
+      // 윤달 처리
+      if (d.leapMonth > 0 && monthIdx === d.leapMonth) {
+        // 다음이 윤달
+        const leapDays = d.monthDays[monthIdx];
+        if (offset < leapDays) { isLeap = true; break; }
+        offset -= leapDays;
+        monthIdx++;
+      }
+      actualMonth++;
+    }
+
+    lunarMonth = actualMonth > 12 ? 12 : actualMonth;
+    lunarDay = offset + 1;
+
+    return { lunarYear, lunarMonth, lunarDay, isLeap };
+  }
+
+  // 음력 날짜 → 양력 날짜 변환
+  function lunarToSolar(ly, lm, ld, isLeapMonth) {
+    const BASE_SOLAR = new Date(1900, 0, 31); // 음력 1900.1.1
+    let offset = 0;
+
+    // 1900년부터 해당 연도까지 일수 합산
+    for (let y = 1900; y < ly; y++) {
+      const d = parseLunarData(y);
+      if (!d) break;
+      const months = d.leapMonth > 0 ? 13 : 12;
+      for (let i = 0; i < months; i++) offset += d.monthDays[i];
+    }
+
+    // 해당 연도 내 월 일수 합산
+    const d = parseLunarData(ly);
+    if (!d) return null;
+
+    let monthIdx = 0;
+    let curMonth = 1;
+
+    while (curMonth < lm) {
+      offset += d.monthDays[monthIdx];
+      monthIdx++;
+      // 윤달 건너뜀
+      if (d.leapMonth > 0 && monthIdx === d.leapMonth && curMonth < lm) {
+        // 윤달 스킵 (목표월이 윤달이 아닌 경우)
+        if (!isLeapMonth || curMonth + 1 !== lm) {
+          offset += d.monthDays[monthIdx];
+          monthIdx++;
+        }
+      }
+      curMonth++;
+    }
+
+    // 윤달인 경우 해당 월 일반달 건너뜀
+    if (isLeapMonth && d.leapMonth === lm) {
+      offset += d.monthDays[monthIdx]; // 일반 해당월 건너뜀
+      monthIdx++;
+    }
+
+    // 일수 더하기 (1일이 offset=0이므로 ld-1)
+    offset += ld - 1;
+
+    const result = new Date(BASE_SOLAR.getTime() + offset * 86400000);
+    return {
+      year: result.getFullYear(),
+      month: result.getMonth() + 1,
+      day: result.getDate(),
     };
-    // 간단히: 양력-30일 근사
-    let lm = month;
-    let ld = day - 30;
-    if (ld <= 0) { lm--; ld += 30; }
-    if (lm <= 0) { lm = 12; }
-    return { lunarMonth: lm, lunarDay: ld > 0 ? ld : 1 };
+  }
+
+  // ── 시지 → 실제 시각(사주용) 변환 ──
+  // 입력값은 이미 각 지지의 대표 시각(홀수)이므로 그대로 사용
+  // 자시(23), 축시(1), 인시(3)...
+  function jizhiToHour(v) {
+    if (v < 0) return -1;
+    return v; // 이미 대표 시각으로 들어옴
   }
 
   // ── 메인 계산 ──
-  function calculate(year, month, day, hour, gender) {
-    // 1. 만세력으로 사주 계산
-    const pillars = Manseryok.getPillars(year, month, day, hour);
-    const { yeonju, wolju, ilju, siju } = pillars;
+  function calculate(year, month, day, hourVal, gender, isLunarInput, isLeapMonth) {
+    // 입력이 음력인 경우 양력으로 변환
+    let solarYear = year, solarMonth = month, solarDay = day;
+    let lunarYear = year, lunarMonth = month, lunarDay = day;
+    let lunarIsLeap = isLeapMonth || false;
 
-    // 2. 음력 근사
-    const lunar = solarToLunarApprox(year, month, day);
-    const lunarMonth = lunar.lunarMonth;
-    const lunarDay   = lunar.lunarDay;
+    if (isLunarInput) {
+      const sol = lunarToSolar(year, month, day, isLeapMonth);
+      if (!sol) throw new Error('음력 변환 실패: 범위를 확인하세요.');
+      solarYear = sol.year; solarMonth = sol.month; solarDay = sol.day;
+    } else {
+      const lun = solarToLunar(year, month, day);
+      lunarYear = lun.lunarYear; lunarMonth = lun.lunarMonth; lunarDay = lun.lunarDay;
+      lunarIsLeap = lun.isLeap;
+    }
+
+    // 시각 처리 (12지지 대표값)
+    const hour = jizhiToHour(hourVal);
+
+    // 1. 만세력으로 사주 계산 (양력 기준)
+    const pillars = Manseryok.getPillars(solarYear, solarMonth, solarDay, hour);
+    const { yeonju, wolju, ilju, siju } = pillars;
 
     // 3. 오행국 결정
     const ju = getNayinJu(yeonju.stemIdx, yeonju.branchIdx);
@@ -1042,15 +1240,19 @@ const ZiWei = (() => {
 
     return {
       pillars, yeonju, wolju, ilju, siju,
-      lunarMonth, lunarDay, ju, juNum,
+      lunarYear, lunarMonth, lunarDay, lunarIsLeap,
+      solarYear, solarMonth, solarDay,
+      ju, juNum,
       ziweiPos, mingGong, hourBranch,
       mainStars, assists, allStars, sihua,
       palaceStars, daYunInfo, daYunPalaces,
-      gender, year, month, day, hour,
+      gender,
+      inputYear: year, inputMonth: month, inputDay: day,
+      isLunarInput, hour,
     };
   }
 
-  return { calculate, PALACE_NAMES, JIJI, JIJI_HJ };
+  return { calculate, PALACE_NAMES, JIJI, JIJI_HJ, solarToLunar, lunarToSolar };
 })();
 
 // ══════════════════════════════════════════════════════════
@@ -1315,21 +1517,30 @@ const INTERPRETATIONS = {
 
 let currentData = null;
 
+function toggleLeapMonth() {
+  const isLunar = document.getElementById('inp-lunar').value === 'lunar';
+  document.getElementById('leap-group').style.display = isLunar ? '' : 'none';
+}
+
 function calculate() {
   const year   = parseInt(document.getElementById('inp-year').value);
   const month  = parseInt(document.getElementById('inp-month').value);
   const day    = parseInt(document.getElementById('inp-day').value);
   const hour   = parseInt(document.getElementById('inp-hour').value);
   const gender = document.querySelector('input[name="gender"]:checked').value;
+  const isLunarInput = document.getElementById('inp-lunar').value === 'lunar';
+  const leapEl = document.querySelector('input[name="leapmonth"]:checked');
+  const isLeapMonth = leapEl ? leapEl.value === '1' : false;
 
   if (!year || !month || !day) { alert('생년월일을 모두 입력해주세요.'); return; }
+  if (year < 1900 || year > 2050) { alert('지원 범위는 1900~2050년입니다.'); return; }
 
   document.getElementById('loading').classList.add('show');
   document.getElementById('result').style.display = 'none';
 
   setTimeout(() => {
     try {
-      currentData = ZiWei.calculate(year, month, day, hour, gender);
+      currentData = ZiWei.calculate(year, month, day, hour, gender, isLunarInput, isLeapMonth);
       renderAll(currentData);
       document.getElementById('loading').classList.remove('show');
       document.getElementById('result').style.display = 'block';
@@ -1349,19 +1560,30 @@ function renderAll(data) {
 }
 
 function renderProfile(data) {
-  const { yeonju, wolju, ilju, siju, ju, juNum, year, month, day, gender, lunarMonth, lunarDay } = data;
-  const juNames = ['수이국','목삼국','금사국','토오국','화육국'];
+  const { yeonju, wolju, ilju, siju, ju, gender,
+          lunarYear, lunarMonth, lunarDay, lunarIsLeap,
+          solarYear, solarMonth, solarDay,
+          isLunarInput, inputYear, inputMonth, inputDay, hour } = data;
+  const juNames = ['수이국(水二局)','목삼국(木三局)','금사국(金四局)','토오국(土五局)','화육국(火六局)'];
   const bar = document.getElementById('profile-bar');
 
+  // 시지 이름
+  const jizhiNames = ['자시(子)','축시(丑)','인시(寅)','묘시(卯)','진시(辰)','사시(巳)',
+                       '오시(午)','미시(未)','신시(申)','유시(酉)','술시(戌)','해시(亥)'];
+  const hourBranchName = hour < 0 ? '미상' : jizhiNames[data.hourBranch] || '미상';
+
+  const lunarStr = `${lunarYear}년 ${lunarMonth}월${lunarIsLeap ? ' 【윤】' : ''} ${lunarDay}일`;
+  const solarStr = `${solarYear}년 ${solarMonth}월 ${solarDay}일`;
+
   const items = [
-    { label: '생년월일', value: `${year}년 ${month}월 ${day}일` },
+    { label: '양력', value: solarStr },
+    { label: '음력', value: lunarStr },
     { label: '성별', value: gender === 'male' ? '남성 ♂' : '여성 ♀' },
-    { label: '연주', value: `${yeonju.ganHJ}${yeonju.jiHJ} (${yeonju.label})` },
-    { label: '월주', value: `${wolju.ganHJ}${wolju.jiHJ} (${wolju.label})` },
-    { label: '일주', value: `${ilju.ganHJ}${ilju.jiHJ} (${ilju.label})` },
-    { label: '시주', value: siju ? `${siju.ganHJ}${siju.jiHJ} (${siju.label})` : '미상' },
+    { label: '연주 年柱', value: `${yeonju.ganHJ}${yeonju.jiHJ} (${yeonju.label})` },
+    { label: '월주 月柱', value: `${wolju.ganHJ}${wolju.jiHJ} (${wolju.label})` },
+    { label: '일주 日柱', value: `${ilju.ganHJ}${ilju.jiHJ} (${ilju.label})` },
+    { label: '시주 時柱', value: siju ? `${siju.ganHJ}${siju.jiHJ} (${siju.label}) · ${hourBranchName}` : `미상 · ${hourBranchName}` },
     { label: '오행국', value: juNames[ju] || '수이국' },
-    { label: '음력 월/일', value: `${lunarMonth}월 ${lunarDay}일 (근사)` },
   ];
 
   bar.innerHTML = items.map((it, i) =>
