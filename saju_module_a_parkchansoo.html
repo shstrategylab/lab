@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>모듈 A — 육친 관계 · 박찬수</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700;900&family=DM+Serif+Display:ital@0;1&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:          #f5f0e8;
+  --bg2:         #ede8df;
+  --parchment:   #f9f5ee;
+  --surface:     #ffffff;
+  --surface2:    #faf7f2;
+
+  --ink:         #1a1410;
+  --ink-mid:     rgba(26,20,16,0.6);
+  --ink-dim:     rgba(26,20,16,0.38);
+  --ink-faint:   rgba(26,20,16,0.15);
+
+  --cinnabar:    #c03820;   /* 주사(朱砂) — 배우자 */
+  --cinnabar-d:  rgba(192,56,32,0.12);
+  --cinnabar-l:  rgba(192,56,32,0.06);
+
+  --indigo:      #2a4a7a;   /* 남색 — 부모 */
+  --indigo-d:    rgba(42,74,122,0.12);
+
+  --jade:        #2a6a4a;   /* 비취 — 자식 */
+  --jade-d:      rgba(42,106,74,0.12);
+
+  --amber:       #9a6010;   /* 호박 — 형제 */
+  --amber-d:     rgba(154,96,16,0.12);
+
+  --gold:        #b08830;
+  --gold-dim:    rgba(176,136,48,0.15);
+
+  --border:      rgba(26,20,16,0.1);
+  --border2:     rgba(26,20,16,0.18);
+
+  --shadow-sm:   0 1px 4px rgba(26,20,16,0.07), 0 2px 12px rgba(26,20,16,0.04);
+  --shadow-md:   0 4px 20px rgba(26,20,16,0.1), 0 1px 4px rgba(26,20,16,0.06);
+}
+
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 400;
+  line-height: 1.8;
+  min-height: 100vh;
+  position: relative;
+}
+
+/* ── 배경 텍스처 ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(192,56,32,0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 10% 80%, rgba(42,74,122,0.04) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── 한자 워터마크 ── */
+.watermark {
+  position: fixed;
+  right: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Noto Serif KR', serif;
+  font-size: 220px;
+  font-weight: 900;
+  color: rgba(26,20,16,0.03);
+  line-height: 1;
+  pointer-events: none;
+  z-index: 0;
+  user-select: none;
+  writing-mode: vertical-rl;
+  letter-spacing: -10px;
+}
+
+/* ── 스크롤바 ── */
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--cinnabar); border-radius: 2px; opacity:.5; }
+
+/* ════════════════════════
+   NAV
+════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: 56px;
+  background: rgba(245,240,232,0.92);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  justify-content: space-between;
+}
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.nav-module {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--cinnabar);
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.nav-sep { color: var(--ink-faint); font-size: 12px; }
+.nav-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.nav-links {
+  display: flex;
+  gap: 2px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 11px;
+  color: var(--ink-dim);
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all .2s;
+  letter-spacing: .3px;
+}
+.nav-links a:hover { color: var(--ink); background: var(--ink-faint); }
+@media (max-width: 640px) { .nav-links { display:none; } }
+
+/* ════════════════════════
+   HERO
+════════════════════════ */
+.hero {
+  position: relative;
+  z-index: 1;
+  padding: 110px 24px 72px;
+  max-width: 860px;
+  margin: 0 auto;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cinnabar-d);
+  border: 1px solid rgba(192,56,32,0.2);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--cinnabar);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: slideIn .6s .1s forwards;
+}
+.hero-badge::before {
+  content: '';
+  width: 6px; height: 6px;
+  background: var(--cinnabar);
+  border-radius: 50%;
+}
+.hero-title {
+  font-family: 'DM Serif Display', 'Noto Serif KR', serif;
+  font-size: clamp(32px, 8vw, 64px);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+  margin-bottom: 6px;
+  opacity: 0;
+  animation: slideIn .6s .2s forwards;
+}
+.hero-title-ko {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(18px, 4vw, 28px);
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: slideIn .6s .25s forwards;
+}
+.hero-rule {
+  width: 48px;
+  height: 2px;
+  background: var(--cinnabar);
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: slideIn .6s .3s forwards;
+}
+.hero-desc {
+  font-size: clamp(13px, 3vw, 15px);
+  color: var(--ink-mid);
+  max-width: 520px;
+  line-height: 1.85;
+  opacity: 0;
+  animation: slideIn .6s .35s forwards;
+}
+.hero-desc strong { color: var(--ink); }
+
+/* 육친 미니맵 */
+.yukchim-map {
+  margin-top: 40px;
+  opacity: 0;
+  animation: slideIn .7s .5s forwards;
+}
+.ym-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--ink-dim);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.ym-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ym-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all .22s;
+  text-decoration: none;
+}
+.ym-chip:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.ym-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.ym-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+.ym-sungshin { font-size: 11px; color: var(--ink-dim); }
+
+/* ════════════════════════
+   MAIN
+════════════════════════ */
+.main {
+  position: relative;
+  z-index: 1;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+}
+
+/* ════════════════════════
+   SECTION
+════════════════════════ */
+.chapter {
+  margin-top: 64px;
+  scroll-margin-top: 72px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.chapter.visible { opacity: 1; transform: translateY(0); }
+
+.chapter-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.chapter-accent {
+  width: 4px;
+  height: 36px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.chapter-meta { flex: 1; }
+.chapter-num {
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.chapter-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(18px, 4.5vw, 24px);
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+}
+.chapter-rule {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ════════════════════════
+   CARD COMPONENTS
+════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow-sm);
+}
+.card + .card { margin-top: 10px; }
+
+.card-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px;
+}
+
+/* HIGHLIGHT CARD */
+.highlight-card {
+  background: var(--parchment);
+  border-radius: 12px;
+  padding: 22px 24px;
+  border-left: 4px solid;
+  box-shadow: var(--shadow-sm);
+}
+
+/* KEY FACT */
+.key-fact {
+  display: flex;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  margin-top: 10px;
+}
+.key-fact + .key-fact { margin-top: 8px; }
+.kf-icon { font-size: 20px; flex-shrink: 0; margin-top: 2px; }
+.kf-body { flex: 1; }
+.kf-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.kf-text { font-size: 13px; color: var(--ink-mid); line-height: 1.75; }
+.kf-text strong { color: var(--ink); font-weight: 600; }
+
+/* BODY TEXT */
+.body-text {
+  font-size: 14px;
+  color: var(--ink-mid);
+  line-height: 1.85;
+}
+.body-text strong { color: var(--ink); font-weight: 600; }
+.body-text + .body-text { margin-top: 12px; }
+
+/* SUNGSHIN BADGE */
+.ss-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  letter-spacing: .5px;
+}
+
+/* WARNING STRIP */
+.warn-strip {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+.warn-strip .ws-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.warn-strip .ws-text { font-size: 13px; line-height: 1.75; }
+.warn-strip .ws-text strong { font-weight: 700; }
+
+/* DIVIDER */
+.divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+/* ════════════════════════
+   배우자 섹션 전용
+════════════════════════ */
+.spouse-main {
+  background: var(--surface);
+  border: 1px solid rgba(192,56,32,0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.spouse-top {
+  background: linear-gradient(135deg, rgba(192,56,32,0.07) 0%, rgba(192,56,32,0.02) 100%);
+  padding: 24px 26px;
+  border-bottom: 1px solid rgba(192,56,32,0.12);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.spouse-char-wrap {
+  width: 72px; height: 72px;
+  background: var(--cinnabar);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px rgba(192,56,32,0.3);
+}
+.spouse-char {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 38px;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+}
+.spouse-info {}
+.spouse-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--cinnabar);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.spouse-name {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+.spouse-sub { font-size: 12px; color: var(--ink-dim); }
+.spouse-body { padding: 22px 26px; }
+
+/* 해충 표시 */
+.hai-box {
+  background: rgba(192,56,32,0.06);
+  border: 1px solid rgba(192,56,32,0.2);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-top: 16px;
+}
+.hai-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cinnabar);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.hai-body {
+  font-size: 13px;
+  color: var(--ink-mid);
+  line-height: 1.8;
+}
+.hai-body strong { color: var(--ink); font-weight: 600; }
+
+/* 2026 경고 */
+.year-warn {
+  background: rgba(192,56,32,0.05);
+  border: 1px solid rgba(192,56,32,0.25);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-top: 12px;
+}
+.year-warn-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cinnabar);
+  margin-bottom: 8px;
+}
+.year-badge {
+  background: var(--cinnabar);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+}
+.year-warn-text {
+  font-size: 13px;
+  color: var(--ink-mid);
+  line-height: 1.75;
+}
+.year-warn-text strong { color: var(--ink); font-weight: 600; }
+
+/* ════════════════════════
+   부모 섹션
+════════════════════════ */
+.parent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.parent-card {
+  background: var(--surface);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.parent-top {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.parent-icon-wrap {
+  width: 52px; height: 52px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.parent-icon {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+}
+.parent-label {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 3px;
+}
+.parent-sungshin {
+  font-size: 12px;
+  color: var(--ink-dim);
+}
+.parent-body { padding: 18px 20px; }
+.parent-body .body-text { font-size: 13px; }
+
+/* ════════════════════════
+   자식·형제 공통
+════════════════════════ */
+.section-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.section-card-head {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sc-icon { font-size: 22px; }
+.sc-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.sc-sub { font-size: 11px; color: var(--ink-dim); margin-top: 1px; }
+.section-card-body { padding: 18px 20px; }
+
+/* ════════════════════════
+   종합 테이블
+════════════════════════ */
+.summary-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.summary-table thead tr {
+  background: var(--bg2);
+}
+.summary-table th {
+  padding: 13px 18px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--ink-dim);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+.summary-table td {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  vertical-align: top;
+  line-height: 1.65;
+  color: var(--ink-mid);
+}
+.summary-table td:first-child {
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.summary-table td:nth-child(2) {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.summary-table tr:hover td { background: rgba(26,20,16,0.02); }
+
+/* 육친 row 컬러 */
+.row-spouse td:first-child { color: var(--cinnabar); }
+.row-mother td:first-child { color: var(--indigo); }
+.row-father td:first-child { color: var(--indigo); }
+.row-child  td:first-child { color: var(--jade); }
+.row-sibling td:first-child { color: var(--amber); }
+
+/* ════════════════════════
+   코칭 최종
+════════════════════════ */
+.coaching-final {
+  background: var(--ink);
+  color: white;
+  border-radius: 14px;
+  padding: 32px 28px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(26,20,16,0.2);
+}
+.coaching-final::before {
+  content: '關';
+  position: absolute;
+  right: -10px; bottom: -20px;
+  font-family: 'Noto Serif KR', serif;
+  font-size: 160px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.04);
+  pointer-events: none;
+  line-height: 1;
+}
+.cf-label {
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: var(--cinnabar);
+  text-transform: uppercase;
+  font-weight: 700;
+  margin-bottom: 14px;
+}
+.cf-text {
+  font-family: 'Noto Serif KR', serif;
+  font-size: clamp(14px, 3.5vw, 17px);
+  line-height: 1.9;
+  color: rgba(255,255,255,0.85);
+  font-style: italic;
+  margin-bottom: 20px;
+}
+.cf-text strong { color: white; font-style: normal; }
+.cf-point {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 13px;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.7;
+}
+.cf-point + .cf-point { margin-top: 8px; }
+.cf-point strong { color: white; }
+.cf-arrow { color: var(--cinnabar); font-size: 14px; flex-shrink: 0; margin-top: 2px; }
+
+/* ════════════════════════
+   ANIMATIONS
+════════════════════════ */
+@keyframes slideIn {
+  from { opacity:0; transform:translateX(-12px); }
+  to   { opacity:1; transform:translateX(0); }
+}
+
+/* ════════════════════════
+   FOOTER
+════════════════════════ */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 28px 24px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--ink-dim);
+  letter-spacing: 2px;
+  background: var(--bg2);
+}
+
+/* ════════════════════════
+   RESPONSIVE
+════════════════════════ */
+@media (max-width: 500px) {
+  .spouse-top { gap: 14px; }
+  .spouse-char-wrap { width: 56px; height: 56px; }
+  .spouse-char { font-size: 28px; }
+  .summary-table th, .summary-table td { padding: 10px 12px; }
+  .summary-table { font-size: 12px; }
+  .coaching-final { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<div class="watermark">육친</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <span class="nav-module">Module A</span>
+    <span class="nav-sep">·</span>
+    <span class="nav-title">육친 관계 — 박찬수(30)</span>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#spouse">배우자</a></li>
+    <li><a href="#parent">부모</a></li>
+    <li><a href="#child">자식</a></li>
+    <li><a href="#sibling">형제·동료</a></li>
+    <li><a href="#summary">종합</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">모듈 A · 육친 관계 해석</div>
+  <h1 class="hero-title">Yukchim Relations</h1>
+  <div class="hero-title-ko">육친(六親) 관계 분석</div>
+  <div class="hero-rule"></div>
+  <p class="hero-desc">
+    일간 <strong>丙火</strong>를 중심으로 배우자·부모·자식·형제의
+    십성 배치와 합충 관계를 읽습니다.<br>
+    비겁 4개 · 木 완전 부재 · 일지 子(정관) — 이 세 가지가
+    <strong>모든 관계 패턴의 뿌리</strong>입니다.
+  </p>
+
+  <!-- 육친 미니맵 -->
+  <div class="yukchim-map">
+    <div class="ym-label">육친 한눈에</div>
+    <div class="ym-grid">
+      <a href="#spouse" class="ym-chip">
+        <div class="ym-dot" style="background:var(--cinnabar)"></div>
+        <span class="ym-name">배우자</span>
+        <span class="ym-sungshin">일지 子 · 정관 · 子未 해</span>
+      </a>
+      <a href="#parent" class="ym-chip">
+        <div class="ym-dot" style="background:var(--indigo)"></div>
+        <span class="ym-name">어머니</span>
+        <span class="ym-sungshin">인성(木) 완전 부재</span>
+      </a>
+      <a href="#parent" class="ym-chip">
+        <div class="ym-dot" style="background:var(--indigo)"></div>
+        <span class="ym-name">아버지</span>
+        <span class="ym-sungshin">편재 申 · 공망</span>
+      </a>
+      <a href="#child" class="ym-chip">
+        <div class="ym-dot" style="background:var(--jade)"></div>
+        <span class="ym-name">자식</span>
+        <span class="ym-sungshin">정관 · 子未 해 변수</span>
+      </a>
+      <a href="#sibling" class="ym-chip">
+        <div class="ym-dot" style="background:var(--amber)"></div>
+        <span class="ym-name">형제·동료</span>
+        <span class="ym-sungshin">비겁 4개 · 편재 극</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- ════════════════════
+       배우자
+  ════════════════════ -->
+  <section class="chapter" id="spouse">
+    <div class="chapter-header">
+      <div class="chapter-accent" style="background:var(--cinnabar)"></div>
+      <div class="chapter-meta">
+        <div class="chapter-num" style="color:var(--cinnabar)">배우자 관계</div>
+        <h2 class="chapter-title">일지 子(정관) — 닻이자 가장 취약한 자리</h2>
+      </div>
+    </div>
+
+    <div class="spouse-main">
+      <div class="spouse-top">
+        <div class="spouse-char-wrap">
+          <div class="spouse-char">子</div>
+        </div>
+        <div class="spouse-info">
+          <div class="spouse-label">배우자 궁 · 일지</div>
+          <div class="spouse-name">정관(正官) · 수(水)</div>
+          <div class="spouse-sub">책임감 있고 안정적인 파트너를 무의식적으로 원함</div>
+        </div>
+      </div>
+      <div class="spouse-body">
+        <p class="body-text">남성 기준 일지 정관은 <strong>배우자 궁에서 가장 직접적으로 읽힙니다.</strong> 겉으로는 비겁 4개의 강한 자아이지만, 일지 깊은 곳에서는 나를 붙잡아줄 중심이 필요한 구조입니다.</p>
+
+        <div class="key-fact" style="border-color:rgba(192,56,32,0.2);background:rgba(192,56,32,0.04);">
+          <div class="kf-icon">⚓</div>
+          <div class="kf-body">
+            <div class="kf-title" style="color:var(--cinnabar)">배우자가 이 사주의 유일한 정서적 닻</div>
+            <div class="kf-text">비겁 4개 · 木 완전 부재 — 충전 통로가 없는 이 구조에서 <strong>일지 정관(子)만이 수(水)로 화(火)를 억제합니다.</strong> 배우자 관계가 흔들리면 원국 전체의 균형이 무너질 수 있습니다.</div>
+          </div>
+        </div>
+
+        <!-- 子未 해 -->
+        <div class="hai-box">
+          <div class="hai-title">
+            ⚡ 子未 해(害)·원진 — 핵심 변수
+          </div>
+          <div class="hai-body">
+            일지 子(배우자 궁)와 월지 未(직업·표현 자리)가 해(害)를 이룹니다. 이것이 관계에서 반복되는 패턴의 <strong>구조적 원인</strong>입니다.
+          </div>
+          <div style="margin-top:12px;display:flex;flex-direction:column;gap:7px;">
+            <div class="warn-strip" style="background:rgba(192,56,32,0.05);border:1px solid rgba(192,56,32,0.15);">
+              <div class="ws-icon">→</div>
+              <div class="ws-text" style="color:var(--ink-mid)">일이 잘 풀리면 관계에 소홀해지고, 관계가 좋아지면 일에서 에너지가 빠집니다.</div>
+            </div>
+            <div class="warn-strip" style="background:rgba(192,56,32,0.05);border:1px solid rgba(192,56,32,0.15);">
+              <div class="ws-icon">→</div>
+              <div class="ws-text" style="color:var(--ink-mid)">직장·직업에서 쌓인 스트레스(상관 未)가 가장 가까운 사람(일지 子)에게 투사될 수 있습니다.</div>
+            </div>
+            <div class="warn-strip" style="background:rgba(192,56,32,0.05);border:1px solid rgba(192,56,32,0.15);">
+              <div class="ws-icon">→</div>
+              <div class="ws-text" style="color:var(--ink-mid);"><strong style="color:var(--ink)">두 영역이 동시에 안정되는 시기가 드문 구조</strong> — 이것을 인식하지 못하면 관계 문제의 원인을 상대방에게서 찾게 됩니다.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2026 경고 -->
+        <div class="year-warn">
+          <div class="year-warn-head">
+            <span class="year-badge">2026</span>
+            丙午 세운 — 午子 충(沖) 발동
+          </div>
+          <div class="year-warn-text">
+            올해 午가 일지 子를 <strong>정면으로 충합니다.</strong> 배우자 궁을 직접 치는 세운입니다. 현재 연애·결혼 관계가 있다면 갈등·거리두기·갑작스러운 변화가 나타날 수 있는 구간. <strong>6~8월 감정이 올라올 때 최소 한 달을 기다리는 것이 핵심 전략입니다.</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════
+       부모
+  ════════════════════ -->
+  <section class="chapter" id="parent">
+    <div class="chapter-header">
+      <div class="chapter-accent" style="background:var(--indigo)"></div>
+      <div class="chapter-meta">
+        <div class="chapter-num" style="color:var(--indigo)">부모 관계</div>
+        <h2 class="chapter-title">木 부재(어머니) · 공망 편재(아버지)</h2>
+      </div>
+    </div>
+
+    <div class="parent-grid">
+      <!-- 어머니 -->
+      <div class="parent-card">
+        <div class="parent-top" style="background:linear-gradient(135deg,rgba(42,74,122,0.06),transparent)">
+          <div class="parent-icon-wrap" style="background:var(--indigo-d);border:1px solid rgba(42,74,122,0.2)">
+            <span class="parent-icon" style="color:var(--indigo)">母</span>
+          </div>
+          <div>
+            <div class="parent-label" style="color:var(--indigo)">어머니</div>
+            <div style="font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;color:var(--ink)">인성(印星) 완전 부재</div>
+            <div class="parent-sungshin">木 0개 — 충전 통로 차단</div>
+          </div>
+        </div>
+        <div class="parent-body">
+          <p class="body-text">인성(목, 木)이 원국에 단 하나도 없습니다. <strong>모친의 정서적 지지·충전 기능이 약한 구조</strong>를 의미합니다. 어머니가 부재했거나, 있었더라도 정서적 충전보다 현실적 역할에 머물렀을 가능성이 있습니다.</p>
+          <div class="key-fact" style="border-color:rgba(42,74,122,0.2);background:rgba(42,74,122,0.04);margin-top:12px;">
+            <div class="kf-icon">🌱</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--indigo)">"충전받지 못하고 자란 아이"의 무의식</div>
+              <div class="kf-text">인성 부재 + 비겁 과다 — <strong>"아무도 도와주지 않으니 내가 혼자 해야 한다"</strong>는 무의식적 신념이 형성됩니다. 이것이 겁재의 고집·자기 방식 고수와 맞물려 관계 패턴 전반에 영향을 줍니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 아버지 -->
+      <div class="parent-card">
+        <div class="parent-top" style="background:linear-gradient(135deg,rgba(42,74,122,0.06),transparent)">
+          <div class="parent-icon-wrap" style="background:var(--indigo-d);border:1px solid rgba(42,74,122,0.2)">
+            <span class="parent-icon" style="color:var(--indigo)">父</span>
+          </div>
+          <div>
+            <div class="parent-label" style="color:var(--indigo)">아버지</div>
+            <div style="font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;color:var(--ink)">편재(偏財) 申 · 공망</div>
+            <div class="parent-sungshin">金 1개 — 申酉 공망 직격</div>
+          </div>
+        </div>
+        <div class="parent-body">
+          <p class="body-text">남성 기준 재성은 아버지 자리입니다. 편재 申이 <strong>공망(空亡)에 해당</strong>합니다. 부친과의 인연이 일찍 분리됐거나, 있어도 심리적 거리가 있는 구조일 수 있습니다.</p>
+          <div class="key-fact" style="border-color:rgba(42,74,122,0.2);background:rgba(42,74,122,0.04);margin-top:12px;">
+            <div class="kf-icon">🏛️</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--indigo)">권위 수용이 본능적으로 어려운 이유</div>
+              <div class="kf-text">비겁 4개가 편재(아버지)를 집단으로 극(克) — <strong>부친의 권위·영향력을 본능적으로 수용하기 어려운 기질</strong>과 연결됩니다. 조직 권위자와의 갈등 패턴과 같은 뿌리.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════
+       자식
+  ════════════════════ -->
+  <section class="chapter" id="child">
+    <div class="chapter-header">
+      <div class="chapter-accent" style="background:var(--jade)"></div>
+      <div class="chapter-meta">
+        <div class="chapter-num" style="color:var(--jade)">자식 관계</div>
+        <h2 class="chapter-title">관성(정관) — 인연은 있으나 에너지 분산</h2>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-head" style="background:linear-gradient(135deg,rgba(42,106,74,0.06),transparent);border-bottom-color:rgba(42,106,74,0.15)">
+        <span class="sc-icon">🌿</span>
+        <div>
+          <div class="sc-title">남성 기준 자식 자리 — 관성(정관·편관)</div>
+          <div class="sc-sub">일지 子(정관) · 지장간 壬(편관)</div>
+        </div>
+      </div>
+      <div class="section-card-body">
+        <p class="body-text">정관(子)이 일지에 있어 <strong>자식과의 인연 자체는 있는 구조</strong>입니다. 그러나 이 자리가 子未 해(害)의 변수를 동시에 안고 있습니다.</p>
+
+        <div class="card-grid-2" style="margin-top:14px;">
+          <div class="key-fact" style="border-color:rgba(42,106,74,0.2);background:rgba(42,106,74,0.05);">
+            <div class="kf-icon">📍</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--jade)">子未 해 — 에너지 분산</div>
+              <div class="kf-text">자식에게 쏟을 에너지가 직업·표현(상관 未)으로 빠져나가는 패턴이 반복될 수 있습니다.</div>
+            </div>
+          </div>
+          <div class="key-fact" style="border-color:rgba(42,106,74,0.2);background:rgba(42,106,74,0.05);">
+            <div class="kf-icon">⚖️</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--jade)">비겁 과다 — 통제 욕구</div>
+              <div class="kf-text"><strong>"내 방식"이 강해서</strong> 자식과의 관계에서도 통제 욕구가 나타날 수 있습니다. 자식이 자기 방식을 따르지 않을 때 갈등.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════
+       형제·동료
+  ════════════════════ -->
+  <section class="chapter" id="sibling">
+    <div class="chapter-header">
+      <div class="chapter-accent" style="background:var(--amber)"></div>
+      <div class="chapter-meta">
+        <div class="chapter-num" style="color:var(--amber)">형제·동료 관계</div>
+        <h2 class="chapter-title">비겁 4개 — 동류는 많으나 역설적 고독</h2>
+      </div>
+    </div>
+
+    <div class="section-card">
+      <div class="section-card-head" style="background:linear-gradient(135deg,rgba(154,96,16,0.06),transparent);border-bottom-color:rgba(154,96,16,0.15)">
+        <span class="sc-icon">🔥</span>
+        <div>
+          <div class="sc-title">비겁(比劫) 4개 — 형제·동료가 삶의 핵심 변수</div>
+          <div class="sc-sub">비견(丙)×2 · 겁재(丁)×2 — 편재 극(克) 구조</div>
+        </div>
+      </div>
+      <div class="section-card-body">
+        <p class="body-text">비겁이 강하면 형제·친구·동료와의 관계가 삶에서 두드러지게 나타납니다. 그런데 이 사주의 비겁은 단순히 "형제가 많다"가 아닙니다.</p>
+
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;">
+          <div class="key-fact" style="border-color:rgba(154,96,16,0.2);background:rgba(154,96,16,0.05);">
+            <div class="kf-icon">💸</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--amber)">비겁 과다 + 편재 공망 = 재물 갈등 구조</div>
+              <div class="kf-text">형제·동료와 재물로 인한 갈등이 내재되어 있습니다. <strong>돈 문제로 가까운 사람과 틀어지는 경험, 함께 시작한 일이 재물 분배에서 어긋나는 경험</strong>이 반복될 수 있습니다.</div>
+            </div>
+          </div>
+          <div class="key-fact" style="border-color:rgba(154,96,16,0.2);background:rgba(154,96,16,0.05);">
+            <div class="kf-icon">⚔️</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--amber)">겁재(丁)×2 — 경쟁·자존심 충돌 사이클</div>
+              <div class="kf-text">처음엔 강렬하게 연결되고, 경쟁 심리 또는 자존심 충돌로 틀어지는 패턴이 반복됩니다. <strong>"내 편이라고 생각했는데 결국 경쟁자가 된다"</strong>는 경험.</div>
+            </div>
+          </div>
+          <div class="key-fact" style="border-color:rgba(154,96,16,0.2);background:rgba(154,96,16,0.05);">
+            <div class="kf-icon">🫙</div>
+            <div class="kf-body">
+              <div class="kf-title" style="color:var(--amber)">인성(木) 부재 = 역설적 고독</div>
+              <div class="kf-text">비겁이 많아 동류는 많은데, <strong>깊은 속내를 털어놓을 수 있는 관계는 오히려 드문 역설적 고독 구조.</strong> 충전해주는 진정한 내 편이 없습니다.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════════════════
+       종합 테이블
+  ════════════════════ -->
+  <section class="chapter" id="summary">
+    <div class="chapter-header">
+      <div class="chapter-accent" style="background:var(--gold)"></div>
+      <div class="chapter-meta">
+        <div class="chapter-num" style="color:var(--gold)">종합</div>
+        <h2 class="chapter-title">육친 관계 한눈에 — 반복되는 핵심 패턴</h2>
+      </div>
+    </div>
+
+    <div class="summary-wrap">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>육친</th>
+            <th>십성·위치</th>
+            <th>반복되는 패턴</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-spouse">
+            <td>배우자</td>
+            <td>정관 · 일지 子<br><span style="font-size:11px;color:var(--ink-dim);font-weight:400;">子未 해·원진</span></td>
+            <td>닻이자 가장 취약한 자리. 일과 관계가 시소 구조. 2026년 午子 충 최대 주의.</td>
+          </tr>
+          <tr class="row-mother">
+            <td>어머니</td>
+            <td>인성(木) · 완전 부재<br><span style="font-size:11px;color:var(--ink-dim);font-weight:400;">木 0개</span></td>
+            <td>정서적 충전 없이 혼자 버텨온 무의식 형성. "혼자 해야 한다"는 신념의 뿌리.</td>
+          </tr>
+          <tr class="row-father">
+            <td>아버지</td>
+            <td>편재 申 · 공망<br><span style="font-size:11px;color:var(--ink-dim);font-weight:400;">申酉 공망</span></td>
+            <td>부친 인연 약함. 권위 수용이 본능적으로 어려움. 조직 갈등의 같은 뿌리.</td>
+          </tr>
+          <tr class="row-child">
+            <td>자식</td>
+            <td>정관 · 일지 子<br><span style="font-size:11px;color:var(--ink-dim);font-weight:400;">子未 해 변수</span></td>
+            <td>인연은 있으나 에너지 분산으로 소홀해지는 패턴. 통제 욕구 주의.</td>
+          </tr>
+          <tr class="row-sibling">
+            <td>형제·동료</td>
+            <td>비겁 4개<br><span style="font-size:11px;color:var(--ink-dim);font-weight:400;">편재 극·공망</span></td>
+            <td>동류는 많으나 재물·자존심 충돌로 틀어지는 반복. 역설적 고독 구조.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 최종 코칭 -->
+    <div class="coaching-final" style="margin-top:16px;">
+      <div class="cf-label">관계 코칭 포인트</div>
+      <p class="cf-text">
+        배우자 관계가 이 사주의 유일한 안정 통로입니다.<br>
+        그런데 바로 그 자리(일지)가 <strong>세운의 충(沖)과 해(害)에 가장 취약하게 노출</strong>되어 있습니다.
+      </p>
+      <div class="cf-point">
+        <span class="cf-arrow">▶</span>
+        <span>관계에서 갈등이 생겼을 때 <strong>"내가 맞다"를 증명하려는 충동(겁재)</strong>을 한 박자 늦추는 훈련 — 이것이 이 사주에서 가장 실질적인 관계 코칭 포인트입니다.</span>
+      </div>
+      <div class="cf-point">
+        <span class="cf-arrow">▶</span>
+        <span>인성(木) 부재 — <strong>충전받지 못한 내면</strong>이 관계에서 과도한 요구 또는 회피로 나타날 수 있습니다. 배우자에게 충전을 의존하기 전에 스스로 충전 루틴을 만드는 것이 선결 과제입니다.</span>
+      </div>
+      <div class="cf-point">
+        <span class="cf-arrow">▶</span>
+        <span><strong>2026년 6~8월</strong>은 모든 관계 결정을 보류하세요. 午子 충이 최고조일 때 내린 판단은 나중에 후회할 가능성이 높습니다.</span>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /main -->
+
+<footer>
+  모듈 A · 육친 관계 해석 · 박찬수(30) · 1997.08.02 · 신해(辛海) 독법 v2.0
+</footer>
+
+<script>
+// 스크롤 페이드인
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) e.target.classList.add('visible');
+  });
+}, { threshold: 0.07, rootMargin: '0px 0px -30px 0px' });
+
+document.querySelectorAll('.chapter').forEach(el => observer.observe(el));
+
+// 네비 활성
+const sections = document.querySelectorAll('[id]');
+const navLinks = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    const isActive = a.getAttribute('href') === '#' + current;
+    a.style.color = isActive ? 'var(--cinnabar)' : '';
+    a.style.fontWeight = isActive ? '700' : '';
+  });
+}, { passive: true });
+</script>
+</body>
+</html>
