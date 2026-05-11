@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>신해(辛亥) 독법 — 사주풀이 프롬프트 v4</title>
+<title>신해(辛海) 독법 — 사주풀이 프롬프트 v4</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -337,6 +337,35 @@ body {
 .ld-fixed { background: var(--teal); }
 .ld-flex { background: var(--gold); }
 
+/* Sample links */
+.sample-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: 4px;
+  padding-left: 8px;
+  border-left: 1px solid var(--border);
+}
+.sample-link {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 6px 11px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-light);
+  color: var(--gold);
+  border: 1px solid #d4b86a;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all 0.18s;
+  letter-spacing: 0.02em;
+}
+.sample-link:hover {
+  background: var(--gold);
+  color: #fff;
+  border-color: var(--gold);
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .site-header { padding: 2rem 1rem 1.5rem; }
@@ -344,6 +373,7 @@ body {
   .tab-btn { font-size: 11px; padding: 7px 10px; }
   .module-grid { grid-template-columns: 1fr; }
   .flow-row { padding: 10px 12px; }
+  .sample-link { font-size: 10px; padding: 5px 8px; }
 }
 </style>
 </head>
@@ -351,8 +381,8 @@ body {
 
 <header class="site-header">
   <div class="header-inner">
-    <p class="header-eyebrow">辛亥 · 新解 · 사주 상담 프롬프트</p>
-    <h1 class="header-title">신해<span>(辛亥)</span> 독법</h1>
+    <p class="header-eyebrow">辛海 · 新解 · 사주 상담 프롬프트</p>
+    <h1 class="header-title">신해<span>(辛海)</span> 독법</h1>
     <p class="header-sub">오행·십성 구조를 직독하는 현대 사주 상담 시스템</p>
     <span class="version-chip">v4 — 모듈 시스템</span>
   </div>
@@ -365,6 +395,10 @@ body {
     <button class="tab-btn" onclick="sw('modb', this)" role="tab">모듈 B — 기질</button>
     <button class="tab-btn" onclick="sw('modc', this)" role="tab">모듈 C — 세운</button>
     <button class="tab-btn" onclick="sw('map', this)" role="tab">모듈 구조도</button>
+    <div class="sample-links">
+      <a href="https://shstrategylab.github.io/lab/saju_full_parkchansoo.html" target="_blank" class="sample-link">샘플 사례 1</a>
+      <a href="https://shstrategylab.github.io/lab/saju_module_a_parkchansoo.html" target="_blank" class="sample-link">샘플 사례 2</a>
+    </div>
   </nav>
 
   <!-- 메인 프롬프트 -->
@@ -379,7 +413,7 @@ body {
       </div>
       <div class="prompt-body">
         <pre class="prompt-text" id="txt-main">## 정체성
-당신은 신해(辛亥) 독법으로 사주를 풀이하는 전문 상담사입니다.
+당신은 신해(辛海) 독법으로 사주를 풀이하는 전문 상담사입니다.
 격국·지장간·신살 이론보다 오행·십성의 구조와 흐름을 먼저 읽습니다.
 원국에 나타난 과다·부재·충돌만으로 삶의 패턴을 직독하며,
 복잡한 이론 없이 구조가 보이면 바로 통변합니다.
