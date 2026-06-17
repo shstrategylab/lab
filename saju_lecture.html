@@ -230,6 +230,25 @@
   .branch-element { font-size: 11px; margin-top: 2px; font-weight: 600; }
   .branch-month { font-size: 10px; color: var(--ink3); margin-top: 2px; }
 
+  /* ZODIAC PERSONALITY ROWS (충 관계 짝) */
+  .zodiac-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 1.5rem; }
+  .zt-row { display: flex; align-items: stretch; border-bottom: 1px solid var(--border); }
+  .zt-row:last-child { border-bottom: none; }
+  .zt-row:nth-child(even) { background: var(--paper2); }
+  .zt-pair { flex: 1; display: flex; align-items: center; gap: 0.7rem; padding: 0.75rem 1rem; min-width: 0; }
+  .zt-han { font-family: 'Noto Serif KR', serif; font-size: 1.3rem; font-weight: 700; flex-shrink: 0; }
+  .zt-emoji { font-size: 1.3rem; flex-shrink: 0; }
+  .zt-trait { font-size: 12.5px; color: var(--ink2); line-height: 1.5; text-align: left; }
+  .zt-trait .zt-sub { color: var(--ink3); }
+  .zt-vs { flex-shrink: 0; width: 2.2rem; display: flex; align-items: center; justify-content: center; color: var(--gold2); font-size: 11px; font-weight: 700; border-left: 1px dashed rgba(184,134,11,0.4); border-right: 1px dashed rgba(184,134,11,0.4); }
+
+  /* 육충(六沖) 상세 그리드 */
+  .chong-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1rem; }
+  .chong-item { background: var(--paper2); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem 0.9rem; }
+  .chong-pair { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 13.5px; color: var(--red2); margin-bottom: 4px; }
+  .chong-pair .chong-emoji { font-size: 13px; font-weight: 400; color: var(--ink3); }
+  .chong-desc { font-size: 12.5px; color: var(--ink2); line-height: 1.6; }
+
   /* OHAENG TABLE */
   .ohaeng-grid {
     display: grid;
@@ -564,6 +583,10 @@
     .branches-grid { grid-template-columns: repeat(4, 1fr); }
     .ohaeng-grid { grid-template-columns: repeat(3, 1fr); }
     .sipseong-table { font-size: 12px; }
+    .zt-row { flex-direction: column; }
+    .zt-pair { padding: 0.65rem 0.9rem; }
+    .zt-vs { width: 100%; padding: 2px 0; border-left: none; border-right: none; border-top: 1px dashed rgba(184,134,11,0.4); border-bottom: 1px dashed rgba(184,134,11,0.4); }
+    .chong-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -850,7 +873,90 @@
       </div>
     </div>
 
-    <div class="grid-3">
+    <div class="tip">아래는 12지지를 띠 동물의 성격 키워드로 풀어본 것이다. 한 화면에 다 담기 위해 12개를 절반씩 나눠 2열로 배치했는데, 마침 이렇게 나누면 좌우가 정확히 마주보는 자리, 즉 충(沖) 관계가 된다. 왜 그런지는 바로 아래 '지지의 충' 카드에서 확인할 수 있다. 내 사주 네 글자에 어떤 지지가 있는지 대입해보자.</div>
+
+    <div class="zodiac-wrap">
+      <div class="zt-row">
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#2e7d32;">寅</div>
+          <div class="zt-emoji">🐯</div>
+          <div class="zt-trait">행동파 · 말보다 시작<br><span class="zt-sub">회심의 한 방</span></div>
+        </div>
+        <div class="zt-vs">沖</div>
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#37474f;">申</div>
+          <div class="zt-emoji">🐵</div>
+          <div class="zt-trait">두뇌 회전 긁음<br><span class="zt-sub">몸의 분주 · 센스</span></div>
+        </div>
+      </div>
+      <div class="zt-row">
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#388e3c;">卯</div>
+          <div class="zt-emoji">🐰</div>
+          <div class="zt-trait">섬세 · 예민 · 말과 표현<br><span class="zt-sub">감성적 · 외유내강</span></div>
+        </div>
+        <div class="zt-vs">沖</div>
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#546e7a;">酉</div>
+          <div class="zt-emoji">🐔</div>
+          <div class="zt-trait">디테일 · 미감<br><span class="zt-sub">예술 · 재배치</span></div>
+        </div>
+      </div>
+      <div class="zt-row">
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#f9a825;">辰</div>
+          <div class="zt-emoji">🐉</div>
+          <div class="zt-trait">중재 · 책임 · 조율<br><span class="zt-sub">무거운 존재감</span></div>
+        </div>
+        <div class="zt-vs">沖</div>
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#f9a825;">戌</div>
+          <div class="zt-emoji">🐶</div>
+          <div class="zt-trait">의리 · 책임 · 현실적<br><span class="zt-sub">패밀리십</span></div>
+        </div>
+      </div>
+      <div class="zt-row">
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#d32f2f;">巳</div>
+          <div class="zt-emoji">🐍</div>
+          <div class="zt-trait">계산 · 관찰 · 전략<br><span class="zt-sub">공부 머리 · 말 머리</span></div>
+        </div>
+        <div class="zt-vs">沖</div>
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#1565c0;">亥</div>
+          <div class="zt-emoji">🐷</div>
+          <div class="zt-trait">상상력 · 이상주의<br><span class="zt-sub">몽상가</span></div>
+        </div>
+      </div>
+      <div class="zt-row">
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#c62828;">午</div>
+          <div class="zt-emoji">🐴</div>
+          <div class="zt-trait">직설 · 폭발<br><span class="zt-sub">인기 · 명랑</span></div>
+        </div>
+        <div class="zt-vs">沖</div>
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#0277bd;">子</div>
+          <div class="zt-emoji">🐭</div>
+          <div class="zt-trait">예민 · 깔끔 · 기억력<br><span class="zt-sub">내 세상 · 스폰지</span></div>
+        </div>
+      </div>
+      <div class="zt-row">
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#b58600;">未</div>
+          <div class="zt-emoji">🐑</div>
+          <div class="zt-trait">고집 · 감정<br><span class="zt-sub">통찰력 · 철벽</span></div>
+        </div>
+        <div class="zt-vs">沖</div>
+        <div class="zt-pair">
+          <div class="zt-han" style="color:#b58600;">丑</div>
+          <div class="zt-emoji">🐮</div>
+          <div class="zt-trait">묵묵함 · 대기만성<br><span class="zt-sub">마침내</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid-2">
       <div class="card">
         <div class="card-title"><span class="dot dot-gold"></span>지지의 합(合)</div>
         <div class="card-body">
@@ -860,18 +966,44 @@
         </div>
       </div>
       <div class="card">
-        <div class="card-title"><span class="dot dot-red"></span>지지의 충(沖)</div>
-        <div class="card-body">
-          子午충 / 丑未충 / 寅申충 / 卯酉충 / 辰戌충 / 巳亥충<br><br>
-          정반대 에너지끼리의 충돌. 해당 궁(위치)이 흔들려 이동·변화·이별·수술 등 큰 변동이 발생할 수 있다.
-        </div>
-      </div>
-      <div class="card">
         <div class="card-title"><span class="dot dot-teal"></span>지지의 형·파·해</div>
         <div class="card-body">
           <strong>형(刑):</strong> 寅巳申 / 丑戌未 — 스스로를 극하는 긴장 관계<br>
           <strong>파(破):</strong> 子酉 / 午卯 등 — 기운이 새는 균열<br>
           <strong>해(害):</strong> 子未 / 丑午 등 — 옆에서 방해하는 작은 갈등
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:1.5rem;">
+      <div class="card-title"><span class="dot dot-red"></span>지지의 충(沖) — 육충(六沖) 여섯 쌍</div>
+      <div class="card-body">
+        충(沖)은 12지지 순환에서 정확히 180도 마주보는 자리, 즉 6칸 떨어진 두 글자가 정면으로 부딪히는 관계다. 방향과 기질이 정반대라 함께 있으면 마찰이나 에너지 소모가 생기기 쉽지만, 무조건 나쁜 것만은 아니다. 서로의 부족한 부분을 자극해 발전의 계기가 되기도 하는 만큼, 가까운 관계라면 배려와 이해가 특히 필요하다.
+      </div>
+      <div class="chong-grid">
+        <div class="chong-item">
+          <div class="chong-pair">子午충 <span class="chong-emoji">쥐 ↔ 말</span></div>
+          <div class="chong-desc">지혜와 이성을 상징하는 水(子)와 열정·표출을 상징하는 火(午)가 정면으로 마주친다. 차분함과 다급함의 충돌.</div>
+        </div>
+        <div class="chong-item">
+          <div class="chong-pair">丑未충 <span class="chong-emoji">소 ↔ 양</span></div>
+          <div class="chong-desc">둘 다 土이지만 겨울의 차가운 땅(丑)과 여름의 뜨거운 땅(未)으로 계절이 정반대라, 고집과 가치관 대립이 잦다.</div>
+        </div>
+        <div class="chong-item">
+          <div class="chong-pair">寅申충 <span class="chong-emoji">호랑이 ↔ 원숭이</span></div>
+          <div class="chong-desc">둘 다 역마(이동)의 기운이 강한 생지(生支)라, 가만히 부딪히기보다 각자 다른 방향으로 내달리며 경쟁하듯 충돌한다.</div>
+        </div>
+        <div class="chong-item">
+          <div class="chong-pair">卯酉충 <span class="chong-emoji">토끼 ↔ 닭</span></div>
+          <div class="chong-desc">부드러운 木(卯)과 날카로운 金(酉)의 충돌. 둘 다 예민한 기운이라 작은 자극에도 신경전으로 번지기 쉽다.</div>
+        </div>
+        <div class="chong-item">
+          <div class="chong-pair">辰戌충 <span class="chong-emoji">용 ↔ 개</span></div>
+          <div class="chong-desc">명예와 존재감을 중시하는 土(辰)와 현실적이고 보수적인 土(戌)가 만나, 같은 흙이라도 지향점이 달라 자존심 싸움이 길어진다.</div>
+        </div>
+        <div class="chong-item">
+          <div class="chong-pair">巳亥충 <span class="chong-emoji">뱀 ↔ 돼지</span></div>
+          <div class="chong-desc">치밀하게 계산하는 火(巳)와 넓게 포용하는 水(亥)의 충돌. 둘 다 생지(生支)지만 사고방식의 출발점 자체가 다르다.</div>
         </div>
       </div>
     </div>
