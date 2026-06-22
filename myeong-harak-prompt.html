@@ -74,14 +74,13 @@
   /* ── Matrix badge strip ── */
   .matrix-strip {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 8px;
-    overflow-x: auto;
     padding: 1rem 1.25rem;
     background: var(--ink);
     border-top: 1px solid #2A2825;
-    scrollbar-width: none;
   }
-  .matrix-strip::-webkit-scrollbar { display: none; }
   .m-badge {
     flex-shrink: 0;
     display: flex;
