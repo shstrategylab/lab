@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>명리 × 하락이수 통합 프롬프트 생성기</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600&family=Noto+Sans+KR:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #F7F5F0;
+    --surface: #FFFFFF;
+    --surface-2: #F0EDE7;
+    --ink: #1C1A17;
+    --ink-2: #5C5751;
+    --ink-3: #9C9891;
+    --accent: #3D5A3E;
+    --accent-light: #E8EFE8;
+    --accent-border: #B5CCB6;
+    --gold: #8B6914;
+    --gold-light: #FAF3E0;
+    --gold-border: #D4B96A;
+    --danger: #8B2E2E;
+    --danger-light: #FAE8E8;
+    --border: #DDD9D2;
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+    font-size: 15px;
+    line-height: 1.75;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--ink);
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+  }
+  .header-title {
+    font-family: 'Noto Serif KR', serif;
+    font-size: clamp(1.5rem, 5vw, 2.4rem);
+    font-weight: 600;
+    color: #F7F5F0;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .header-title em {
+    font-style: normal;
+    color: #A8C5A0;
+  }
+  .header-sub {
+    margin-top: 0.75rem;
+    font-size: 13px;
+    color: #7A7670;
+    font-weight: 300;
+  }
+
+  /* ── Matrix badge strip ── */
+  .matrix-strip {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 1rem 1.25rem;
+    background: var(--ink);
+    border-top: 1px solid #2A2825;
+    scrollbar-width: none;
+  }
+  .matrix-strip::-webkit-scrollbar { display: none; }
+  .m-badge {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 0.5px solid #3A3835;
+    font-size: 11px;
+    color: #9C9891;
+    white-space: nowrap;
+  }
+  .m-badge .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-go { background: #A8C5A0; }
+  .dot-warn { background: #D4B96A; }
+  .dot-pivot { background: #89ABCE; }
+  .dot-stop { background: #C47A7A; }
+
+  /* ── Main layout ── */
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+  }
+
+  /* ── Step card ── */
+  .step-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .step-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: #F7F5F0;
+    font-size: 11px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .step-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .axis-tag {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .tag-x {
+    background: var(--accent-light);
+    color: var(--accent);
+    border: 0.5px solid var(--accent-border);
+  }
+  .tag-y {
+    background: var(--gold-light);
+    color: var(--gold);
+    border: 0.5px solid var(--gold-border);
+  }
+  .step-hint {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-bottom: 10px;
+  }
+  textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 12px 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    resize: vertical;
+    transition: border-color 0.2s;
+    outline: none;
+  }
+  textarea:focus {
+    border-color: var(--accent);
+    background: #fff;
+  }
+  textarea::placeholder {
+    color: var(--ink-3);
+    font-size: 13px;
+  }
+
+  /* ── Generate button ── */
+  .btn-wrap {
+    text-align: center;
+    margin: 1.75rem 0 0;
+  }
+  .btn-generate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--ink);
+    color: #F7F5F0;
+    border: none;
+    border-radius: var(--radius);
+    padding: 14px 36px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15px;
+    font-weight: 400;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.18s, transform 0.12s;
+  }
+  .btn-generate:hover { background: #2A2825; }
+  .btn-generate:active { transform: scale(0.97); }
+  .btn-generate svg { width: 18px; height: 18px; }
+
+  /* ── Result card ── */
+  .result-card {
+    display: none;
+    margin-top: 2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+  .result-header {
+    background: var(--ink);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .result-header-title {
+    font-size: 13px;
+    color: #A8C5A0;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+  }
+  .btn-copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: transparent;
+    border: 0.5px solid #4A4845;
+    border-radius: 6px;
+    color: #9C9891;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-copy:hover { border-color: #9C9891; color: #F7F5F0; }
+  .btn-copy svg { width: 14px; height: 14px; }
+
+  /* Matrix indicator */
+  .matrix-result {
+    padding: 1rem 1.5rem;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+    display: none;
+  }
+  .matrix-result-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .matrix-result-label {
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.05em;
+  }
+  .matrix-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .chip-go { background: var(--accent-light); color: var(--accent); border: 0.5px solid var(--accent-border); }
+  .chip-warn { background: var(--gold-light); color: var(--gold); border: 0.5px solid var(--gold-border); }
+  .chip-pivot { background: #EAF1F7; color: #1A4A6E; border: 0.5px solid #9ABCD4; }
+  .chip-stop { background: var(--danger-light); color: var(--danger); border: 0.5px solid #D4A0A0; }
+
+  .result-body {
+    padding: 1.25rem 1.5rem;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--ink-2);
+    white-space: pre-wrap;
+    word-break: break-all;
+    max-height: 420px;
+    overflow-y: auto;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-weight: 300;
+  }
+
+  .result-footer {
+    border-top: 1px solid var(--border);
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .result-footer-hint {
+    font-size: 12px;
+    color: var(--ink-3);
+  }
+  .copy-success {
+    display: none;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  /* ── How to use ── */
+  .how-section {
+    margin-top: 2.5rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  .how-title {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+  .how-steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+  }
+  .how-step {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    background: var(--bg);
+    border-radius: var(--radius);
+  }
+  .how-step-n {
+    font-size: 11px;
+    color: var(--ink-3);
+  }
+  .how-step-text {
+    font-size: 13px;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .how-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-3);
+    font-size: 18px;
+    padding: 0 2px;
+    align-self: center;
+  }
+
+  /* ── Divider ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 2rem 0 1.5rem;
+    color: var(--ink-3);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 540px) {
+    header { padding: 2rem 1rem 1.5rem; }
+    main { padding: 1.5rem 1rem 3rem; }
+    .step-card { padding: 1.25rem 1rem; }
+    .result-header { padding: 0.85rem 1rem; }
+    .result-body { padding: 1rem; }
+    .result-footer { padding: 0.85rem 1rem; }
+    .how-section { padding: 1.25rem 1rem; }
+    .axis-tag { display: none; }
+    .btn-generate { padding: 13px 28px; font-size: 14px; }
+    .how-arrows { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="header-eyebrow">동양 명학 통합 분석 도구</p>
+  <h1 class="header-title">자평명리 <em>×</em> 하락이수<br>통합 프롬프트 생성기</h1>
+  <p class="header-sub">데이터 표준화 → 4가지 매트릭스 조율 → 6단계 파이프라인 리포트 생성</p>
+</header>
+
+<div class="matrix-strip" aria-label="조율 매트릭스 유형">
+  <div class="m-badge"><span class="dot" style="background:#6B8F6B"></span>① Data Tagging · X/Y축 점수화</div>
+  <div class="m-badge"><span class="dot dot-go"></span>🟢 X(+)×Y(+) 가속</div>
+  <div class="m-badge"><span class="dot dot-warn"></span>🟡 X(+)×Y(-) 속도조절</div>
+  <div class="m-badge"><span class="dot dot-pivot"></span>🔵 X(-)×Y(+) 피벗</div>
+  <div class="m-badge"><span class="dot dot-stop"></span>🔴 X(-)×Y(-) 생존</div>
+  <div class="m-badge"><span class="dot" style="background:#9C9891"></span>⑥단계 파이프라인 출력</div>
+</div>
+
+<main>
+
+  <!-- Step 1 -->
+  <div class="step-card">
+    <div class="step-head">
+      <div class="step-num">1</div>
+      <span class="step-title">자평명리 추출 텍스트</span>
+      <span class="axis-tag tag-x">X축 · 외부 환경</span>
+    </div>
+    <p class="step-hint">명리 사이트 결과를 클로드에서 해석한 텍스트를 붙여넣으세요.</p>
+    <textarea id="myungri" placeholder="예) 클로드가 해석한 올해 대운·세운 풀이, 용신·희신 흐름, 재관 분석 결과 등&#10;&#10;명리 원문 데이터를 클로드에 먼저 해석시킨 후 그 결과를 붙여넣으세요."></textarea>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="step-card">
+    <div class="step-head">
+      <div class="step-num">2</div>
+      <span class="step-title">하락이수 추출 텍스트</span>
+      <span class="axis-tag tag-y">Y축 · 내부 태도</span>
+    </div>
+    <p class="step-hint">하락이수 사이트 결과를 클로드에서 해석한 텍스트를 붙여넣으세요.</p>
+    <textarea id="harak" placeholder="예) 클로드가 해석한 선천괘·후천괘·유년괘 풀이, 효사 기반 행동 지침, 심리 처방 결과 등&#10;&#10;하락이수 원문 데이터를 클로드에 먼저 해석시킨 후 그 결과를 붙여넣으세요."></textarea>
+  </div>
+
+  <!-- Generate -->
+  <div class="btn-wrap">
+    <button class="btn-generate" onclick="generate()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M12 3v3M3 12h3m12 0h3M12 18v3M6.34 6.34l2.12 2.12m7.08 7.08l2.12 2.12M6.34 17.66l2.12-2.12M15.54 8.46l2.12-2.12"/>
+      </svg>
+      통합 프롬프트 생성
+    </button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-card" id="resultCard">
+    <div class="result-header">
+      <span class="result-header-title">생성된 통합 프롬프트</span>
+      <button class="btn-copy" onclick="copyPrompt()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+        </svg>
+        클립보드 복사
+      </button>
+    </div>
+    <div class="matrix-result" id="matrixResult">
+      <div class="matrix-result-inner">
+        <span class="matrix-result-label">감지된 조율 유형</span>
+        <span class="matrix-chip" id="matrixChip"></span>
+      </div>
+    </div>
+    <div class="result-body" id="resultBody"></div>
+    <div class="result-footer">
+      <span class="result-footer-hint">복사 후 claude.ai에 붙여넣으면 6단계 파이프라인 통합 리포트가 출력됩니다.</span>
+      <span class="copy-success" id="copySuccess">✓ 복사 완료</span>
+    </div>
+  </div>
+
+  <!-- How to use -->
+  <div class="section-divider">사용 방법</div>
+
+  <div class="how-section">
+    <p class="how-title">원스톱 통합 해석 흐름</p>
+    <div class="how-steps">
+      <div class="how-step">
+        <span class="how-step-n">Step 1</span>
+        <span class="how-step-text">명리 사이트 결과를 클로드에 해석 요청 → 결과 복사</span>
+      </div>
+      <div class="how-arrow how-arrows">→</div>
+      <div class="how-step">
+        <span class="how-step-n">Step 2</span>
+        <span class="how-step-text">하락이수 사이트 결과를 클로드에 해석 요청 → 결과 복사</span>
+      </div>
+      <div class="how-arrow how-arrows">→</div>
+      <div class="how-step">
+        <span class="how-step-n">Step 3</span>
+        <span class="how-step-text">두 해석 결과를 각 칸에 붙여넣고 생성 버튼 클릭</span>
+      </div>
+      <div class="how-arrow how-arrows">→</div>
+      <div class="how-step">
+        <span class="how-step-n">Step 4</span>
+        <span class="how-step-text">통합 프롬프트 복사 후 claude.ai에 붙여넣기</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+function detectMatrix(m, h) {
+  const mText = m.toLowerCase();
+  const hText = h.toLowerCase();
+
+  const mGood = /호운|길|재관|발복|용신|희신|상승|좋/.test(mText);
+  const mBad  = /악운|흉|극|충|기신|구신|위기|정체/.test(mText);
+  const hGood = /길|해소|풀|관용|화해|출발|회복/.test(hText);
+  const hBad  = /경고|흉|과열|오만|독단|조심|도적|까불|리스크/.test(hText);
+
+  if (mGood && hGood) return { type: 'go',    label: '호운 × 길괘 — 가속',       cls: 'chip-go',    dot: '#A8C5A0' };
+  if (mGood && hBad)  return { type: 'warn',  label: '호운 × 흉괘 — 속도 조절',  cls: 'chip-warn',  dot: '#D4B96A' };
+  if (mBad  && hGood) return { type: 'pivot', label: '악운 × 길괘 — 피벗',        cls: 'chip-pivot', dot: '#89ABCE' };
+  if (mBad  && hBad)  return { type: 'stop',  label: '악운 × 흉괘 — 생존',        cls: 'chip-stop',  dot: '#C47A7A' };
+  return null;
+}
+
+function generate() {
+  const m = document.getElementById('myungri').value.trim();
+  const h = document.getElementById('harak').value.trim();
+
+  if (!m && !h) {
+    alert('자평명리 또는 하락이수 텍스트 중 하나 이상을 입력해주세요.');
+    return;
+  }
+
+  const matrix = detectMatrix(m, h);
+
+  const prompt = `[역할 정의]
+당신은 자평명리학(환경 및 기회 진단)과 하락이수(주역 기반 심리 및 처세학)를 결합하여, 현대 기업가와 개인을 위한 프리미엄 비즈니스 컨설팅 리포트를 작성하는 AI 마스터 컨설턴트입니다.
+두 학문의 데이터를 유기적으로 융합하여 인지적 모순이 없는 하나의 명확한 행동 전략을 도출하는 것이 당신의 임무입니다.
+
+━━━━━━━━━━━━━━━━━━━━━━
+【 STEP 1 · 데이터 표준화 (Data Tagging) 】
+━━━━━━━━━━━━━━━━━━━━━━
+아래 기준으로 두 입력 데이터를 먼저 점수화하세요. 출력에 점수를 명시하지 않아도 되지만, 내부 판단 기준으로 반드시 사용하세요.
+
+■ X축 — 자평명리 (외부 환경·시장 기회 지수)
+  +2 (강한 상승): 식상생재·재관운·희용신운 → 시장이 나를 밀어주는 호재
+  +1 (약한 상승): 일부 길신 혼재, 중간 흐름
+  -1 (약한 하락): 일부 흉신, 정체 흐름
+  -2 (강한 하락): 군겁쟁재·상관견관·기구신운 → 위기 관리 필요
+
+■ Y축 — 하락이수 (내부 심리·행동 태도 지수)
+  +2 (냉철·해소): 해괘·겸괘·관용 계열 → 판단력 완벽, 리스크 통제 가능
+  +1 (안정): 중간 효, 균형 상태
+  -1 (주의): 과열 조짐, 약한 경고
+  -2 (과열·독단): 예괘 과열·건위천 독단·흉효 계열 → 오만·무리한 확장 위험
+
+━━━━━━━━━━━━━━━━━━━━━━
+【 STEP 2 · 통합 조율 매트릭스 (4가지 전략 알고리즘) 】
+━━━━━━━━━━━━━━━━━━━━━━
+X축과 Y축 점수를 교차하여 아래 4가지 전략 중 하나를 확정하세요.
+
+🟢 전략 1 · 가속 (Acceleration) — X(+) × Y(+)
+  외부 기회도 열리고 내부 판단력도 완벽한 상태.
+  → "망설이지 말고 가속 페달을 밟으십시오. 공격적 투자와 확장이 성공을 가져옵니다."
+
+🟡 전략 2 · 속도 조절 (Speed Limit) — X(+) × Y(-)
+  외부 기회는 오지만 내면 과열·오만으로 도적(리스크)을 불러들일 수 있는 상태.
+  → "운은 들어오니 잡으십시오. 단, 조용히 실속만 챙기십시오. 계약서는 세 번 더 확인하고, 성과는 연말까지 절대 자랑하지 마십시오."
+
+🔵 전략 3 · 피벗 (Pivot) — X(-) × Y(+)
+  시장은 위축되지만 내부적으로 묵은 실타래가 풀리는 기운.
+  → "외부 확장은 멈추십시오. 부실 자산 정리·꼬인 계약 해소·인간관계 구조조정에 완벽한 타이밍입니다. 내실을 다지는 재출발의 기회입니다."
+
+🔴 전략 4 · 생존 (Survival) — X(-) × Y(-)
+  시장도 나쁘고 내부 판단도 흔들리는 설상가상의 상태.
+  → "소나기는 피해야 합니다. 아무것도 새로 벌이지 마십시오. 현금을 확보하고 완전히 자중하십시오."
+
+━━━━━━━━━━━━━━━━━━━━━━
+【 입력 데이터 】
+━━━━━━━━━━━━━━━━━━━━━━
+
+■ 자평명리 해석 결과 (X축 · 외부 환경):
+${m || '(입력 없음)'}
+
+■ 하락이수 해석 결과 (Y축 · 내부 태도):
+${h || '(입력 없음)'}
+
+━━━━━━━━━━━━━━━━━━━━━━
+【 STEP 3~6 · 시스템 리포트 출력 구조 (6단계 파이프라인) 】
+━━━━━━━━━━━━━━━━━━━━━━
+반드시 아래 6단계 순서로 리포트를 작성하세요. '~습니다' 체, 비즈니스 컨설팅 문체를 사용하세요.
+
+## ① 올해의 통합 융합 메시지
+[STEP 2에서 확정한 전략 유형을 명시하고, 두 학문의 모순을 해소한 핵심 한 문장 요약]
+예) "올해는 [전략명] 타이밍입니다 — 시장의 기회는 열리나, 내부 과속 리스크를 통제하며 조용히 실속을 챙겨야 하는 해입니다."
+
+## ② 외부 환경 진단 (자평명리 관점 · X축)
+[올해 대운·세운의 십신 흐름, 용희신 여부, 재관·식상의 움직임을 바탕으로 시장 기회 지수를 진단]
+→ 기회 지수: ___% / 위기 지수: ___%  (체감 수치로 표현)
+
+## ③ 내부 리스크 탐지 (하락이수 관점 · Y축)
+[선천괘·후천괘·유년괘·현재 대운 효사를 바탕으로 현재 내담자가 저지르기 쉬운 심리적 오류와 행동 취약점 분석]
+→ 핵심 리스크 키워드: ___, ___, ___
+
+## ④ 갈등 조율 결론 (헤드라인)
+[②와 ③의 충돌을 단 한 문장으로 정리한 '모순 해소형 헤드라인']
+예) "시장의 판이 깔리나, 지금 당신의 멘탈 상태가 도적을 불러들이는 포지션에 있습니다."
+
+## ⑤ 킬러 액션 플랜
+✅ 반드시 해야 할 행동 2가지 (구체적 행동 동사로)
+❌ 절대 하지 말아야 할 행동 2가지 (구체적 리스크 상황으로)
+
+## ⑥ 심리 처방 한 마디
+[하락이수 효사의 핵심 메시지를 현대 비즈니스 언어로 한 문장 압축]
+예) "벤츠를 탔다고 어깨에 힘주는 순간, 사기꾼이 냄새를 맡습니다."`;
+
+
+  document.getElementById('resultBody').textContent = prompt;
+
+  const mr = document.getElementById('matrixResult');
+  const chip = document.getElementById('matrixChip');
+  if (matrix) {
+    chip.textContent = matrix.label;
+    chip.className = 'matrix-chip ' + matrix.cls;
+    mr.style.display = 'block';
+  } else {
+    mr.style.display = 'none';
+  }
+
+  const card = document.getElementById('resultCard');
+  card.style.display = 'block';
+  document.getElementById('copySuccess').style.display = 'none';
+
+  setTimeout(() => {
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
+function copyPrompt() {
+  const text = document.getElementById('resultBody').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showCopySuccess();
+  }).catch(() => {
+    const r = document.createElement('textarea');
+    r.value = text;
+    document.body.appendChild(r);
+    r.select();
+    document.execCommand('copy');
+    document.body.removeChild(r);
+    showCopySuccess();
+  });
+}
+
+function showCopySuccess() {
+  const el = document.getElementById('copySuccess');
+  el.style.display = 'inline';
+  setTimeout(() => { el.style.display = 'none'; }, 2500);
+}
+</script>
+</body>
+</html>
