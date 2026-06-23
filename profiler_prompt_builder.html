@@ -63,6 +63,8 @@ textarea{min-height:110px;line-height:1.7;}
 .prompt-box{background:#141008;border-radius:5px;padding:18px 16px;font-family:'Courier Prime',monospace;font-size:12.5px;line-height:2;color:#e8dfc8;white-space:pre-wrap;word-break:break-word;max-height:460px;overflow-y:auto;}
 .copy-btn{margin-top:10px;width:100%;padding:10px;background:transparent;border:1px solid var(--line);border-radius:4px;font-size:12px;color:var(--fade);cursor:pointer;transition:all .2s;}
 .copy-btn:hover{color:var(--ink);border-color:#999;}
+#c-seo .chip.on{background:rgba(196,146,42,0.18);border-color:rgba(196,146,42,0.55);color:var(--gold);font-weight:600;}
+#c-seo .chip{font-size:13px;padding:8px 18px;}
 @media(max-width:600px){.tone-grid{grid-template-columns:repeat(2,1fr);}.input-row{grid-template-columns:1fr;}.saju-grid{grid-template-columns:repeat(2,1fr);}.result-card{padding:20px 14px 16px;}.tab{min-width:70px;font-size:10px;}}
 </style>
 </head>
@@ -181,6 +183,13 @@ textarea{min-height:110px;line-height:1.7;}
     <div><label class="lbl">목표 분량</label><select id="c-length"><option value="800자 내외 단문 칼럼">800자 단문 칼럼</option><option value="1500자 내외 중편 칼럼" selected>1500자 중편 칼럼</option><option value="2500자 이상 심층 칼럼">2500자+ 심층 칼럼</option><option value="3500자 이상 심층 칼럼">3500자+ 심층 칼럼</option><option value="4500자 이상 심층 칼럼">4500자+ 심층 칼럼</option><option value="5500자 이상 심층 칼럼">5500자+ 심층 칼럼</option><option value="6500자 이상 심층 칼럼">6500자+ 심층 칼럼</option></select></div>
     <div><label class="lbl">게재 매체 (선택)</label><input type="text" id="c-media" placeholder="예: 브런치, 블로그, 신문 기고"></div>
   </div></div></div>
+  <div class="sec"><div class="sec-hdr"><span class="sec-n">05</span><span class="sec-t">SEO 메타 콘텐츠 자동 생성</span><div class="sec-line"></div></div>
+  <p class="sec-hint">칼럼 작성 후 SEO 제목 3개, 부제목 3개, 해시태그 5개를 함께 생성합니다.</p>
+  <div class="card">
+    <div class="chips" id="c-seo">
+      <div class="chip on" data-v="seo" onclick="togChip(this)">✦ SEO 메타 자동 생성 포함</div>
+    </div>
+  </div></div>
   <button class="gen-btn" onclick="gen('column')">&#10022; 칼럼 프롬프트 생성</button>
 </div>
 
@@ -308,8 +317,10 @@ function buildColumn(){
   const source=v('c-source'),dir=getChips('c-direction'),persona=getTone('c-persona');
   const length=v('c-length')||'1500자 내외 중편 칼럼',media=v('c-media');
   const dt=dir.length?dir.join(', '):'다각도 분석';
-  return{title:'칼럼·논설 쓰기',sub:(persona||'논설위원')+' · '+length,meta:[dt,persona,length].filter(Boolean),
-  prompt:'당신은 '+(persona||'중립적 논설위원')+'입니다.\n깊은 통찰과 명확한 논리로 독자를 설득하는 칼럼을 씁니다.'+(media?'\n게재 매체: '+media:'')+'\n\n'+'='.repeat(31)+'\n[원문 자료]\n'+(source||'(원문을 여기에 붙여넣으세요)')+'\n\n[칼럼 방향]\n  '+dt+'\n\n[목표 분량]\n  '+length+'\n'+'='.repeat(31)+'\n\n[작성 지침]\n  - 첫 문장은 독자를 즉시 사로잡는 훅으로 시작한다.\n  - 주장은 하나의 핵심 메시지를 중심으로 구성한다.\n  - 구체적인 사례와 논거로 설득력을 강화한다.\n  - 반대 입장을 인정한 뒤 논리적으로 넘어선다.\n  - 마지막 문단은 여운이 남는 문장으로 마무리한다.\n\n위 자료를 바탕으로 칼럼을 작성해주세요.'};
+  const seoOn=document.querySelector('#c-seo .chip.on');
+  const seoBlock=seoOn?'\n\n'+'='.repeat(31)+'\n[SEO 메타 콘텐츠 — 칼럼 작성 완료 후 아래 항목을 추가로 작성한다]\n\n▸ SEO 제목 3개\n  검색 노출에 최적화된 제목을 3가지 작성한다.\n  각 제목은 핵심 키워드를 포함하고 클릭을 유도하는 표현으로 구성한다.\n  30자 내외로 작성한다.\n  예시 형식:\n  1. [제목1]\n  2. [제목2]\n  3. [제목3]\n\n▸ 부제목(서브헤딩) 3개\n  칼럼의 핵심 논지를 보완하는 부제목을 3가지 작성한다.\n  독자의 궁금증을 자극하거나 핵심 메시지를 요약한다.\n  20자 내외로 작성한다.\n  예시 형식:\n  1. [부제목1]\n  2. [부제목2]\n  3. [부제목3]\n\n▸ 해시태그 5개\n  SNS 및 블로그 검색에 적합한 해시태그 5개를 작성한다.\n  칼럼 주제와 직결된 키워드를 선정한다.\n  예시 형식: #키워드1 #키워드2 #키워드3 #키워드4 #키워드5\n'+'='.repeat(31):'';
+  return{title:'칼럼·논설 쓰기',sub:(persona||'논설위원')+' · '+length,meta:[dt,persona,length,seoOn?'SEO 자동생성':null].filter(Boolean),
+  prompt:'당신은 '+(persona||'중립적 논설위원')+'입니다.\n깊은 통찰과 명확한 논리로 독자를 설득하는 칼럼을 씁니다.'+(media?'\n게재 매체: '+media:'')+'\n\n'+'='.repeat(31)+'\n[원문 자료]\n'+(source||'(원문을 여기에 붙여넣으세요)')+'\n\n[칼럼 방향]\n  '+dt+'\n\n[목표 분량]\n  '+length+'\n'+'='.repeat(31)+'\n\n[작성 지침]\n  - 첫 문장은 독자를 즉시 사로잡는 훅으로 시작한다.\n  - 주장은 하나의 핵심 메시지를 중심으로 구성한다.\n  - 구체적인 사례와 논거로 설득력을 강화한다.\n  - 반대 입장을 인정한 뒤 논리적으로 넘어선다.\n  - 마지막 문단은 여운이 남는 문장으로 마무리한다.\n\n위 자료를 바탕으로 칼럼을 작성해주세요.'+seoBlock};
 }
 
 function buildNovel(){
