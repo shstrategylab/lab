@@ -1559,21 +1559,24 @@ ${CAUTION}`;
 
 /* ========== 비교 평가 빌드 ========== */
 function buildCompare(persons) {
-  const header = persons.map((p, i) => `  ${letters[i]}. ${p.name || ('정치인 이름 ' + letters[i])} / ${p.position || '직책'}`).join('
-');
-  const names = persons.map((p, i) => letters[i] + '.' + (p.name || ('이름' + letters[i])));
-  const colW = '--------';
-  const tableHeader  = '항목              | ' + names.join(' | ');
-  const tableDivider = '-----------------|' + persons.map(() => colW).join('|');
-  const qItems = ['①언행일관성', '②책임감    ', '③위기대응  ', '④공공성    ', '⑤소통투명성', '⑥협치자세  '];
-  const qiRows = qItems.map(n => `${n}      | ` + persons.map(() => ' X.X ').join('| ')).join('
-');
-  const avgRow   = '정량 종합 평균    | ' + persons.map(() => ' X.XX').join(' | ') + '  ← 6항목 산술평균';
-  const gradeRow = 'CGI 등급          | ' + persons.map(() => '[등급]').join(' | ') + '  ← 등급표 적용';
-  const q1Row    = 'Q1 공감·진정성    | ' + persons.map(() => ' X.X ').join('| ');
-  const q2Row    = 'Q2 역할기대충족도  | ' + persons.map(() => ' X.X ').join('| ');
-  const q3Row    = 'Q3 여론추이       | ' + persons.map(() => '[추이]').join('| ');
-  const gapRow   = '정량-정성 괴리    | ' + persons.map(() => '[일치/괴리]').join('| ');
+  const NL = "\n";
+  const header = persons.map(function(p, i) {
+    return "  " + letters[i] + ". " + (p.name || ("정치인 이름 " + letters[i])) + " / " + (p.position || "직책");
+  }).join(NL);
+  const names = persons.map(function(p, i) { return letters[i] + "." + (p.name || ("이름" + letters[i])); });
+  const colW = "--------";
+  const tableHeader  = "항목              | " + names.join(" | ");
+  const tableDivider = "-----------------|" + persons.map(function() { return colW; }).join("|");
+  const qItems = ["①언행일관성", "②책임감    ", "③위기대응  ", "④공공성    ", "⑤소통투명성", "⑥협치자세  "];
+  const qiRows = qItems.map(function(n) {
+    return n + "      | " + persons.map(function() { return " X.X "; }).join("| ");
+  }).join(NL);
+  const avgRow   = "정량 종합 평균    | " + persons.map(function() { return " X.XX"; }).join(" | ") + "  ← 6항목 산술평균";
+  const gradeRow = "CGI 등급          | " + persons.map(function() { return "[등급]"; }).join(" | ") + "  ← 등급표 적용";
+  const q1Row    = "Q1 공감·진정성    | " + persons.map(function() { return " X.X "; }).join("| ");
+  const q2Row    = "Q2 역할기대충족도  | " + persons.map(function() { return " X.X "; }).join("| ");
+  const q3Row    = "Q3 여론추이       | " + persons.map(function() { return "[추이]"; }).join("| ");
+  const gapRow   = "정량-정성 괴리    | " + persons.map(function() { return "[일치/괴리]"; }).join("| ");
 
   return `${SEARCH_WARNING}
 당신은 CGI(국민주권 신용등급) 전문 평가 분석가입니다.
