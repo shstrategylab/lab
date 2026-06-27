@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>대운세운 사주분석 프롬프트 생성기</title>
+<style>
+  :root{
+    --bg:#F4EEE2;
+    --paper:#FBF7EE;
+    --ink:#2B2722;
+    --ink-soft:#6B6358;
+    --ink-faint:#A39A8B;
+    --line:#DCD2BA;
+    --seal:#B23A2E;
+    --seal-dark:#8C2A20;
+    --seal-soft:#B23A2E14;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    background-image:
+      radial-gradient(circle at 15% 20%, #00000006 0%, transparent 35%),
+      radial-gradient(circle at 85% 80%, #00000005 0%, transparent 40%);
+    color:var(--ink);
+    font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:48px 24px 80px;
+  }
+  header.top{
+    text-align:center;
+    margin-bottom:48px;
+  }
+  header.top .eyebrow{
+    font-size:12px;
+    letter-spacing:.22em;
+    color:var(--seal);
+    font-weight:600;
+  }
+  header.top h1{
+    font-family:"Nanum Myeongjo","Batang",serif;
+    font-size:clamp(26px,4vw,38px);
+    font-weight:700;
+    margin:10px 0 8px;
+    letter-spacing:-.01em;
+  }
+  header.top p{
+    color:var(--ink-soft);
+    font-size:14.5px;
+    margin:0;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:28px;
+    align-items:start;
+  }
+  @media (max-width:880px){
+    .grid{grid-template-columns:1fr;}
+  }
+  .card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:26px 28px;
+    margin-bottom:20px;
+    position:relative;
+  }
+  .step-num{
+    font-family:"Nanum Myeongjo",serif;
+    font-size:13px;
+    color:var(--seal);
+    font-weight:700;
+    letter-spacing:.05em;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    margin-bottom:6px;
+  }
+  .step-num .dot{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--seal);
+    display:inline-block;
+  }
+  .card h2{
+    font-family:"Nanum Myeongjo","Batang",serif;
+    font-size:19px;
+    margin:0 0 4px;
+    font-weight:700;
+  }
+  .card .desc{
+    color:var(--ink-soft);
+    font-size:13px;
+    margin:0 0 18px;
+  }
+  label.field-label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    color:var(--ink);
+    margin:14px 0 6px;
+  }
+  label.field-label:first-of-type{margin-top:0;}
+  .hint{
+    font-size:11.5px;
+    color:var(--ink-faint);
+    font-weight:400;
+    margin-left:4px;
+  }
+  input[type=text], textarea, select{
+    width:100%;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:3px;
+    padding:10px 12px;
+    font-size:14px;
+    font-family:inherit;
+    color:var(--ink);
+    resize:vertical;
+  }
+  input[type=text]:focus, textarea:focus, select:focus{
+    outline:2px solid var(--seal);
+    outline-offset:1px;
+    border-color:var(--seal);
+  }
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  @media (max-width:520px){.row2{grid-template-columns:1fr;}}
+  .row4{display:grid;grid-template-columns:1fr 1fr 1fr 1.3fr;gap:8px;}
+  @media (max-width:560px){.row4{grid-template-columns:1fr 1fr;}}
+
+  .checks{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px;}
+  .chip{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:20px;
+    padding:7px 14px;
+    font-size:13px;
+    cursor:pointer;
+    user-select:none;
+    transition:.12s;
+    color:var(--ink-soft);
+  }
+  .chip input{display:none;}
+  .chip.active{
+    background:var(--seal-soft);
+    border-color:var(--seal);
+    color:var(--seal-dark);
+    font-weight:600;
+  }
+  .radio-list{display:flex;flex-direction:column;gap:8px;margin-top:4px;}
+  .radio-row{
+    display:flex;align-items:center;gap:10px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:9px 12px;
+    cursor:pointer;
+    background:#fff;
+  }
+  .radio-row.active{border-color:var(--seal);background:var(--seal-soft);}
+  .radio-row input{accent-color:var(--seal);}
+  .radio-row input[type=text]{
+    margin-left:auto;
+    max-width:140px;
+    padding:5px 8px;
+    font-size:13px;
+  }
+
+  /* preview pane */
+  .preview-sticky{position:sticky; top:24px;}
+  .preview-card{
+    background:var(--ink);
+    color:#F4EEE2;
+    border-radius:4px;
+    padding:24px 24px 20px;
+    border:1px solid var(--ink);
+  }
+  .preview-card .eyebrow{
+    font-size:11px;
+    letter-spacing:.18em;
+    color:#E0A89E;
+    font-weight:600;
+    margin-bottom:10px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+  }
+  #promptOut{
+    width:100%;
+    min-height:380px;
+    background:#1F1C18;
+    color:#EDE6D8;
+    border:1px solid #3A352C;
+    border-radius:3px;
+    padding:16px;
+    font-family:"Pretendard","Noto Sans KR",monospace;
+    font-size:12.6px;
+    line-height:1.65;
+    white-space:pre-wrap;
+    resize:none;
+  }
+  #promptOut:focus{outline:1px solid var(--seal);}
+  .copy-btn{
+    margin-top:14px;
+    width:100%;
+    background:var(--seal);
+    color:#fff;
+    border:none;
+    border-radius:3px;
+    padding:13px;
+    font-size:14.5px;
+    font-weight:700;
+    cursor:pointer;
+    letter-spacing:.03em;
+    transition:.15s;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+  }
+  .copy-btn:hover{background:var(--seal-dark);}
+  .copy-btn .seal-mark{
+    width:18px;height:18px;
+    border:1.6px solid currentColor;
+    border-radius:3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:10px;
+    font-family:"Nanum Myeongjo",serif;
+  }
+  .copy-feedback{
+    text-align:center;
+    font-size:12px;
+    color:#E0A89E;
+    height:16px;
+    margin-top:8px;
+  }
+  .reset-link{
+    display:block;
+    text-align:center;
+    margin-top:10px;
+    font-size:12px;
+    color:var(--ink-faint);
+    cursor:pointer;
+    text-decoration:underline;
+  }
+  .note{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:3px;
+    padding:10px 12px;
+    margin-top:14px;
+  }
+  .tip-box{
+    background:#fff;
+    border:1px dashed var(--line);
+    border-radius:3px;
+    padding:10px 14px;
+    margin-bottom:16px;
+  }
+  .tip-row{
+    font-size:12px;
+    color:var(--ink-soft);
+    padding:3px 0;
+  }
+  .tip-row b{color:var(--ink);}
+  .quality-hint{
+    font-size:11.5px;
+    margin:5px 2px 0;
+    min-height:14px;
+    transition:.15s;
+  }
+  .quality-hint.q-empty{color:var(--ink-faint);}
+  .quality-hint.q-low{color:var(--seal);}
+  .quality-hint.q-ok{color:#8a8060;}
+  .quality-hint.q-good{color:#5b7a4f;}
+  textarea#freeTopic{min-height:38px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">大運 · 歲運 · PROMPT BUILDER</div>
+    <h1>대운세운 사주분석 프롬프트 생성기</h1>
+    <p>지금·오늘·이번 달·올해의 운을 보는 도구입니다. 만세력을 준비한 뒤 아래 5단계를 채우면, 우측에 분석용 프롬프트가 자동으로 만들어집니다.</p>
+  </header>
+
+  <div class="grid">
+    <div class="col-form">
+
+      <!-- STEP 1 -->
+      <div class="card">
+        <div class="step-num"><span class="dot"></span>STEP 1 · 만세력 준비</div>
+        <h2>만세력 이미지를 옆에 준비해두세요</h2>
+        <p class="desc">이 도구는 텍스트 프롬프트만 만듭니다. 실제 분석 시 만세력 이미지를 Claude 대화창에 함께 첨부해야 합니다.</p>
+        <div class="note">예) 만세력 사이트에서 캡처한 사주 이미지, 대운·세운표 이미지</div>
+      </div>
+
+      <!-- STEP 2 -->
+      <div class="card">
+        <div class="step-num"><span class="dot"></span>STEP 2 · 기본 정보</div>
+        <h2>생년월일시 / 성별</h2>
+        <p class="desc">만세력 이미지를 첨부하면 <strong>이미지 정보가 항상 우선</strong>됩니다. 아래 입력은 이미지가 없거나 보조 확인용일 때만 채우세요.</p>
+
+        <label class="field-label">양력 / 음력</label>
+        <div class="checks" id="calendarChips">
+          <label class="chip active"><input type="radio" name="calType" value="양력" checked>양력</label>
+          <label class="chip"><input type="radio" name="calType" value="음력">음력</label>
+        </div>
+
+        <label class="field-label" style="margin-top:16px;">생년월일시</label>
+        <div class="row4">
+          <input type="text" id="birthYear" placeholder="년 (예: 1973)">
+          <input type="text" id="birthMonth" placeholder="월 (예: 9)">
+          <input type="text" id="birthDay" placeholder="일 (예: 25)">
+          <input type="text" id="birthHour" placeholder="시:분 (예: 04:30)">
+        </div>
+
+        <div class="row2" style="margin-top:14px;">
+          <div>
+            <label class="field-label">성별</label>
+            <select id="gender">
+              <option value="">선택 안 함</option>
+              <option value="여성">여성</option>
+              <option value="남성">남성</option>
+            </select>
+          </div>
+          <div>
+            <label class="field-label">호칭<span class="hint">(선택)</span></label>
+            <input type="text" id="name" placeholder="예: 강다인">
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 3 -->
+      <div class="card">
+        <div class="step-num"><span class="dot"></span>STEP 3 · 현재 상황</div>
+        <h2>지금 어떤 상황인지 구체적으로</h2>
+        <p class="desc">아래 3가지가 들어가야 풀이 단계(간극 진단·솔루션)가 일반론이 아닌 맞춤형으로 나옵니다.</p>
+        <div class="tip-box">
+          <div class="tip-row"><b>① 무엇을</b> — 구체적 행위·대상 (예: 유튜브 채널 3개, 그중 시사·정치)</div>
+          <div class="tip-row"><b>② 언제부터·얼마나</b> — 기간이나 단계 (예: 2년째, 책 출간 후 3개월)</div>
+          <div class="tip-row"><b>③ 어떤 상태·감정</b> — 막힌 지점 (예: 정체된 느낌, 수익화 직전)</div>
+        </div>
+        <label class="field-label">직업 / 하고 있는 일</label>
+        <textarea id="job" rows="2" placeholder="예: 심리상담, 유튜브 채널 3개 운영(시사·정치)"></textarea>
+        <div class="quality-hint" id="jobHint"></div>
+        <label class="field-label">현재 진행 중인 일 / 고민</label>
+        <textarea id="project" rows="2" placeholder="예: 책 출간 후 채널 성장이 정체된 느낌, 수익화 준비 중인 채널 1개"></textarea>
+        <div class="quality-hint" id="projectHint"></div>
+        <label class="field-label">스스로 느끼는 성향</label>
+        <textarea id="trait" rows="2" placeholder="예: 나서서 영업·홍보하는 게 체질적으로 안 맞음, 1:1 상담은 잘함"></textarea>
+        <div class="quality-hint" id="traitHint"></div>
+      </div>
+
+      <!-- STEP 4 -->
+      <div class="card">
+        <div class="step-num"><span class="dot"></span>STEP 4 · 궁금한 것</div>
+        <h2>무엇이 가장 궁금한가요? <span class="hint">(복수 선택 가능)</span></h2>
+        <div class="checks" id="topicChips">
+          <label class="chip"><input type="checkbox" value="전반적 재물운">전반적 재물운</label>
+          <label class="chip"><input type="checkbox" value="사업/창업 확장 여부">사업/창업 확장</label>
+          <label class="chip"><input type="checkbox" value="이직/전직 타이밍">이직/전직 타이밍</label>
+          <label class="chip"><input type="checkbox" value="동업/협업 적합성">동업/협업 적합성</label>
+          <label class="chip"><input type="checkbox" value="투자 적정 시기">투자 적정 시기</label>
+        </div>
+        <label class="field-label">기타<span class="hint">(직접 입력, 선택)</span></label>
+        <textarea id="freeTopic" rows="1" placeholder="예: 채널 확장 시기가 맞는지"></textarea>
+      </div>
+
+      <!-- STEP 5 -->
+      <div class="card">
+        <div class="step-num"><span class="dot"></span>STEP 5 · 분석 대상 시점</div>
+        <h2>언제를 기준으로 볼까요?</h2>
+        <div class="radio-list" id="timeRadios">
+          <label class="radio-row active">
+            <input type="radio" name="timepoint" value="올해" checked>올해 운세
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="timepoint" value="특정연도">특정 연도
+            <input type="text" id="specificYear" placeholder="예: 2027년">
+          </label>
+          <label class="radio-row">
+            <input type="radio" name="timepoint" value="향후N년">향후 여러 해
+            <input type="text" id="nYears" placeholder="예: 3년간">
+          </label>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PREVIEW -->
+    <div class="col-preview preview-sticky">
+      <div class="preview-card">
+        <div class="eyebrow"><span>생성된 프롬프트</span><span id="charCount">0자</span></div>
+        <textarea id="promptOut" readonly></textarea>
+        <button class="copy-btn" id="copyBtn">
+          <span class="seal-mark">印</span>
+          <span id="copyBtnLabel">프롬프트 복사하기</span>
+        </button>
+        <div class="copy-feedback" id="copyFeedback"></div>
+        <span class="reset-link" id="resetLink">입력 초기화</span>
+      </div>
+      <div class="note" style="margin-top:14px;">
+        복사한 텍스트를 만세력 이미지와 함께 Claude 대화창에 붙여넣으세요.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const els = {
+  birthYear: document.getElementById('birthYear'),
+  birthMonth: document.getElementById('birthMonth'),
+  birthDay: document.getElementById('birthDay'),
+  birthHour: document.getElementById('birthHour'),
+  gender: document.getElementById('gender'),
+  name: document.getElementById('name'),
+  job: document.getElementById('job'),
+  project: document.getElementById('project'),
+  trait: document.getElementById('trait'),
+  freeTopic: document.getElementById('freeTopic'),
+  specificYear: document.getElementById('specificYear'),
+  nYears: document.getElementById('nYears'),
+  promptOut: document.getElementById('promptOut'),
+  charCount: document.getElementById('charCount'),
+  copyBtn: document.getElementById('copyBtn'),
+  copyBtnLabel: document.getElementById('copyBtnLabel'),
+  copyFeedback: document.getElementById('copyFeedback'),
+  resetLink: document.getElementById('resetLink'),
+};
+
+// topic chip toggle (multi-select)
+document.querySelectorAll('#topicChips .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const cb = chip.querySelector('input');
+    setTimeout(()=>{
+      chip.classList.toggle('active', cb.checked);
+      buildPrompt();
+    },0);
+  });
+});
+
+// calendar chip toggle (single-select)
+document.querySelectorAll('#calendarChips .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('#calendarChips .chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    buildPrompt();
+  });
+});
+
+// radio toggle styling
+document.querySelectorAll('#timeRadios .radio-row').forEach(row=>{
+  row.addEventListener('click', ()=>{
+    document.querySelectorAll('#timeRadios .radio-row').forEach(r=>r.classList.remove('active'));
+    row.classList.add('active');
+  });
+});
+
+function getTopics(){
+  const checked = Array.from(document.querySelectorAll('#topicChips input:checked')).map(i=>i.value);
+  const free = els.freeTopic.value.trim();
+  if(free) checked.push(free);
+  return checked.length ? checked.join(', ') : '전반적인 재물·사업운';
+}
+
+function getTimepoint(){
+  const sel = document.querySelector('input[name=timepoint]:checked').value;
+  if(sel === '특정연도') return els.specificYear.value.trim() || '특정 연도(미입력)';
+  if(sel === '향후N년') return (els.nYears.value.trim() || 'N년') + ' 흐름';
+  return '올해';
+}
+
+function checkQuality(text, hintEl){
+  const len = text.trim().length;
+  hintEl.classList.remove('q-empty','q-low','q-ok','q-good');
+  if(len === 0){
+    hintEl.textContent = '';
+    hintEl.classList.add('q-empty');
+  } else if(len < 8){
+    hintEl.textContent = '너무 짧아요. "무엇을·언제부터·어떤 상태"를 한 문장씩 더 적어주세요.';
+    hintEl.classList.add('q-low');
+  } else if(len < 20){
+    hintEl.textContent = '조금만 더 — 기간이나 구체적 상태를 덧붙이면 더 정확해져요.';
+    hintEl.classList.add('q-ok');
+  } else {
+    hintEl.textContent = '충분히 구체적입니다 ✓';
+    hintEl.classList.add('q-good');
+  }
+}
+
+function refreshQualityHints(){
+  checkQuality(els.job.value, document.getElementById('jobHint'));
+  checkQuality(els.project.value, document.getElementById('projectHint'));
+  checkQuality(els.trait.value, document.getElementById('traitHint'));
+}
+
+function getBirthInfo(){
+  const y = els.birthYear.value.trim();
+  const m = els.birthMonth.value.trim();
+  const d = els.birthDay.value.trim();
+  const h = els.birthHour.value.trim();
+  const calType = document.querySelector('input[name=calType]:checked').value;
+  if(!y && !m && !d && !h) return '(미입력 — 만세력 이미지 정보 사용)';
+  return `${y || '?'}년 ${m || '?'}월 ${d || '?'}일 ${h || '시간 미입력'} (${calType})`;
+}
+
+function buildPrompt(){
+  const birth = getBirthInfo();
+  const gender = els.gender.value || '(미입력)';
+  const name = els.name.value.trim();
+  const job = els.job.value.trim() || '(미입력)';
+  const project = els.project.value.trim() || '(미입력)';
+  const trait = els.trait.value.trim() || '(미입력)';
+  const topics = getTopics();
+  const timepoint = getTimepoint();
+  const who = name ? `${name}님` : '이 사람';
+
+  const prompt =
+`[대운·세운 사주 분석 요청 — 만세력 이미지 첨부함]
+※ 아래 텍스트 정보와 첨부 이미지가 다르면, 첨부한 만세력 이미지를 우선할 것.
+
+▸기본정보(텍스트, 참고용): ${birth} / 성별: ${gender}
+▸현재상황 — 직업: ${job} | 진행중인 일: ${project} | 성향: ${trait}
+▸궁금한 것: ${topics}
+▸분석시점: ${timepoint}
+
+위 정보와 첨부한 만세력 이미지로, 다음 4단계를 반드시 순서대로, 각 단계 빠짐없이 분석해줘. 일반론 금지, ${who} 상황에 맞춘 구체적 해석만.
+
+1) 원국 — 일간·신강약·오행·십신 배치로 타고난 기질과 그릇을 분석. 위 "성향"과 대조해서 이 사람 방식으로는 어떻게 발현되는지 짚을 것.
+2) 대운·세운 — 먼저 현재 대운과 ${timepoint} 세운이 이 원국 기준으로 용신(길)인지 기신(흉)인지부터 판정할 것. 그 다음 십신·생극합충으로 분석. "궁금한 것"에 해당하는 부분만 집중 해석.
+3) 간극 진단 — 2)의 길흉 판정에 따라 아래 중 맞는 경로로 진단(추측하지 말고 2)의 판정 결과를 그대로 따를 것):
+   - 길운(용신)인데 현실이 답답한 경우 → ①그릇이 운을 못 받음 ②그릇은 되는데 타이밍이 아직 ③운·그릇은 맞는데 행동이 다른 방향 ④이미 맞게 가고 있고 불안감만 큼 — 이 중 해당 유형과 근거
+   - 흉운(기신)이라 객관적으로 어려운 시기인 경우 → 그렇다고 솔직히 알릴 것. 이 시기가 왜 힘든지, 언제(어느 대운/세운)부터 풀리는지, 그 전까지 손실을 줄이며 버티는 전략은 무엇인지
+4) 솔루션 — 3)의 진단 유형에 맞춰: 길운형이면 지금부터 준비·강화할 것 2~3가지 + 지금 안 해도 되는 것 1~2가지 + 주의할 변수 1~2가지. 흉운형이면 버티기 전략 2~3가지 + 절대 하지 말아야 할 행동 1~2가지 + 다음 전환 시점.`;
+
+  els.promptOut.value = prompt;
+  els.charCount.textContent = prompt.length + '자';
+}
+
+// live update
+['input','change'].forEach(evt=>{
+  ['birthYear','birthMonth','birthDay','birthHour','gender','name','job','project','trait','freeTopic','specificYear','nYears'].forEach(id=>{
+    els[id].addEventListener(evt, ()=>{ buildPrompt(); refreshQualityHints(); });
+  });
+});
+document.querySelectorAll('input[name=timepoint]').forEach(r=>r.addEventListener('change', buildPrompt));
+document.querySelectorAll('input[name=calType]').forEach(r=>r.addEventListener('change', buildPrompt));
+
+// copy
+els.copyBtn.addEventListener('click', async ()=>{
+  try{
+    await navigator.clipboard.writeText(els.promptOut.value);
+  }catch(e){
+    els.promptOut.removeAttribute('readonly');
+    els.promptOut.select();
+    document.execCommand('copy');
+    els.promptOut.setAttribute('readonly','true');
+  }
+  els.copyFeedback.textContent = '복사되었습니다. Claude 창에 붙여넣으세요.';
+  els.copyBtnLabel.textContent = '복사 완료';
+  setTimeout(()=>{
+    els.copyBtnLabel.textContent = '프롬프트 복사하기';
+    els.copyFeedback.textContent = '';
+  }, 2200);
+});
+
+// reset
+els.resetLink.addEventListener('click', ()=>{
+  ['birthYear','birthMonth','birthDay','birthHour','name','specificYear','nYears'].forEach(id=>els[id].value='');
+  ['job','project','trait','freeTopic'].forEach(id=>els[id].value='');
+  els.gender.value='';
+  document.querySelectorAll('#topicChips input').forEach(i=>{i.checked=false; i.closest('.chip').classList.remove('active');});
+  document.querySelectorAll('input[name=calType]')[0].checked = true;
+  document.querySelectorAll('#calendarChips .chip').forEach((c,i)=>c.classList.toggle('active', i===0));
+  document.querySelectorAll('input[name=timepoint]')[0].checked = true;
+  document.querySelectorAll('#timeRadios .radio-row').forEach((r,i)=>r.classList.toggle('active', i===0));
+  buildPrompt();
+  refreshQualityHints();
+});
+
+buildPrompt();
+refreshQualityHints();
+</script>
+</body>
+</html>
