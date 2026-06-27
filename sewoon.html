@@ -170,6 +170,21 @@
     padding:5px 8px;
     font-size:13px;
   }
+  .chip-toggle{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    margin-top:12px;
+    padding:11px 13px;
+    border:1px solid var(--line);
+    border-radius:3px;
+    background:#fff;
+    cursor:pointer;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .chip-toggle input{accent-color:var(--seal); margin-top:2px;}
+  .chip-toggle.active{border-color:var(--seal); background:var(--seal-soft); color:var(--ink);}
 
   /* preview pane */
   .preview-sticky{position:sticky; top:24px;}
@@ -291,7 +306,7 @@
   <header class="top">
     <div class="eyebrow">大運 · 歲運 · PROMPT BUILDER</div>
     <h1>대운세운 사주분석 프롬프트 생성기</h1>
-    <p>지금·오늘·이번 달·올해의 운을 보는 도구입니다. 만세력을 준비한 뒤 아래 5단계를 채우면, 우측에 분석용 프롬프트가 자동으로 만들어집니다.</p>
+    <p>지금·오늘·이번 달·올해·대운흐름의 운을 보는 도구입니다.<br>만세력을 준비한 뒤 아래 5단계를 채우면, 우측에 분석용 프롬프트가 자동으로 만들어집니다.</p>
   </header>
 
   <div class="grid">
@@ -394,6 +409,10 @@
             <input type="text" id="nYears" placeholder="예: 3년간">
           </label>
         </div>
+        <label class="chip-toggle" id="futureFlowToggle">
+          <input type="checkbox" id="futureFlow">
+          <span>앞으로의 대운 흐름도 함께 보기 <span class="hint">(다음 2~3개 대운 — 단계적으로 풀리는 시기가 있다면 같이 짚어줍니다)</span></span>
+        </label>
       </div>
 
     </div>
@@ -438,7 +457,15 @@ const els = {
   copyBtnLabel: document.getElementById('copyBtnLabel'),
   copyFeedback: document.getElementById('copyFeedback'),
   resetLink: document.getElementById('resetLink'),
+  futureFlow: document.getElementById('futureFlow'),
 };
+
+document.getElementById('futureFlowToggle').addEventListener('click', ()=>{
+  setTimeout(()=>{
+    document.getElementById('futureFlowToggle').classList.toggle('active', els.futureFlow.checked);
+    buildPrompt();
+  },0);
+});
 
 // topic chip toggle (multi-select)
 document.querySelectorAll('#topicChips .chip').forEach(chip=>{
@@ -526,6 +553,11 @@ function buildPrompt(){
   const topics = getTopics();
   const timepoint = getTimepoint();
   const who = name ? `${name}님` : '이 사람';
+  const futureFlowText = els.futureFlow.checked
+    ? `
+
+5) (옵션) 앞으로의 대운 흐름 — 현재 대운부터 다음 2~3개 대운까지 십신 변화를 이어서 보고, "준비기→발현기→결실기" 같은 단계적 전개가 실제로 보이면 각 단계와 시점(나이)을 명시할 것. 단, 모든 사주가 이런 단계적 흐름을 갖는 건 아니므로 억지로 끼워맞추지 말 것 — 그런 흐름이 안 보이면 "단계적 전개보다는 [실제 패턴]에 가깝다"고 솔직히 말할 것.`
+    : '';
 
   const prompt =
 `[대운·세운 사주 분석 요청 — 만세력 이미지 첨부함]
@@ -538,12 +570,12 @@ function buildPrompt(){
 
 위 정보와 첨부한 만세력 이미지로, 다음 4단계를 반드시 순서대로, 각 단계 빠짐없이 분석해줘. 일반론 금지, ${who} 상황에 맞춘 구체적 해석만.
 
-1) 원국 — 일간·신강약·오행·십신 배치로 타고난 기질과 그릇을 분석. 위 "성향"과 대조해서 이 사람 방식으로는 어떻게 발현되는지 짚을 것.
-2) 대운·세운 — 먼저 현재 대운과 ${timepoint} 세운이 이 원국 기준으로 용신(길)인지 기신(흉)인지부터 판정할 것. 그 다음 십신·생극합충으로 분석. "궁금한 것"에 해당하는 부분만 집중 해석.
-3) 간극 진단 — 2)의 길흉 판정에 따라 아래 중 맞는 경로로 진단(추측하지 말고 2)의 판정 결과를 그대로 따를 것):
-   - 길운(용신)인데 현실이 답답한 경우 → ①그릇이 운을 못 받음 ②그릇은 되는데 타이밍이 아직 ③운·그릇은 맞는데 행동이 다른 방향 ④이미 맞게 가고 있고 불안감만 큼 — 이 중 해당 유형과 근거
+1) 원국 — 일간·신강약·오행·십신·지장간(地藏干)·12운성까지 포함해 타고난 기질과 그릇을 분석. 위 "성향"과 대조해서 이 사람 방식으로는 어떻게 발현되는지 짚을 것.
+2) 대운·세운 — 먼저 현재 대운과 ${timepoint} 세운이 이 원국 기준으로 용신(길)인지 기신(흉)인지부터 판정할 것. 이때 일간 전반의 길흉과, "궁금한 것" 주제와 직결된 십신(예: 재물→재성, 직장→관성)의 길흉을 반드시 구분해서 볼 것 — 둘이 다를 수 있음(예: 일간엔 길운이지만 재물 주제로는 중립). 그 다음 십신·합충형파해(合沖刑破害)·신살(神殺, 이 시기에 새로 작동하거나 풀리는 살이 있으면 포함)로 분석.
+3) 간극 진단 — 2)의 길흉 판정에 따라 아래 중 맞는 경로로 진단(추측하지 말고 2)의 판정 결과를 그대로 따를 것, 복수 유형이 겹치면 모두 명시):
+   - 길운(용신)인데 현실이 답답한 경우 → ①그릇이 운을 못 받음 ②그릇은 되는데 타이밍이 아직 ③운·그릇은 맞는데 행동이 다른 방향 ④이미 맞게 가고 있고 불안감만 큼 — 해당 유형과 근거. ②가 해당되면 정확히 몇 살/어느 대운부터 그 주제(재물 등) 관련 운이 들어오는지 반드시 명시.
    - 흉운(기신)이라 객관적으로 어려운 시기인 경우 → 그렇다고 솔직히 알릴 것. 이 시기가 왜 힘든지, 언제(어느 대운/세운)부터 풀리는지, 그 전까지 손실을 줄이며 버티는 전략은 무엇인지
-4) 솔루션 — 3)의 진단 유형에 맞춰: 길운형이면 지금부터 준비·강화할 것 2~3가지 + 지금 안 해도 되는 것 1~2가지 + 주의할 변수 1~2가지. 흉운형이면 버티기 전략 2~3가지 + 절대 하지 말아야 할 행동 1~2가지 + 다음 전환 시점.`;
+4) 솔루션 — 3)의 진단 유형에 맞춰: 길운형이면 지금부터 준비·강화할 것 2~3가지 + 지금 안 해도 되는 것 1~2가지 + 주의할 변수 1~2가지. 흉운형이면 버티기 전략 2~3가지 + 절대 하지 말아야 할 행동 1~2가지 + 다음 전환 시점. 공통 필수: 제시한 솔루션 중 위 "성향"상 실행이 부담될 만한 부분은 왜 그런지 한 줄로 짚고, 그것을 가장 작게 시작할 수 있는 첫 행동 1가지를 별도로 제시할 것 (큰 전환을 한번에 요구하지 말 것).${futureFlowText}`;
 
   els.promptOut.value = prompt;
   els.charCount.textContent = prompt.length + '자';
@@ -582,6 +614,8 @@ els.resetLink.addEventListener('click', ()=>{
   ['job','project','trait','freeTopic'].forEach(id=>els[id].value='');
   els.gender.value='';
   document.querySelectorAll('#topicChips input').forEach(i=>{i.checked=false; i.closest('.chip').classList.remove('active');});
+  els.futureFlow.checked = false;
+  document.getElementById('futureFlowToggle').classList.remove('active');
   document.querySelectorAll('input[name=calType]')[0].checked = true;
   document.querySelectorAll('#calendarChips .chip').forEach((c,i)=>c.classList.toggle('active', i===0));
   document.querySelectorAll('input[name=timepoint]')[0].checked = true;
