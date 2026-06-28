@@ -287,12 +287,36 @@
       <div class="card phase-c">
         <div class="step-num c"><span class="dot"></span>STEP 5 · 궁금한 것</div>
         <h2>무엇이 가장 궁금한가요? <span class="hint">(복수 선택 가능)</span></h2>
+
+        <label class="field-label" style="margin-top:0;">💼 진로 및 직업운</label>
         <div class="checks" id="topicChips">
+          <label class="chip"><input type="checkbox" value="승진·진급 가능성">승진·진급</label>
+          <label class="chip"><input type="checkbox" value="이직·전직 타이밍">이직·전직 타이밍</label>
+          <label class="chip"><input type="checkbox" value="창업 성공 여부">창업 성공 여부</label>
+          <label class="chip"><input type="checkbox" value="적성 변화·방향 전환">적성·방향 전환</label>
+
+          <label class="field-label" style="width:100%;margin:12px 0 6px;">💰 재물운</label>
           <label class="chip"><input type="checkbox" value="전반적 재물운">전반적 재물운</label>
-          <label class="chip"><input type="checkbox" value="사업/창업 확장 여부">사업/창업 확장</label>
-          <label class="chip"><input type="checkbox" value="이직/전직 타이밍">이직/전직 타이밍</label>
-          <label class="chip"><input type="checkbox" value="동업/협업 적합성">동업/협업 적합성</label>
-          <label class="chip"><input type="checkbox" value="투자 적정 시기">투자 적정 시기</label>
+          <label class="chip"><input type="checkbox" value="투자 적정 시기">투자 시기</label>
+          <label class="chip"><input type="checkbox" value="금전적 성취·수익 확대">수익 확대</label>
+          <label class="chip"><input type="checkbox" value="손재수(돈이 나가는 시기)">손재수 시기</label>
+          <label class="chip"><input type="checkbox" value="사업·창업 확장 여부">사업·창업 확장</label>
+
+          <label class="field-label" style="width:100%;margin:12px 0 6px;">❤️ 애정 및 대인관계운</label>
+          <label class="chip"><input type="checkbox" value="연애운">연애운</label>
+          <label class="chip"><input type="checkbox" value="결혼운·결혼 시기">결혼운·시기</label>
+          <label class="chip"><input type="checkbox" value="이혼·갈등 요소">이혼·갈등</label>
+          <label class="chip"><input type="checkbox" value="동업·협업 적합성">동업·협업 적합성</label>
+
+          <label class="field-label" style="width:100%;margin:12px 0 6px;">🏥 건강 및 사고수</label>
+          <label class="chip"><input type="checkbox" value="건강 취약 시기·오행 불균형">건강 취약 시기</label>
+          <label class="chip"><input type="checkbox" value="사고·수술 주의 시기">사고·수술 주의</label>
+          <label class="chip"><input type="checkbox" value="오행 불균형으로 인한 질환 경향">질환 경향</label>
+
+          <label class="field-label" style="width:100%;margin:12px 0 6px;">📚 학업 및 시험운</label>
+          <label class="chip"><input type="checkbox" value="시험 합격운·합격 시기">합격운·시기</label>
+          <label class="chip"><input type="checkbox" value="집중력 발휘되는 시기">집중력 시기</label>
+          <label class="chip"><input type="checkbox" value="유학·자격증 타이밍">유학·자격증 타이밍</label>
         </div>
         <label class="field-label">기타<span class="hint">(직접 입력, 선택)</span></label>
         <textarea id="freeTopic" rows="1" placeholder="예: 채널 확장 시기가 맞는지"></textarea>
@@ -350,7 +374,7 @@ document.getElementById('futureFlowToggle').addEventListener('click', ()=>{
   },0);
 });
 
-document.querySelectorAll('#topicChips .chip').forEach(chip=>{
+document.querySelectorAll('#topicChips label.chip').forEach(chip=>{
   chip.addEventListener('click', ()=>{
     const cb = chip.querySelector('input');
     setTimeout(()=>{ chip.classList.toggle('active', cb.checked); buildPrompt(); },0);
@@ -376,7 +400,7 @@ function getTopics(){
   const checked = Array.from(document.querySelectorAll('#topicChips input:checked')).map(i=>i.value);
   const free = els.freeTopic.value.trim();
   if(free) checked.push(free);
-  return checked.length ? checked.join(', ') : '전반적인 재물·사업운';
+  return checked.length ? checked.join(', ') : '(선택 없음 — 전반적인 운세)';
 }
 
 function getTimepoint(){
