@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>대운세운 사주분석 프롬프트 생성기 v4</title>
+<title>대운세운 사주분석 프롬프트 생성기 v8</title>
 <style>
   :root{
     --bg:#F4EEE2;
@@ -15,45 +15,31 @@
     --seal:#B23A2E;
     --seal-dark:#8C2A20;
     --seal-soft:#B23A2E14;
-    --step-a:#2A5C8A;   /* 1단계 블라인드 분석 — 청색 계열 */
+    --step-a:#2A5C8A;
     --step-a-soft:#2A5C8A12;
-    --step-b:#5B7A4F;   /* 2단계 운 분석 — 녹색 계열 */
+    --step-b:#5B7A4F;
     --step-b-soft:#5B7A4F12;
-    --step-c:#8C5E2A;   /* 3단계 상황 대조 — 황토 계열 */
+    --step-c:#8C5E2A;
     --step-c-soft:#8C5E2A12;
   }
   *{box-sizing:border-box;}
   body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
+    margin:0;background:var(--bg);color:var(--ink);
     font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-    line-height:1.55;
-    -webkit-font-smoothing:antialiased;
+    line-height:1.55;-webkit-font-smoothing:antialiased;
   }
   .wrap{max-width:1180px;margin:0 auto;padding:48px 24px 80px;}
-  header.top{text-align:center;margin-bottom:48px;}
+  header.top{text-align:center;margin-bottom:40px;}
   header.top .eyebrow{font-size:12px;letter-spacing:.22em;color:var(--seal);font-weight:600;}
-  header.top h1{font-family:"Nanum Myeongjo","Batang",serif;font-size:clamp(26px,4vw,38px);font-weight:700;margin:10px 0 8px;letter-spacing:-.01em;}
-  header.top p{color:var(--ink-soft);font-size:14.5px;margin:0;}
+  header.top h1{font-family:"Nanum Myeongjo","Batang",serif;font-size:clamp(24px,4vw,36px);font-weight:700;margin:10px 0 8px;}
+  header.top p{color:var(--ink-soft);font-size:14px;margin:0;}
 
-  /* 구조 안내 배너 */
+  /* 구조 안내 */
   .structure-banner{
-    background:var(--paper);
-    border:1px solid var(--line);
-    border-radius:4px;
-    padding:20px 24px;
-    margin-bottom:32px;
-    display:flex;
-    gap:0;
-    align-items:stretch;
+    background:var(--paper);border:1px solid var(--line);border-radius:4px;
+    padding:20px 24px;margin-bottom:24px;display:flex;gap:0;align-items:stretch;
   }
-  .struct-step{
-    flex:1;
-    padding:12px 16px;
-    border-radius:3px;
-    font-size:12.5px;
-  }
+  .struct-step{flex:1;padding:12px 16px;border-radius:3px;font-size:12.5px;}
   .struct-step .num{font-size:11px;font-weight:700;letter-spacing:.08em;margin-bottom:4px;}
   .struct-step .title{font-weight:700;font-size:13.5px;margin-bottom:4px;}
   .struct-step .body{color:var(--ink-soft);font-size:12px;line-height:1.5;}
@@ -64,48 +50,58 @@
   .struct-step.c{background:var(--step-c-soft);border:1px solid #8C5E2A30;}
   .struct-step.c .num{color:var(--step-c);}
   .struct-arrow{display:flex;align-items:center;padding:0 4px;color:var(--ink-faint);font-size:18px;}
-  @media(max-width:640px){
-    .structure-banner{flex-direction:column;gap:8px;}
-    .struct-step.b{margin:0;}
-    .struct-arrow{display:none;}
+
+  /* v6 개선 배너 */
+  .upgrade-box{
+    background:#fff;border-left:3px solid var(--seal);border-radius:0 3px 3px 0;
+    padding:14px 18px;margin-bottom:24px;font-size:13px;
   }
+  .upgrade-box .title{font-weight:700;color:var(--seal);margin-bottom:6px;}
+  .upgrade-box p{margin:0;color:var(--ink-soft);line-height:1.8;}
+  .upgrade-box strong{color:var(--ink);}
 
   .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:start;}
   @media(max-width:880px){.grid{grid-template-columns:1fr;}}
-  .card{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:26px 28px;margin-bottom:20px;}
-
-  /* 단계 색 구분 */
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:22px 24px;margin-bottom:18px;}
+  .card:last-child{margin-bottom:0;}
   .card.phase-a{border-top:3px solid var(--step-a);}
   .card.phase-b{border-top:3px solid var(--step-b);}
   .card.phase-c{border-top:3px solid var(--step-c);}
 
-  .step-num{font-size:13px;font-weight:700;letter-spacing:.05em;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .step-num{font-size:12.5px;font-weight:700;letter-spacing:.05em;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
   .step-num .dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
   .step-num.a{color:var(--step-a);} .step-num.a .dot{background:var(--step-a);}
   .step-num.b{color:var(--step-b);} .step-num.b .dot{background:var(--step-b);}
   .step-num.c{color:var(--step-c);} .step-num.c .dot{background:var(--step-c);}
   .step-num.seal{color:var(--seal);} .step-num.seal .dot{background:var(--seal);}
 
-  .card h2{font-family:"Nanum Myeongjo","Batang",serif;font-size:19px;margin:0 0 4px;font-weight:700;}
-  .card .desc{color:var(--ink-soft);font-size:13px;margin:0 0 18px;}
+  .card h2{font-family:"Nanum Myeongjo","Batang",serif;font-size:18px;margin:0 0 4px;font-weight:700;}
+  .card .desc{color:var(--ink-soft);font-size:12.5px;margin:0 0 16px;}
 
-  /* 블라인드 강조 박스 */
-  .blind-box{
-    background:#fff;
-    border:1.5px dashed var(--step-a);
-    border-radius:3px;
-    padding:12px 14px;
-    margin-bottom:16px;
-    font-size:12.5px;
-    color:var(--step-a);
-    line-height:1.6;
+  /* 방어장치 안내 박스 */
+  .guard-box{
+    border-radius:3px;padding:11px 14px;margin-bottom:14px;font-size:12.5px;line-height:1.7;
   }
-  .blind-box strong{display:block;font-weight:700;margin-bottom:4px;}
+  .guard-box.blue{background:var(--step-a-soft);border:1px solid #2A5C8A25;}
+  .guard-box.blue strong{color:var(--step-a);}
+  .guard-box.brown{background:var(--step-c-soft);border:1px solid #8C5E2A25;}
+  .guard-box.brown strong{color:var(--step-c);}
+  .guard-box strong{display:block;font-weight:700;margin-bottom:3px;font-size:12.5px;}
 
-  label.field-label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin:14px 0 6px;}
+  /* 블라인드 박스 */
+  .blind-box{
+    background:#fff;border:1.5px dashed var(--step-a);border-radius:3px;
+    padding:11px 13px;margin-bottom:14px;font-size:12.5px;color:var(--step-a);line-height:1.6;
+  }
+  .blind-box strong{display:block;font-weight:700;margin-bottom:3px;}
+
+  label.field-label{display:block;font-size:13px;font-weight:600;color:var(--ink);margin:14px 0 5px;}
   label.field-label:first-of-type{margin-top:0;}
-  .hint{font-size:11.5px;color:var(--ink-faint);font-weight:400;margin-left:4px;}
-  input[type=text],textarea,select{width:100%;border:1px solid var(--line);background:#fff;border-radius:3px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--ink);resize:vertical;}
+  .hint{font-size:11px;color:var(--ink-faint);font-weight:400;margin-left:4px;}
+  input[type=text],textarea,select{
+    width:100%;border:1px solid var(--line);background:#fff;border-radius:3px;
+    padding:9px 11px;font-size:13.5px;font-family:inherit;color:var(--ink);resize:vertical;
+  }
   input[type=text]:focus,textarea:focus,select:focus{outline:2px solid var(--seal);outline-offset:1px;border-color:var(--seal);}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
   @media(max-width:520px){.row2{grid-template-columns:1fr;}}
@@ -123,67 +119,112 @@
   .chip-toggle{display:flex;align-items:flex-start;gap:10px;margin-top:12px;padding:11px 13px;border:1px solid var(--line);border-radius:3px;background:#fff;cursor:pointer;font-size:13px;color:var(--ink-soft);}
   .chip-toggle input{accent-color:var(--seal);margin-top:2px;}
   .chip-toggle.active{border-color:var(--seal);background:var(--seal-soft);color:var(--ink);}
+
+  /* 단계 구분선 */
+  .phase-divider{
+    display:flex;align-items:center;gap:10px;
+    margin:6px 0 18px;font-size:11.5px;letter-spacing:.1em;font-weight:700;
+  }
+  .phase-divider span{white-space:nowrap;}
+  .phase-divider::after{content:'';flex:1;height:1px;background:var(--line);}
+
+  /* 탭 */
+  .tab-row{display:flex;gap:6px;margin-bottom:10px;}
+  .tab-btn{
+    flex:1;padding:10px 8px;border:1.5px solid var(--line);border-radius:4px 4px 0 0;
+    background:var(--paper);color:var(--ink-soft);font-size:12.5px;font-weight:600;
+    cursor:pointer;font-family:inherit;line-height:1.35;transition:.12s;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .tab-btn .tab-step{font-size:10px;letter-spacing:.1em;font-weight:700;}
+  .tab-btn.active{background:var(--ink);color:#F4EEE2;border-color:var(--ink);}
+  .tab-btn.active .tab-step{color:#E0A89E;}
+
+  /* 패널 */
+  .hidden{display:none!important;}
+  .panel-guide{
+    font-size:12px;color:#c8b89a;background:#2a2520;border-radius:3px;
+    padding:8px 11px;margin-bottom:10px;line-height:1.6;
+  }
+  .panel-guide strong{color:#F4EEE2;}
+  .panel-guide code{background:#3a3028;padding:1px 5px;border-radius:2px;font-size:11.5px;color:#e0c88a;}
+  .panel-guide-b{border-left:2px solid #8C5E2A;}
+  .copy-btn-b{background:var(--step-c);}
+  .copy-btn-b:hover{background:#6b4520;}
+
+  /* 프리뷰 */
   .preview-sticky{position:sticky;top:24px;}
-  .preview-card{background:var(--ink);color:#F4EEE2;border-radius:4px;padding:24px 24px 20px;border:1px solid var(--ink);}
-  .preview-card .eyebrow{font-size:11px;letter-spacing:.18em;color:#E0A89E;font-weight:600;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-  #promptOut{width:100%;min-height:480px;background:#1F1C18;color:#EDE6D8;border:1px solid #3A352C;border-radius:3px;padding:16px;font-family:"Pretendard","Noto Sans KR",monospace;font-size:12.6px;line-height:1.65;white-space:pre-wrap;resize:none;}
-  #promptOut:focus{outline:1px solid var(--seal);}
-  .copy-btn{margin-top:14px;width:100%;background:var(--seal);color:#fff;border:none;border-radius:3px;padding:13px;font-size:14.5px;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+  .preview-card{background:var(--ink);color:#F4EEE2;border-radius:0 0 4px 4px;padding:16px 18px 14px;}
+  .preview-card .eyebrow{font-size:11px;letter-spacing:.18em;color:#E0A89E;font-weight:600;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+  #promptOut1,#promptOut2{
+    width:100%;min-height:460px;background:#1F1C18;color:#EDE6D8;
+    border:1px solid #3A352C;border-radius:3px;padding:15px;
+    font-family:"Pretendard","Noto Sans KR",monospace;
+    font-size:12px;line-height:1.65;white-space:pre-wrap;resize:none;
+  }
+  #promptOut1:focus,#promptOut2:focus{outline:1px solid var(--seal);}
+  .copy-btn{margin-top:10px;width:100%;background:var(--seal);color:#fff;border:none;border-radius:3px;padding:12px;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
   .copy-btn:hover{background:var(--seal-dark);}
-  .copy-btn .seal-mark{width:18px;height:18px;border:1.6px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:"Nanum Myeongjo",serif;}
-  .copy-feedback{text-align:center;font-size:12px;color:#E0A89E;height:16px;margin-top:8px;}
-  .reset-link{display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--ink-faint);cursor:pointer;text-decoration:underline;}
-  .note{font-size:11.5px;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin-top:14px;}
+  .copy-btn .seal-mark{width:17px;height:17px;border:1.5px solid currentColor;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-family:"Nanum Myeongjo",serif;}
+  .copy-feedback{text-align:center;font-size:12px;color:#E0A89E;height:16px;margin-top:5px;}
+  .reset-link{display:block;text-align:center;margin-top:8px;font-size:12px;color:var(--ink-faint);cursor:pointer;text-decoration:underline;}
+  .note{font-size:11.5px;color:var(--ink-soft);background:#fff;border:1px solid var(--line);border-radius:3px;padding:9px 12px;margin-top:12px;}
   .quality-hint{font-size:11.5px;margin:5px 2px 0;min-height:14px;transition:.15s;}
   .quality-hint.q-empty{color:var(--ink-faint);}
   .quality-hint.q-low{color:var(--seal);}
   .quality-hint.q-ok{color:#8a8060;}
   .quality-hint.q-good{color:var(--step-b);}
-  textarea#freeTopic{min-height:38px;}
 
-  /* 단계 구분선 */
-  .phase-divider{
-    display:flex;align-items:center;gap:10px;
-    margin:8px 0 20px;font-size:11.5px;letter-spacing:.1em;font-weight:700;
+  @media(max-width:640px){
+    .structure-banner{flex-direction:column;gap:8px;}
+    .struct-step.b{margin:0;}
+    .struct-arrow{display:none;}
   }
-  .phase-divider span{white-space:nowrap;}
-  .phase-divider::after{content:'';flex:1;height:1px;background:var(--line);}
 </style>
 </head>
 <body>
 <div class="wrap">
 
   <header class="top">
-    <div class="eyebrow">大運 · 歲運 · PROMPT BUILDER v4</div>
+    <div class="eyebrow">大運 · 歲運 · PROMPT BUILDER v8</div>
     <h1>대운세운 사주분석 프롬프트 생성기</h1>
-    <p>원국을 먼저 독립적으로 읽고, 그 다음 운을 보고, 마지막에 상황과 대조합니다.<br>이 순서를 지켜야 끼워맞추기 없는 근거 있는 풀이가 나옵니다.</p>
+    <p>1·2단계와 3단계를 분리 — AI가 내담자 정보를 미리 읽지 못하게 물리적으로 차단합니다.</p>
   </header>
 
   <!-- 구조 안내 -->
   <div class="structure-banner">
     <div class="struct-step a">
-      <div class="num">1단계 · 블라인드 분석</div>
-      <div class="title">원국만으로 도출</div>
-      <div class="body">신강약·용신·합충·성향을 내담자 정보 없이 글자에서만 읽어냅니다. 내담자가 말한 것과 일치하면 그때 확인 — 그게 근거입니다.</div>
+      <div class="num">1단계 · 원국 블라인드</div>
+      <div class="title">글자 근거 선제 확정</div>
+      <div class="body">신강약·용신·성향을 도출할 때 반드시 근거 글자를 먼저 명시. 나중에 바꾸기 어렵게 못을 박습니다.</div>
     </div>
     <div class="struct-arrow">→</div>
     <div class="struct-step b">
       <div class="num">2단계 · 운 분석</div>
-      <div class="title">대운·세운 흐름 판정</div>
-      <div class="body">원국 구조를 기반으로 현재 대운·세운이 어떻게 작용하는지 판정합니다. 좋은 운인지 나쁜 운인지 먼저 한 줄 확정.</div>
+      <div class="title">현재 대운 결실 가능성 먼저</div>
+      <div class="body">"지금은 준비기" 자동 패턴 금지. 현재 대운이 결실기인지 아닌지를 글자로 먼저 증명합니다.</div>
     </div>
     <div class="struct-arrow">→</div>
     <div class="struct-step c">
       <div class="num">3단계 · 상황 대조</div>
-      <div class="title">그 다음에 내담자 상황 반영</div>
-      <div class="body">1·2단계 결론을 내담자 상황에 대조합니다. 운과 상황이 일치하면 이유를, 불일치하면 왜 막히는지를 설명합니다.</div>
+      <div class="title">불일치 필수 + 재검증</div>
+      <div class="body">일치만 나열하는 풀이는 거부. 불일치 항목을 반드시 찾고, 솔루션과 종합으로 마무리합니다.</div>
     </div>
+  </div>
+
+  <!-- v6 개선 요약 -->
+  <div class="upgrade-box">
+    <div class="title">v8 추가 — HTML 출력 방어장치(장치 2) 삽입</div>
+    <p>
+      <strong>왜 추가했나요?</strong> 분석 결과를 HTML로 통합할 때 1단계 ④ 패턴 카드에 3단계 판정 배지가 역류하는 오류가 발생했습니다. 장치 2가 이를 프롬프트 수준에서 명시적으로 차단합니다.<br>
+      <strong>사용 순서:</strong> ① <strong>STEP A</strong> 복사 → 만세력 이미지와 함께 Claude에 전송 → 결과 나오면 → ② <strong>같은 대화창에</strong> STEP B 바로 붙여넣기. 복사·붙여넣기는 각 1회씩만.
+    </p>
   </div>
 
   <div class="grid">
     <div class="col-form">
 
-      <!-- STEP 1 — 만세력 -->
+      <!-- 기본 정보 -->
       <div class="card">
         <div class="step-num seal"><span class="dot"></span>STEP 1 · 만세력 준비</div>
         <h2>만세력 이미지를 옆에 준비해두세요</h2>
@@ -191,11 +232,10 @@
         <div class="note">예) 만세력 사이트에서 캡처한 사주 이미지, 대운·세운표 이미지</div>
       </div>
 
-      <!-- STEP 2 — 기본 정보 -->
       <div class="card">
         <div class="step-num seal"><span class="dot"></span>STEP 2 · 기본 정보</div>
         <h2>생년월일시 / 성별</h2>
-        <p class="desc">만세력 이미지를 첨부하면 <strong>이미지 정보가 항상 우선</strong>됩니다. 아래 입력은 이미지가 없거나 보조 확인용일 때만 채우세요.</p>
+        <p class="desc">만세력 이미지 첨부 시 이미지 정보가 항상 우선됩니다.</p>
 
         <label class="field-label">양력 / 음력</label>
         <div class="checks" id="calendarChips">
@@ -203,7 +243,7 @@
           <label class="chip"><input type="radio" name="calType" value="음력">음력</label>
         </div>
 
-        <label class="field-label" style="margin-top:16px;">생년월일시</label>
+        <label class="field-label" style="margin-top:14px;">생년월일시</label>
         <div class="row4">
           <input type="text" id="birthYear" placeholder="년 (예: 1973)">
           <input type="text" id="birthMonth" placeholder="월 (예: 9)">
@@ -211,7 +251,7 @@
           <input type="text" id="birthHour" placeholder="시:분 (예: 04:30)">
         </div>
 
-        <div class="row2" style="margin-top:14px;">
+        <div class="row2" style="margin-top:12px;">
           <div>
             <label class="field-label">성별</label>
             <select id="gender">
@@ -221,20 +261,30 @@
             </select>
           </div>
           <div>
-            <label class="field-label">호칭<span class="hint">(선택)</span></label>
+            <label class="field-label">호칭 <span class="hint">(선택)</span></label>
             <input type="text" id="name" placeholder="예: 강다인">
           </div>
         </div>
       </div>
 
-      <!-- PHASE A — 원국 블라인드 분석 -->
+      <!-- 1단계 입력 -->
       <div class="phase-divider" style="color:var(--step-a);">
-        <span>▸ 1단계 · 블라인드 분석 입력</span>
+        <span>▸ 1·2단계 · 분석 설정</span>
       </div>
 
       <div class="card phase-a">
         <div class="step-num a"><span class="dot"></span>STEP 3 · 분석 시점</div>
         <h2>언제를 기준으로 볼까요?</h2>
+        <div class="guard-box blue">
+          <strong>🔒 장치 1 · 근거 선제 확정</strong>
+          1·2단계에서 각 결론을 낼 때 근거 글자를 먼저 고정합니다.
+          이후 내담자 정보를 보더라도 이미 확정된 글자 근거를 바꾸는 것은 금지됩니다.
+        </div>
+        <div class="guard-box blue">
+          <strong>🔒 장치 2 · HTML 변환 규칙</strong>
+          분석 결과를 HTML로 출력할 때, 1단계 ④ 패턴 카드에 일치·불일치·판단불가 배지를 붙이는 것은 금지입니다.
+          배지는 3단계 ⑧에서만 허용됩니다. 복수 응답을 하나의 파일로 통합할 때 단계 경계를 주석으로 먼저 구분한 뒤 내용을 채웁니다.
+        </div>
         <div class="radio-list" id="timeRadios">
           <label class="radio-row active">
             <input type="radio" name="timepoint" value="올해" checked>올해 운세
@@ -254,20 +304,23 @@
         </label>
       </div>
 
-      <!-- PHASE B — 내담자 정보 (나중에 참조) -->
+      <!-- 3단계 입력 -->
       <div class="phase-divider" style="color:var(--step-c);">
-        <span>▸ 3단계 · 상황 대조 입력 (나중에 참조됨)</span>
+        <span>▸ 3단계 · 상황 대조 입력 (1·2단계 완료 후 참조)</span>
       </div>
 
       <div class="card phase-c">
         <div class="step-num c"><span class="dot"></span>STEP 4 · 내담자 상황</div>
-        <h2>현재 상황 — 원국 분석 <em style="font-style:normal;font-size:14px;">이후</em>에만 참조됩니다</h2>
-        <p class="desc">이 정보는 프롬프트 맨 뒤에 위치합니다. 모델이 원국·운을 먼저 독립적으로 읽은 뒤에만 이 내용을 참고하도록 지시됩니다.</p>
-
+        <h2>현재 상황 — 1·2단계 완료 후에만 참조됩니다</h2>
         <div class="blind-box">
           <strong>⚠ 끼워맞추기 방지</strong>
-          아래 정보는 1·2단계 분석이 완료된 후에만 참조됩니다.
-          모델이 이 내용을 먼저 읽고 역방향으로 근거를 꾸미는 것을 막습니다.
+          이 정보는 프롬프트 맨 뒤에 위치합니다.
+          1·2단계 분석이 완료되고 근거 글자가 확정된 뒤에만 이 내용을 참고하도록 지시됩니다.
+        </div>
+        <div class="guard-box brown">
+          <strong>🔒 장치 2 · 불일치 강제 + 재검증</strong>
+          대조 결과가 "모두 일치"로만 나오면 1단계로 돌아가 재도출합니다.
+          불일치 항목을 찾아 그 원인을 설명할 수 있을 때 비로소 유효한 풀이가 됩니다.
         </div>
 
         <label class="field-label">직업 / 하고 있는 일</label>
@@ -275,15 +328,17 @@
         <div class="quality-hint" id="jobHint"></div>
 
         <label class="field-label">현재 진행 중인 일 / 고민</label>
-        <textarea id="project" rows="2" placeholder="예: 책 출간 후 채널 성장 정체 느낌, 수익화 준비 중인 채널 1개"></textarea>
+        <textarea id="project" rows="2" placeholder="예: 책 출간 후 채널 성장 정체, 수익화 준비 중인 채널 1개"></textarea>
         <div class="quality-hint" id="projectHint"></div>
+
+        <label class="field-label">함께하는 사람 <span class="hint">(동업자·동거인·가족 등, 있다면)</span></label>
+        <textarea id="partner" rows="1" placeholder="예: 동업자 겸 동거인 있음, 개발 아이디어 논의 같이 함"></textarea>
 
         <label class="field-label">스스로 느끼는 성향</label>
         <textarea id="trait" rows="2" placeholder="예: 나서서 영업·홍보가 체질적으로 안 맞음, 1:1 상담은 잘함"></textarea>
         <div class="quality-hint" id="traitHint"></div>
       </div>
 
-      <!-- STEP 5 — 궁금한 것 -->
       <div class="card phase-c">
         <div class="step-num c"><span class="dot"></span>STEP 5 · 궁금한 것</div>
         <h2>무엇이 가장 궁금한가요? <span class="hint">(복수 선택 가능)</span></h2>
@@ -295,30 +350,30 @@
           <label class="chip"><input type="checkbox" value="창업 성공 여부">창업 성공 여부</label>
           <label class="chip"><input type="checkbox" value="적성 변화·방향 전환">적성·방향 전환</label>
 
-          <label class="field-label" style="width:100%;margin:12px 0 6px;">💰 재물운</label>
+          <label class="field-label" style="width:100%;margin:10px 0 5px;">💰 재물운</label>
           <label class="chip"><input type="checkbox" value="전반적 재물운">전반적 재물운</label>
           <label class="chip"><input type="checkbox" value="투자 적정 시기">투자 시기</label>
           <label class="chip"><input type="checkbox" value="금전적 성취·수익 확대">수익 확대</label>
           <label class="chip"><input type="checkbox" value="손재수(돈이 나가는 시기)">손재수 시기</label>
           <label class="chip"><input type="checkbox" value="사업·창업 확장 여부">사업·창업 확장</label>
 
-          <label class="field-label" style="width:100%;margin:12px 0 6px;">❤️ 애정 및 대인관계운</label>
+          <label class="field-label" style="width:100%;margin:10px 0 5px;">❤️ 애정 및 대인관계운</label>
           <label class="chip"><input type="checkbox" value="연애운">연애운</label>
           <label class="chip"><input type="checkbox" value="결혼운·결혼 시기">결혼운·시기</label>
           <label class="chip"><input type="checkbox" value="이혼·갈등 요소">이혼·갈등</label>
           <label class="chip"><input type="checkbox" value="동업·협업 적합성">동업·협업 적합성</label>
 
-          <label class="field-label" style="width:100%;margin:12px 0 6px;">🏥 건강 및 사고수</label>
+          <label class="field-label" style="width:100%;margin:10px 0 5px;">🏥 건강 및 사고수</label>
           <label class="chip"><input type="checkbox" value="건강 취약 시기·오행 불균형">건강 취약 시기</label>
           <label class="chip"><input type="checkbox" value="사고·수술 주의 시기">사고·수술 주의</label>
           <label class="chip"><input type="checkbox" value="오행 불균형으로 인한 질환 경향">질환 경향</label>
 
-          <label class="field-label" style="width:100%;margin:12px 0 6px;">📚 학업 및 시험운</label>
+          <label class="field-label" style="width:100%;margin:10px 0 5px;">📚 학업 및 시험운</label>
           <label class="chip"><input type="checkbox" value="시험 합격운·합격 시기">합격운·시기</label>
           <label class="chip"><input type="checkbox" value="집중력 발휘되는 시기">집중력 시기</label>
           <label class="chip"><input type="checkbox" value="유학·자격증 타이밍">유학·자격증 타이밍</label>
         </div>
-        <label class="field-label">기타<span class="hint">(직접 입력, 선택)</span></label>
+        <label class="field-label">기타 <span class="hint">(직접 입력)</span></label>
         <textarea id="freeTopic" rows="1" placeholder="예: 채널 확장 시기가 맞는지"></textarea>
       </div>
 
@@ -326,18 +381,56 @@
 
     <!-- PREVIEW -->
     <div class="col-preview preview-sticky">
-      <div class="preview-card">
-        <div class="eyebrow"><span>생성된 프롬프트</span><span id="charCount">0자</span></div>
-        <textarea id="promptOut" readonly></textarea>
-        <button class="copy-btn" id="copyBtn">
-          <span class="seal-mark">印</span>
-          <span id="copyBtnLabel">프롬프트 복사하기</span>
+
+      <!-- 탭 -->
+      <div class="tab-row">
+        <button class="tab-btn active" id="tabBtn1" onclick="switchTab(1)">
+          <span class="tab-step">STEP A</span>
+          1·2단계 프롬프트
         </button>
-        <div class="copy-feedback" id="copyFeedback"></div>
-        <span class="reset-link" id="resetLink">입력 초기화</span>
+        <button class="tab-btn" id="tabBtn2" onclick="switchTab(2)">
+          <span class="tab-step">STEP B</span>
+          3단계 프롬프트
+        </button>
       </div>
-      <div class="note" style="margin-top:14px;">
-        복사한 텍스트를 만세력 이미지와 함께 Claude 대화창에 붙여넣으세요.
+
+      <!-- 1·2단계 패널 -->
+      <div class="preview-card" id="panel1">
+        <div class="eyebrow">
+          <span>1·2단계 · 원국 블라인드 + 운 분석</span>
+          <span id="charCount1">0자</span>
+        </div>
+        <div class="panel-guide">
+          내담자 정보 <strong>없이</strong> 만세력 이미지만 첨부해서 Claude에 전송하세요.
+        </div>
+        <textarea id="promptOut1" readonly></textarea>
+        <button class="copy-btn" id="copyBtn1">
+          <span class="seal-mark">印</span>
+          <span id="copyBtnLabel1">1·2단계 프롬프트 복사</span>
+        </button>
+        <div class="copy-feedback" id="copyFeedback1"></div>
+      </div>
+
+      <!-- 3단계 패널 -->
+      <div class="preview-card hidden" id="panel2">
+        <div class="eyebrow">
+          <span>3단계 · 상황 대조</span>
+          <span id="charCount2">0자</span>
+        </div>
+        <div class="panel-guide panel-guide-b">
+          1·2단계 결과가 나오면 <strong>같은 대화창</strong>에 이 프롬프트를 바로 붙여넣고 전송하세요. Claude가 앞 결과를 이미 기억하고 있습니다.
+        </div>
+        <textarea id="promptOut2" readonly></textarea>
+        <button class="copy-btn copy-btn-b" id="copyBtn2">
+          <span class="seal-mark">印</span>
+          <span id="copyBtnLabel2">3단계 프롬프트 복사</span>
+        </button>
+        <div class="copy-feedback" id="copyFeedback2"></div>
+      </div>
+
+      <span class="reset-link" id="resetLink">입력 초기화</span>
+      <div class="note">
+        두 프롬프트를 순서대로 사용하면 AI가 내담자 정보를 미리 읽지 않습니다.
       </div>
     </div>
   </div>
@@ -345,71 +438,36 @@
 </div>
 
 <script>
-const els = {
-  birthYear: document.getElementById('birthYear'),
-  birthMonth: document.getElementById('birthMonth'),
-  birthDay: document.getElementById('birthDay'),
-  birthHour: document.getElementById('birthHour'),
-  gender: document.getElementById('gender'),
-  name: document.getElementById('name'),
-  job: document.getElementById('job'),
-  project: document.getElementById('project'),
-  trait: document.getElementById('trait'),
-  freeTopic: document.getElementById('freeTopic'),
-  specificYear: document.getElementById('specificYear'),
-  nYears: document.getElementById('nYears'),
-  promptOut: document.getElementById('promptOut'),
-  charCount: document.getElementById('charCount'),
-  copyBtn: document.getElementById('copyBtn'),
-  copyBtnLabel: document.getElementById('copyBtnLabel'),
-  copyFeedback: document.getElementById('copyFeedback'),
-  resetLink: document.getElementById('resetLink'),
-  futureFlow: document.getElementById('futureFlow'),
-};
+// ── 탭 전환 ──────────────────────────────
+function switchTab(n){
+  document.getElementById('panel1').classList.toggle('hidden', n!==1);
+  document.getElementById('panel2').classList.toggle('hidden', n!==2);
+  document.getElementById('tabBtn1').classList.toggle('active', n===1);
+  document.getElementById('tabBtn2').classList.toggle('active', n===2);
+}
 
-document.getElementById('futureFlowToggle').addEventListener('click', ()=>{
-  setTimeout(()=>{
-    document.getElementById('futureFlowToggle').classList.toggle('active', els.futureFlow.checked);
-    buildPrompt();
-  },0);
-});
-
-document.querySelectorAll('#topicChips label.chip').forEach(chip=>{
-  chip.addEventListener('click', ()=>{
-    const cb = chip.querySelector('input');
-    setTimeout(()=>{ chip.classList.toggle('active', cb.checked); buildPrompt(); },0);
-  });
-});
-
-document.querySelectorAll('#calendarChips .chip').forEach(chip=>{
-  chip.addEventListener('click', ()=>{
-    document.querySelectorAll('#calendarChips .chip').forEach(c=>c.classList.remove('active'));
-    chip.classList.add('active');
-    buildPrompt();
-  });
-});
-
-document.querySelectorAll('#timeRadios .radio-row').forEach(row=>{
-  row.addEventListener('click', ()=>{
-    document.querySelectorAll('#timeRadios .radio-row').forEach(r=>r.classList.remove('active'));
-    row.classList.add('active');
-  });
-});
-
+// ── 헬퍼 ─────────────────────────────────
 function getTopics(){
   const checked = Array.from(document.querySelectorAll('#topicChips input:checked')).map(i=>i.value);
-  const free = els.freeTopic.value.trim();
+  const free = document.getElementById('freeTopic').value.trim();
   if(free) checked.push(free);
   return checked.length ? checked.join(', ') : '(선택 없음 — 전반적인 운세)';
 }
-
 function getTimepoint(){
   const sel = document.querySelector('input[name=timepoint]:checked').value;
-  if(sel==='특정연도') return els.specificYear.value.trim() || '특정 연도(미입력)';
-  if(sel==='향후N년') return (els.nYears.value.trim() || 'N년') + ' 흐름';
+  if(sel==='특정연도') return document.getElementById('specificYear').value.trim() || '특정 연도(미입력)';
+  if(sel==='향후N년') return (document.getElementById('nYears').value.trim() || 'N년') + ' 흐름';
   return '올해';
 }
-
+function getBirthInfo(){
+  const y=document.getElementById('birthYear').value.trim(),
+        m=document.getElementById('birthMonth').value.trim(),
+        d=document.getElementById('birthDay').value.trim(),
+        h=document.getElementById('birthHour').value.trim();
+  const calType=document.querySelector('input[name=calType]:checked').value;
+  if(!y&&!m&&!d&&!h) return '(미입력 — 만세력 이미지 정보 사용)';
+  return `${y||'?'}년 ${m||'?'}월 ${d||'?'}일 ${h||'시간 미입력'} (${calType})`;
+}
 function checkQuality(text, hintEl){
   const len = text.trim().length;
   hintEl.classList.remove('q-empty','q-low','q-ok','q-good');
@@ -418,147 +476,211 @@ function checkQuality(text, hintEl){
   else if(len<20){ hintEl.textContent='기간이나 구체적 상태를 한 줄 더 덧붙이면 더 좋아요.'; hintEl.classList.add('q-ok'); }
   else{ hintEl.textContent='충분히 구체적입니다 ✓'; hintEl.classList.add('q-good'); }
 }
-
 function refreshQualityHints(){
-  checkQuality(els.job.value, document.getElementById('jobHint'));
-  checkQuality(els.project.value, document.getElementById('projectHint'));
-  checkQuality(els.trait.value, document.getElementById('traitHint'));
+  checkQuality(document.getElementById('job').value, document.getElementById('jobHint'));
+  checkQuality(document.getElementById('project').value, document.getElementById('projectHint'));
+  checkQuality(document.getElementById('trait').value, document.getElementById('traitHint'));
 }
 
-function getBirthInfo(){
-  const y=els.birthYear.value.trim(), m=els.birthMonth.value.trim(),
-        d=els.birthDay.value.trim(), h=els.birthHour.value.trim();
-  const calType=document.querySelector('input[name=calType]:checked').value;
-  if(!y&&!m&&!d&&!h) return '(미입력 — 만세력 이미지 정보 사용)';
-  return `${y||'?'}년 ${m||'?'}월 ${d||'?'}일 ${h||'시간 미입력'} (${calType})`;
-}
-
+// ── 프롬프트 빌드 ─────────────────────────
 function buildPrompt(){
-  const birth = getBirthInfo();
-  const gender = els.gender.value || '(미입력)';
-  const name = els.name.value.trim();
-  const who = name ? `${name}님` : '이 사람';
-  const job = els.job.value.trim();
-  const project = els.project.value.trim();
-  const trait = els.trait.value.trim();
-  const topics = getTopics();
+  const birth     = getBirthInfo();
+  const gender    = document.getElementById('gender').value || '(미입력)';
+  const name      = document.getElementById('name').value.trim();
   const timepoint = getTimepoint();
+  const topics    = getTopics();
+  const job       = document.getElementById('job').value.trim();
+  const project   = document.getElementById('project').value.trim();
+  const partner   = document.getElementById('partner').value.trim();
+  const trait     = document.getElementById('trait').value.trim();
+  const futureOn  = document.getElementById('futureFlow').checked;
 
-  const situationBlock = (job || project || trait)
-    ? `직업·하는 일: ${job || '(미입력)'}
-진행 중인 일·고민: ${project || '(미입력)'}
-스스로 느끼는 성향: ${trait || '(미입력)'}`
+  const situationBlock = (job||project||partner||trait)
+    ? `직업·하는 일: ${job||'(미입력)'}
+진행 중인 일·고민: ${project||'(미입력)'}
+함께하는 사람: ${partner||'(미입력)'}
+스스로 느끼는 성향: ${trait||'(미입력)'}`
     : '(상황 정보 미입력)';
 
-  const futureFlowText = els.futureFlow.checked
-    ? `
+  const futureFlowText = futureOn ? `
 
 【추가 · 대운 흐름 전망】
-현재 대운부터 다음 2~3개 대운까지 십신 변화를 이어서 보고,
-"준비기→발현기→결실기" 같은 단계적 전개가 실제로 보이면 각 단계와 시점(나이)을 명시할 것.
-억지로 끼워맞추지 말 것 — 그런 흐름이 안 보이면 "단계적 전개보다는 [실제 패턴]에 가깝다"고 솔직히 말할 것.`
-    : '';
+현재 대운부터 다음 2~3개 대운까지 십신 변화를 이어서 본다.
+단, 현재 대운이 결실기일 가능성을 먼저 글자로 따진 뒤에만 다음 대운을 언급한다.
+"준비기→발현기→결실기" 흐름이 실제로 보이면 시점(나이)을 명시한다.
+억지로 끼워맞추지 말 것 — 흐름이 없으면 솔직하게 말한다.` : '';
 
-  const prompt =
-`[대운·세운 사주 분석 — 만세력 이미지 첨부]
+  // ━━━ 1·2단계 프롬프트 (내담자 정보 없음) ━━━
+  const prompt1 =
+`[대운·세운 사주 분석 — 1·2단계 · 원국 블라인드 + 운 분석]
 텍스트와 이미지가 다르면 이미지 우선.
+⚠ 이 프롬프트에는 내담자 상황 정보가 포함되어 있지 않습니다.
+   원국과 운 구조만으로 1·2단계를 완전히 완료한 뒤 출력을 멈추세요.
 
 기본정보: ${birth} / ${gender}
 분석 시점: ${timepoint}
-궁금한 것: ${topics}
+궁금한 것(참고용): ${topics}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【역할 정의】
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-당신은 오행·십성의 구조와 흐름을 직독하는 사주 상담사입니다.
+당신은 자평명리학(子平命理學) 전문가입니다.
+일간을 중심에 놓고 월지·일지를 가장 먼저 읽어 신강약을 판단한 뒤,
+나머지 글자(십성)가 일간 쪽으로 힘을 보태는지, 일간에서 빠져나가는지 그 에너지 방향을 따져
+일간의 운명 패턴을 판단하는 방식으로 풀이합니다.
 격국·신살보다 원국의 과다·부재·충돌에서 삶의 패턴을 먼저 읽습니다.
 근거 없는 이론 나열은 하지 않습니다 — 구조가 보이면 바로 통변합니다.
 전문 용어는 처음 나올 때 한 번만 쉬운 말로 병기하고, 이후 반복하지 않습니다.
-
-풀이는 내담자 앞에 앉아 말하듯 씁니다.
-각 단계는 앞 단계의 결론 위에 자연스럽게 이어지고, 전체가 하나의 흐름이 되어야 합니다.
-듣는 사람이 따라오기 쉽고, 근거가 있으며, 현실에 닿는 말로 — 형식은 내용에 맞게 고릅니다.
+풀이는 내담자 앞에 앉아 말하듯 씁니다. 전체가 하나의 흐름이 되어야 합니다.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
-【분석 순서 규칙 — 반드시 지킬 것】
+【출력 형식 · 원국 구조표】
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-아래 3단계는 순서가 핵심이다.
-맨 아래 [내담자 상황]은 1·2단계가 완전히 끝난 뒤에만 참조할 것.
-내담자가 말한 내용을 먼저 읽고 역방향으로 근거를 꾸미는 것은 금지.
+①을 시작하기 전, 사주 원국을 마크다운 표로 먼저 제시한다.
+열 순서: 시주 / 일주 / 월주 / 년주 (만세력 이미지와 동일한 좌우 순서).
+행 순서: 천간(십성) → 천간 글자 → 지지 글자 → 지지(십성).
+
+표 아래에 일간을 중심으로 한 흐름 줄을 천간·지지 각각 추가한다 (순서는 년→월→일→시):
+  천간 흐름: [년간(십성)]→[월간(십성)]→[일간]→[시간(십성)] — 어느 글자가 일간을 생/극하고, 일간이 어느 십성으로 설기되는지 한 줄로.
+  지지 흐름: [년지(십성)]→[월지(십성)]→[일지(십성)]→[시지(십성)] — 흐름 중 발견되는 합충·암합·원진·귀문을 그 자리에서 바로 지적.
+이후 ①~⑦의 모든 풀이는 이 표와 흐름 줄을 기준점으로 글자를 설명한다.
+한 번 설명한 합충·구조는 이후 단계에서 키워드만 인용한다. 반복 설명 금지.
+최종 답변에 "1단계 · 원국 블라인드 분석", "2단계 · 운 분석" 소제목을 표시한다.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+【핵심 규칙 — 방어장치】
+━━━━━━━━━━━━━━━━━━━━━━━━━
+
+▶ 장치 1 · 팔자 근거 선제 확정
+1단계와 2단계의 모든 결론은 반드시 사주팔자의 글자를 먼저 명시한 뒤 결론을 낸다.
+형식: "[기둥명 + 천간/지지 + 글자] → [십신] → [결론]" 순서를 지킨다.
+"원국에서", "구조상", "팔자가" 같은 뭉뚱그린 표현만으로 결론을 내는 것은 금지.
+이 단계에서 확정한 근거는 나중에 내담자 정보를 보더라도 절대 수정할 수 없다.
+
+▶ 장치 2 · HTML 변환 규칙 (분석 결과를 HTML로 출력할 때 적용)
+1단계 ④ 패턴 카드에는 일치·불일치·판단불가 배지를 절대 표시하지 않는다.
+  — 배지는 3단계 ⑧ 섹션에서만 허용된다.
+  — 1단계 ④는 완전 블라인드 구간이므로 내담자 정보와의 대조 결과를 이 구간에 역류시키는 것은 금지.
+UI 컴포넌트(카드·배지 등)를 여러 단계에서 재사용할 때,
+  각 단계에서 허용되는 정보 범위를 코딩 전에 먼저 확인한다.
+  1단계 구간: 팔자 글자 근거·패턴·조건만 표시 허용.
+  3단계 구간: 일치/불일치/판단불가 판정 + 내담자 정보 대조 내용만 허용.
+복수의 응답을 하나의 HTML 파일로 통합할 때,
+  각 섹션의 단계 경계를 주석으로 먼저 구분한 뒤 내용을 채운다.
+  형식 예시: <!-- ① 원국 성향 패턴 — 1단계 블라인드 구간: 배지 금지 -->
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【1단계 · 원국 블라인드 분석】
-내담자 상황을 참조하기 전, 글자만으로 도출할 것
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ① 신강약 판정
 월지(가장 무거움) → 일지 → 나머지 순서로 일간에 힘이 들어오는지 빠지는지 계산.
 삼합·반합·방합으로 변질된 글자는 변질된 십신으로 재계산.
-→ "신강 / 신약 / 중화" 중 하나를 한 줄 확정 + 근거 글자 명시.
+장치 1 적용: "[기둥명 천간/지지 글자] → [십신] → [생/극 방향]" 형식으로 나열 후 신강약 확정.
 
 ② 용신 확정
 신강: 설기·극제 방향(식상→재성→관살 순 검토)
 신약: 강화 방향(인성→비겁 순 검토)
 관살 과다 신약 예외: 식상의 제화 역할 허용 — 단 그 이유를 한 줄 명시.
-→ 용신 1개 확정 + 기신 명시.
+장치 1 적용: "[기둥명 + 글자] → [십신] → 용신 확정" 형식. 기신도 동일하게 기둥명 + 글자로 명시.
 
 ③ 합충 정리
 실제로 존재하는 합충만 적을 것 — 없는 글자를 억지로 채우지 말 것.
-일지충 여부, 배우자궁·거주 변화 가능성, 반합으로 십신이 변질된 것 확인.
+일지충 여부, 반합으로 십신이 변질된 것만 확인.
 
-④ 원국에서 읽히는 성향 (블라인드 도출)
-①②③ 결과만 보고, 이 사람에게 나타날 법한 성향·패턴을 2~3가지 도출.
-반드시 어떤 글자 조합에서 왔는지 근거를 함께 쓸 것.
-→ 이 단계는 내담자 정보 없이 완결되어야 한다.
-→ 다음 단계로 넘어가는 연결 문장 한 줄로 마무리할 것.
+④ 원국 성향 패턴 도출 (완전 블라인드 — 내담자 정보 참조 절대 금지)
+①②③ 결과만 보고 이 원국에서 나타날 법한 성향·패턴 2~3가지 도출.
+장치 1 적용: 각 패턴마다 "[기둥명 + 글자 조합] → [십신 작용] → [성향]" 형식으로 팔자 근거 먼저.
+각 패턴이 "나타나지 않을 수 있는 조건"도 한 줄 병기.
+⚠ HTML 출력 시 장치 2 적용: 이 구간의 패턴 카드에 일치·불일치·판단불가 배지를 붙이는 것은 금지.
+   일치/불일치 판정은 3단계 ⑧에서만 수행한다. 내담자 정보를 보기 전이므로 대조 자체가 불가능하다.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
-【2단계 · 운 분석】 (${timepoint})
+【2단계 · 운 분석】(${timepoint})
 원국 구조를 기반으로 — 내담자 상황 참조 전
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ⑤ 현 대운·세운 판정
 현재 대운 간지 + 세운 간지를 원국과 대조.
-→ 한 줄 판정 먼저: "용신 방향이다 / 기신 방향이다 / 혼합이다" + 이유.
+장치 1 적용: "[대운 천간 글자] → [십신] → 용신/기신 방향", "[대운 지지 글자] → [십신] → 용신/기신 방향",
+           "[세운 천간 글자] → [십신]", "[세운 지지 글자] → [십신]" 형식으로 먼저 나열.
+→ 한 줄 판정: "용신 방향이다 / 기신 방향이다 / 혼합이다" + 이유.
 
-⑥ 주요 육친 길흉 분리
-[내담자가 질문한 주제는 3단계에서 확인할 것 — 여기서는 참조 금지]
+⑥ 현재 대운 결실 가능성 먼저 검토
+  STEP 1. 현재 대운 천간·지지 → 용신·희신 해당 여부를 글자로 먼저 확인.
+  STEP 2. 세운과의 합충이 재성·식상을 강화하는지 약화하는지 확인.
+  STEP 3. "현재 대운이 결실기다 / 아니다"를 먼저 한 줄 확정.
+  → 결실기라면: 어떤 분야에서 어떻게 나타날 수 있는지 구체적으로.
+  → 결실기가 아니라면: 아닌 이유를 글자로 증명한 뒤에만 다음 대운 언급 허용.
+  ※ 글자 증명 없이 "지금은 준비기, 다음 대운에 풀린다"고 쓰는 것은 금지.
+
+⑦ 주요 육친 길흉 분리
 재물(재성), 배우자(관살·일지), 이동·활동(역마·식상) 관련 육친이
-이 대운·세운에서 원국과 어떻게 작용하는지 구조적으로만 설명.
-일간 전체 길흉과 육친별 길흉이 다를 수 있으므로 구분해서 읽을 것.
-→ 다음 단계로 넘어가는 연결 문장 한 줄로 마무리할 것.
+이 대운·세운에서 원국과 어떻게 작용하는지 구조적으로만 설명.${futureFlowText}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+【출력 완료 후 안내】
+━━━━━━━━━━━━━━━━━━━━━━━━━
+1·2단계 분석이 끝나면 다음 문장으로 마무리하세요:
+"▶ 3단계 프롬프트를 이 대화창에 바로 붙여넣으세요."`;
+
+  // ━━━ 3단계 프롬프트 (같은 대화창에 이어서 전송) ━━━
+  const prompt2 =
+`[대운·세운 사주 분석 — 3단계 · 상황 대조]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━
+【필수 전제 — 소급 수정 절대 금지】
+━━━━━━━━━━━━━━━━━━━━━━━━━
+바로 위 대화에서 완료된 1·2단계 결과를 기반으로 3단계를 수행하세요.
+1·2단계에서 확정된 글자 근거·용신·성향 패턴을 내담자 상황에 맞춰 수정하는 것은 금지입니다.
+3단계는 오직 "대조·검증·솔루션·종합"만 수행합니다.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【3단계 · 상황 대조】
-1·2단계 결론을 아래 내담자 상황과 대조할 것
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 
-⑦ 원국 성향과 내담자 성향 대조
-④에서 블라인드로 도출한 성향과 내담자가 말한 성향을 비교.
-일치하면: 어떤 글자에서 그 성향이 왔는지 한 줄 확인으로 쓸 것 — 단순 "일치합니다" 반복 금지.
-불일치하면: 어느 쪽이 더 신뢰할 만한지 이유와 함께 설명.
+⑧ 성향 대조 — 불일치 필수
+1단계 ④에서 도출한 성향 패턴 각각에 대해 아래 중 하나를 먼저 확정:
 
-⑧ 왜 답답한가
-2단계 운 판정과 내담자 고민을 대조해 유형을 먼저 한 줄로 확정:
-  ⓐ 그릇이 운을 못 받음 (구조 문제)
-  ⓑ 타이밍이 아직 이름 → 몇 살·언제부터 풀리는지 명시
+  [일치] 어떤 기둥의 글자에서 그 성향이 왔는지 한 줄 확인. "일치합니다" 단순 반복 금지.
+  [불일치] 팔자 근거와 내담자 서술이 왜 다른지 설명.
+           어느 쪽이 더 신뢰할 만한지 — 팔자인지, 자기 서술인지 — 판단 이유 포함.
+  [판단 불가] 왜 판단하기 어려운지 한 줄.
+
+  ⚠ 필수: 불일치 또는 판단 불가가 최소 1개 이상 나와야 한다.
+  모두 일치로만 나오면 ④를 다시 수행한다.
+  불일치 항목의 설명이 일치 항목보다 먼저, 더 충실하게 나와야 한다.
+
+⑨ 왜 답답한가
+2단계 운 판정과 내담자 고민을 대조해 유형을 먼저 한 줄 확정:
+  ⓐ 그릇이 운을 못 받음 (원국 구조 문제)
+  ⓑ 타이밍이 아직 이름 — ⑥에서 "결실기 아님"이 글자로 증명된 경우에만 선택 가능.
+     선택 시: 왜 결실기가 아닌지 근거 한 줄 재명시 + 몇 살부터 풀리는지 확정.
   ⓒ 방향이 어긋남 (하는 일이 용신 방향과 맞지 않음)
   ⓓ 잘 가고 있는데 불안이 큼
   ⓔ 흉운 — 솔직하게 알리고 언제 나아지는지 + 버티는 방법
-유형 확정 후, 표나 목록 없이 문단으로 풀어서 설명할 것.
+유형 확정 후, 표나 목록 없이 문단으로 풀어서 설명한다.
+※ 궁금한 것에 "언제", "안정", "시기" 관련 표현이 포함된 경우,
+  유형 설명 뒤에 "대운 단위 전체 흐름 + 가까운 1~3년 세부"로 나누어 정리한다.
 
-⑨ 지금 당장 할 것
-할 것 2~3가지는 문단으로 풀어 쓸 것 — 항목 번호를 달더라도 각 항목이 한 단락이 되도록.
-반드시 ①②③에서 도출된 용신·강점과 연결된 행동이어야 하며, 그 연결 이유를 함께 쓸 것.
-안 해도 되는 것 1가지 + 이유, 조심할 것 1가지를 마지막 문단에 함께 담을 것.
+⑩ 지금 당장 할 것
+할 것 2~3가지를 문단으로 풀어 쓴다.
+반드시 ①②에서 확정된 용신·강점과 연결된 행동이어야 하며, 연결 이유를 함께 쓴다.
+안 해도 되는 것 1가지 + 이유, 조심할 것 1가지를 마지막 문단에 담는다.
 성향상 부담될 항목은 "가장 작게 시작하는 첫 행동"을 마지막에 따로 제시.
 
-⑩ 마무리 한 줄
-모든 분석이 끝난 뒤, 지금 이 운이 이 원국에서 어떤 시기인지를 한 문장으로 압축할 것.
-앞서 나온 내용을 반복하지 말고, 내담자가 이 풀이를 듣고 나서 가장 오래 기억할 문장 하나.
-형식: "지금 [대운·세운]은 이 원국에서 [어떤 힘으로] 작동하고 있습니다 — 그래서 지금은 [어떤 시기]입니다."${futureFlowText}
+⑪ 종합 — 지금 이 상황을 한 흐름으로
+⑧~⑩의 대조·검증·솔루션을 내담자 언어로 하나의 흐름으로 엮어 쓴다.
+"원국이 이런 구조라서 → 지금 이 운에서 이렇게 작동하고 있고 → 그래서 내담자가 이 고민을 하는 것이 당연하며 → 이 방향으로 가면 달라질 수 있다"는 흐름이 한 단락 안에 담겨야 한다.
+분석 용어 없이, 내담자 앞에 앉아 마지막으로 건네는 말처럼 쓴다.
+앞서 나온 항목을 목록으로 반복하지 말고, 전체가 하나의 문단으로 읽혀야 한다.
+
+⑫ 마무리 한 줄
+모든 분석이 끝난 뒤 지금 이 운이 이 원국에서 어떤 시기인지를 한 문장으로 압축.
+⑪의 내용을 반복하지 말고, 내담자가 가장 오래 기억할 문장 하나.
+형식: "지금 [대운·세운]은 이 원국에서 [어떤 힘으로] 작동하고 있습니다 — 그래서 지금은 [어떤 시기]입니다."
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━
 【내담자 상황 — 3단계에서만 참조할 것】
@@ -567,37 +689,80 @@ function buildPrompt(){
 궁금한 것: ${topics}
 ${situationBlock}`;
 
-  els.promptOut.value = prompt;
-  els.charCount.textContent = prompt.length + '자';
+  // 출력
+  const out1 = document.getElementById('promptOut1');
+  const out2 = document.getElementById('promptOut2');
+  out1.value = prompt1;
+  out2.value = prompt2;
+  document.getElementById('charCount1').textContent = prompt1.length + '자';
+  document.getElementById('charCount2').textContent = prompt2.length + '자';
 }
 
+// ── 복사 버튼 ────────────────────────────
+function makeCopyHandler(btnId, labelId, feedbackId, outId){
+  document.getElementById(btnId).addEventListener('click', async ()=>{
+    const text = document.getElementById(outId).value;
+    try{ await navigator.clipboard.writeText(text); }
+    catch(e){
+      const el = document.getElementById(outId);
+      el.removeAttribute('readonly'); el.select();
+      document.execCommand('copy');
+      el.setAttribute('readonly','true');
+    }
+    document.getElementById(feedbackId).textContent = '복사되었습니다. Claude 창에 붙여넣으세요.';
+    document.getElementById(labelId).textContent = '복사 완료';
+    setTimeout(()=>{
+      document.getElementById(labelId).textContent = btnId==='copyBtn1' ? '1·2단계 프롬프트 복사' : '3단계 프롬프트 복사';
+      document.getElementById(feedbackId).textContent = '';
+    }, 2200);
+  });
+}
+makeCopyHandler('copyBtn1','copyBtnLabel1','copyFeedback1','promptOut1');
+makeCopyHandler('copyBtn2','copyBtnLabel2','copyFeedback2','promptOut2');
+
+// ── 이벤트 바인딩 ─────────────────────────
 ['input','change'].forEach(evt=>{
-  ['birthYear','birthMonth','birthDay','birthHour','gender','name','job','project','trait','freeTopic','specificYear','nYears'].forEach(id=>{
-    els[id].addEventListener(evt, ()=>{ buildPrompt(); refreshQualityHints(); });
+  ['birthYear','birthMonth','birthDay','birthHour','gender','name','job','project','partner','trait','freeTopic','specificYear','nYears'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.addEventListener(evt, ()=>{ buildPrompt(); refreshQualityHints(); });
   });
 });
 document.querySelectorAll('input[name=timepoint]').forEach(r=>r.addEventListener('change', buildPrompt));
 document.querySelectorAll('input[name=calType]').forEach(r=>r.addEventListener('change', buildPrompt));
 
-els.copyBtn.addEventListener('click', async ()=>{
-  try{ await navigator.clipboard.writeText(els.promptOut.value); }
-  catch(e){
-    els.promptOut.removeAttribute('readonly');
-    els.promptOut.select();
-    document.execCommand('copy');
-    els.promptOut.setAttribute('readonly','true');
-  }
-  els.copyFeedback.textContent='복사되었습니다. Claude 창에 붙여넣으세요.';
-  els.copyBtnLabel.textContent='복사 완료';
-  setTimeout(()=>{ els.copyBtnLabel.textContent='프롬프트 복사하기'; els.copyFeedback.textContent=''; }, 2200);
+document.getElementById('futureFlowToggle').addEventListener('click', ()=>{
+  setTimeout(()=>{
+    document.getElementById('futureFlowToggle').classList.toggle('active', document.getElementById('futureFlow').checked);
+    buildPrompt();
+  },0);
+});
+document.querySelectorAll('#topicChips label.chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const cb = chip.querySelector('input');
+    setTimeout(()=>{ chip.classList.toggle('active', cb.checked); buildPrompt(); },0);
+  });
+});
+document.querySelectorAll('#calendarChips .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('#calendarChips .chip').forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    buildPrompt();
+  });
+});
+document.querySelectorAll('#timeRadios .radio-row').forEach(row=>{
+  row.addEventListener('click', ()=>{
+    document.querySelectorAll('#timeRadios .radio-row').forEach(r=>r.classList.remove('active'));
+    row.classList.add('active');
+  });
 });
 
-els.resetLink.addEventListener('click', ()=>{
-  ['birthYear','birthMonth','birthDay','birthHour','name','specificYear','nYears'].forEach(id=>els[id].value='');
-  ['job','project','trait','freeTopic'].forEach(id=>els[id].value='');
-  els.gender.value='';
+// ── 초기화 ───────────────────────────────
+document.getElementById('resetLink').addEventListener('click', ()=>{
+  ['birthYear','birthMonth','birthDay','birthHour','name','specificYear','nYears'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  ['job','project','partner','trait','freeTopic'].forEach(id=>{ const e=document.getElementById(id); if(e) e.value=''; });
+  document.getElementById('gender').value='';
   document.querySelectorAll('#topicChips input').forEach(i=>{ i.checked=false; i.closest('.chip').classList.remove('active'); });
-  els.futureFlow.checked=false;
+  document.getElementById('futureFlow').checked=false;
   document.getElementById('futureFlowToggle').classList.remove('active');
   document.querySelectorAll('input[name=calType]')[0].checked=true;
   document.querySelectorAll('#calendarChips .chip').forEach((c,i)=>c.classList.toggle('active',i===0));
